@@ -7,7 +7,7 @@ const Post = () => {
   const { pid } = router.query
   if (!pid) return
 
-  const post = trpc.useQuery(['post.byId', { id: Array.isArray(pid) ? pid[0] : pid }])
+  const post = trpc.useQuery(['post.byId', { id: Array.isArray(pid) ? parseInt(pid[0]) : parseInt(pid) }])
   if (!post.data) {
     return <div>Loading...</div>
   }
@@ -29,7 +29,7 @@ const Post = () => {
         {post.data.description}
       </Typography>
       <Typography color='white'>
-        Post id: {pid}
+        Post id: {post.data.id}
       </Typography>
     </div>
   )

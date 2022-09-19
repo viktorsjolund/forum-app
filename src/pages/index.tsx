@@ -1,16 +1,31 @@
+import { trpc } from '@/utils/trpc'
 import { Button } from '@mui/material'
 import Link from 'next/link'
 
 const Home = () => {
+  const posts = trpc.useQuery(['post.all'])
+  if (!posts.data) {
+    return <div>Loading...</div>
+  }
+
   return (
     <div>
-      <Link href={`/view-post/${encodeURIComponent(1)}`}>
-        <a>
-          <Button>
-            Post
-          </Button>
-        </a>
-      </Link>
+      {posts.data.map((post) => {
+        return (
+          <Link href={`/view-post/${post.id}`} key={post.id}>
+            <a>
+              <Button style={{
+                width: '500px',
+                height: '100px'
+              }}
+              variant='contained' color='secondary'>
+                {post.title}
+                {post.id}
+              </Button>
+            </a>
+          </Link>
+        )
+      })}
     </div>
   )
 }

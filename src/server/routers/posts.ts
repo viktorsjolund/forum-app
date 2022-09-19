@@ -1,18 +1,30 @@
 import { z } from 'zod'
 import { createRouter } from '../createRouter'
+import { prisma } from '../prisma'
 
-export const posts = createRouter().query('byId', {
-  input: z.object({
-    id: z.string(),
-  }),
-  async resolve({ input }) {
-    return {
-      pid: input.id,
-      title: 'At vero',
-      description:'At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus. Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat.',
-      username: 'admin',
-      likes: 10,
-      dislikes: 2
+export const posts = createRouter()
+  .query('byId', {
+    input: z.object({
+      id: z.number(),
+    }),
+    async resolve({ input }) {
+      const post = await prisma.post.findUnique({
+        where: {
+          id: input.id,
+        },
+      })
+
+      return {
+        id: post?.id,
+        title: post?.title,
+        description: post?.description,
+        createdAt: post?.createdAt,
+        updatedAt: post?.updatedAt,
+      }
     }
-  },
-})
+  })
+  .query('all', {
+    async resolve() {
+      return await prisma.post.findMany({})
+    }
+  })
