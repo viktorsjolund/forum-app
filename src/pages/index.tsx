@@ -1,12 +1,18 @@
-import { trpc } from '@/utils/trpc'
+import { Button } from '@mui/material'
+import Link from 'next/link'
 
 const Home = () => {
-  const post = trpc.useQuery(['post.byId', { id: '1' }])
-  if (!post.data) {
-    return <div>Loading...</div>
-  }
-
-  return <div>{post.data}</div>
+  return (
+    <div>
+      <Link href={`/view-post/${encodeURIComponent(1)}`}>
+        <a>
+          <Button>
+            Post
+          </Button>
+        </a>
+      </Link>
+    </div>
+  )
 }
 
 export default Home
