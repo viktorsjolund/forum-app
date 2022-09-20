@@ -26,10 +26,19 @@ const Post = () => {
         paragraph
         width='60%'
         >
-        {post.data.description}
+        {post.data.content}
       </Typography>
       <Typography color='white'>
         Post id: {post.data.id}
+      </Typography>
+      <Typography color='white'>
+        {post.data.created_at.toString()}
+      </Typography>
+      <Typography color='white'>
+        {post.data.updated_at.toString()}
+      </Typography>
+      <Typography color='white'>
+        {post.data.author.username}
       </Typography>
     </div>
   )

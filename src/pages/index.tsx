@@ -16,7 +16,7 @@ const Home = () => {
             <a>
               <Button style={{
                 width: '500px',
-                height: '100px'
+                height: '100px',
               }}
               variant='contained' color='secondary'>
                 {post.title}

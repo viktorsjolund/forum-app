@@ -8,23 +8,20 @@ export const posts = createRouter()
       id: z.number(),
     }),
     async resolve({ input }) {
-      const post = await prisma.post.findUnique({
+      const post = await prisma.forum_post.findUnique({
         where: {
           id: input.id,
         },
+        include: {
+          author: true
+        }
       })
-
-      return {
-        id: post?.id,
-        title: post?.title,
-        description: post?.description,
-        createdAt: post?.createdAt,
-        updatedAt: post?.updatedAt,
-      }
+      
+      return post
     }
   })
   .query('all', {
     async resolve() {
-      return await prisma.post.findMany({})
+      return await prisma.forum_post.findMany({})
     }
   })
