@@ -1,3 +1,4 @@
+import Header from '@/components/header'
 import { trpc } from '@/utils/trpc'
 import { Typography } from '@mui/material'
 import { useRouter } from 'next/router'
@@ -13,7 +14,8 @@ const Post = () => {
   }
 
   return (
-    <div className='p-10'>
+    <div>
+      <Header />
       <Typography 
         variant='h2' 
         component='h1' 
@@ -27,9 +29,6 @@ const Post = () => {
         width='60%'
         >
         {post.data.content}
-      </Typography>
-      <Typography color='white'>
-        Post id: {post.data.id}
       </Typography>
       <Typography color='white'>
         {post.data.created_at.toString()}

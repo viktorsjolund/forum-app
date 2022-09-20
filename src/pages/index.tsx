@@ -1,3 +1,4 @@
+import Header from '@/components/header'
 import { trpc } from '@/utils/trpc'
 import { Button } from '@mui/material'
 import Link from 'next/link'
@@ -10,6 +11,7 @@ const Home = () => {
 
   return (
     <div>
+      <Header />
       {posts.data.map((post) => {
         return (
           <Link href={`/view-post/${post.id}`} key={post.id}>
