@@ -96,6 +96,7 @@ export default function Header() {
       }}
       open={isMenuOpen}
       onClose={handleMenuClose}
+      sx={{ li: { color: 'black' } }}
     >
       <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
       <MenuItem onClick={handleMenuClose}>My account</MenuItem>
@@ -166,7 +167,10 @@ export default function Header() {
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position='static' style={{ backgroundColor: '#1f1f1f'}}>
+      <AppBar
+        position='static'
+        style={{ backgroundColor: '#1f1f1f', color: 'white' }}
+      >
         <Toolbar>
           <IconButton
             size='large'
@@ -182,8 +186,7 @@ export default function Header() {
             noWrap
             component='div'
             sx={{ display: { xs: 'none', sm: 'block' } }}
-          >
-          </Typography>
+          ></Typography>
           <Search>
             <SearchIconWrapper>
               <SearchIcon />
