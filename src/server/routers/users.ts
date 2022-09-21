@@ -5,6 +5,7 @@ import * as trpc from '@trpc/server'
 import { Prisma } from '@prisma/client'
 import jwt from 'jsonwebtoken'
 import argon2 from 'argon2'
+import { serialize } from 'cookie'
 
 export const users = createRouter()
   .mutation('register', {
@@ -90,23 +91,21 @@ export const users = createRouter()
         token = result as string
       })
       
-      ctx.res?.setHeader('Set-Cookie', token)
+      ctx.res?.setHeader('Set-Cookie',  serialize('token', token, { path: '/' }))
     },
   })
   .query('me', {
     async resolve({ ctx }) {
       if (!ctx.user) {
-        throw new trpc.TRPCError({
-          code: 'UNAUTHORIZED'
-        })
-      } else {
-        const user = await prisma.forum_user.findUnique({
-          where: {
-            id: parseInt(ctx.user.id)
-          }
-        })
-        
-        return user
+        return null
       }
+
+      const user = await prisma.forum_user.findUnique({
+        where: {
+          id: parseInt(ctx.user.id)
+        }
+      })
+      
+      return user
     }
   })
