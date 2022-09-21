@@ -1,21 +1,42 @@
 import Header from '@/components/header'
-import { TextField, FormControl, Button, Box, Typography } from '@mui/material'
+import { TextField, FormControl, Button, Box, Typography, FormHelperText, cardActionAreaClasses } from '@mui/material'
 import { FormEvent, useState } from 'react'
+import { trpc } from '@/utils/trpc'
+import { useRouter } from 'next/router'
 
 const Register = () => {
+  const router = useRouter()
   const [email, setEmail] = useState('')
   const [username, setUsername] = useState('')
   const [repassword, setRepassword] = useState('')
   const [password, setPassword] = useState('')
   const [passwordErrorMessage, setPasswordErrorMessage] = useState('')
+  const [uniqueErrorMessage, setUniqueErrorMessage] = useState('')
+  const [internalError, setInternalError] = useState(false)
+  const register = trpc.useMutation(['user.register'])
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setPasswordErrorMessage('')
+    setUniqueErrorMessage('')
+    setInternalError(false)
 
     if (repassword !== password) {
       setPasswordErrorMessage('Passwords needs to be matching.')
     }
+
+    try {
+      await register.mutateAsync({ email, username, password })
+    } catch (e: any) {
+      if (e.data.code === 'BAD_REQUEST') {
+        setUniqueErrorMessage(e.message)
+      } else if (e.data.code === 'INTERNAL_SERVER_ERROR') {
+        setInternalError(true)
+      }
+      return
+    }
+    
+    router.push('/account/login')
   }
 
   return (
@@ -54,6 +75,8 @@ const Register = () => {
               type='email'
               value={email}
               onChange={e => setEmail(e.target.value)}
+              error={Boolean(uniqueErrorMessage)}
+              helperText={uniqueErrorMessage}
               focused
             />
             <TextField
@@ -65,6 +88,8 @@ const Register = () => {
               type='text'
               value={username}
               onChange={e => setUsername(e.target.value)}
+              error={Boolean(uniqueErrorMessage)}
+              helperText={uniqueErrorMessage}
               focused
             />
             <TextField
@@ -92,6 +117,9 @@ const Register = () => {
               error={Boolean(passwordErrorMessage)}
               helperText={passwordErrorMessage}
             />
+            <FormHelperText disabled={!internalError}>
+              Something went wrong...
+            </FormHelperText>
             <Button
               type='submit'
               variant='outlined'
