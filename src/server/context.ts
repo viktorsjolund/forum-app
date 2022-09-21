@@ -11,7 +11,7 @@ export async function createContext(opts?: trpcNext.CreateNextContextOptions) {
   async function getUserFromHeader() {
     if (opts?.req.headers.cookie) {
       const user = jwt.verify(opts.req.headers.cookie, process.env.JWT_SECRET!)
-      return user
+      return user as { id: string }
     }
     return null
   }

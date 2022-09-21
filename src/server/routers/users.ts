@@ -93,3 +93,20 @@ export const users = createRouter()
       ctx.res?.setHeader('Set-Cookie', token)
     },
   })
+  .query('me', {
+    async resolve({ ctx }) {
+      if (!ctx.user) {
+        throw new trpc.TRPCError({
+          code: 'UNAUTHORIZED'
+        })
+      } else {
+        const user = await prisma.forum_user.findUnique({
+          where: {
+            id: parseInt(ctx.user.id)
+          }
+        })
+        
+        return user
+      }
+    }
+  })
