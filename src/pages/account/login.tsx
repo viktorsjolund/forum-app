@@ -1,13 +1,34 @@
 import Header from '@/components/header'
+import { trpc } from '@/utils/trpc'
 import { TextField, FormControl, Button, Box, Typography } from '@mui/material'
+import { useRouter } from 'next/router'
 import { FormEvent, useState } from 'react'
 
 const Login = () => {
+  const router = useRouter()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [emailErrorMessage, setEmailErrorMessage] = useState('')
+  const [passwordErrorMessage, setPasswordErrorMessage] = useState('')
+  const login = trpc.useMutation(['user.login'])
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    setEmailErrorMessage('')
+    setPasswordErrorMessage('')
+
+    try {
+      await login.mutateAsync({ email, password })
+    } catch (e: any) {
+      if (e.data.code === 'BAD_REQUEST') {
+        setPasswordErrorMessage(e.message)
+      } else if (e.data.code === 'NOT_FOUND') {
+        setEmailErrorMessage(e.message)
+      }
+      return
+    }
+
+    router.push('/')
   }
 
   return (
@@ -46,6 +67,8 @@ const Login = () => {
               type='email'
               value={email}
               onChange={e => setEmail(e.target.value)}
+              error={Boolean(emailErrorMessage)}
+              helperText={emailErrorMessage}
               focused
             />
             <TextField
@@ -57,6 +80,8 @@ const Login = () => {
               type='password'
               value={password}
               onChange={e => setPassword(e.target.value)}
+              error={Boolean(passwordErrorMessage)}
+              helperText={passwordErrorMessage}
               focused
             />
             <Button
