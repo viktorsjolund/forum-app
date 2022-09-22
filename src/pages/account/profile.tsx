@@ -1,3 +1,4 @@
+import Header from '@/components/header'
 import { trpc } from '@/utils/trpc'
 import { Box, Typography } from '@mui/material'
 import { useRouter } from 'next/router'
@@ -11,14 +12,17 @@ const Profile = () => {
   }
 
   return (
-    <Box>
-      <Typography>
-        {user.data?.username}
-      </Typography>
-      <Typography>
-        {user.data?.email}
-      </Typography>
-    </Box>
+    <>
+      <Header />
+      <Box>
+        <Typography>
+          {user.data?.username}
+        </Typography>
+        <Typography>
+          {user.data?.email}
+        </Typography>
+      </Box>
+    </>
   )
 }
 

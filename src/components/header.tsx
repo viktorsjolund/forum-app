@@ -15,6 +15,8 @@ import AccountCircle from '@mui/icons-material/AccountCircle'
 import MailIcon from '@mui/icons-material/Mail'
 import NotificationsIcon from '@mui/icons-material/Notifications'
 import MoreIcon from '@mui/icons-material/MoreVert'
+import Link from 'next/link'
+import { useRouter } from 'next/router'
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -57,6 +59,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }))
 
 export default function Header() {
+  const router = useRouter()
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState<null | HTMLElement>(null)
 
@@ -74,6 +77,7 @@ export default function Header() {
   const handleMenuClose = () => {
     setAnchorEl(null)
     handleMobileMenuClose()
+    router.push('/account/profile')
   }
 
   const handleMobileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {

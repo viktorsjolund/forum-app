@@ -1,8 +1,8 @@
 import '../styles/globals.css'
-import '@fontsource/roboto/300.css';
-import '@fontsource/roboto/400.css';
-import '@fontsource/roboto/500.css';
-import '@fontsource/roboto/700.css';
+import '@fontsource/roboto/300.css'
+import '@fontsource/roboto/400.css'
+import '@fontsource/roboto/500.css'
+import '@fontsource/roboto/700.css'
 import { withTRPC } from '@trpc/next'
 import { AppType } from 'next/dist/shared/lib/utils'
 import type { AppRouter } from '@/server/routers/_app'
@@ -11,11 +11,19 @@ import { createTheme, ThemeProvider } from '@mui/material'
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#ffffff'
+      main: '#5a189a',
+      light: '#7b2cbf',
+      dark: '#3c096c',
+      contrastText: '#ffffff'
+    },
+    secondary: {
+      main: '#ADB5BD',
+      light: '#F8F9FA',
+      dark: '#495057',
     },
     text: {
-      primary: '#ffffff'
-    }
+      primary: '#ffffff',
+    },
   },
 })
 
@@ -34,7 +42,7 @@ export default withTRPC<AppRouter>({
       : 'http://localhost:3000/api/trpc'
 
     return {
-      url
+      url,
     }
   },
   ssr: true,

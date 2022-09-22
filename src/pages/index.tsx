@@ -1,34 +1,16 @@
 import Header from '@/components/header'
-import { trpc } from '@/utils/trpc'
-import { Button } from '@mui/material'
-import Link from 'next/link'
+import { Box } from '@mui/material'
 
 const Home = () => {
-  const posts = trpc.useQuery(['post.all'])
-  if (!posts.data) {
-    return <div>Loading...</div>
-  }
-
   return (
-    <div>
+    <>
       <Header />
-      {posts.data.map((post) => {
-        return (
-          <Link href={`/view-post/${post.id}`} key={post.id}>
-            <a>
-              <Button style={{
-                width: '500px',
-                height: '100px',
-              }}
-              variant='contained' color='secondary'>
-                {post.title}
-                {post.id}
-              </Button>
-            </a>
-          </Link>
-        )
-      })}
-    </div>
+      <Box display='flex'>
+        <Box>
+          <p>Trending</p>
+        </Box>
+      </Box>
+    </>
   )
 }
 
