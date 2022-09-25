@@ -35,3 +35,24 @@ export const likes = createRouter()
       }
     }
   })
+  .mutation('remove', {
+    input: z.object({
+      postId: z.number()
+    }),
+    async resolve ({ input, ctx }) {
+      const { postId } = input
+
+      try {
+        await prisma.forum_post_likes.deleteMany({
+          where: {
+            user_id: parseInt(ctx.user!.id),
+            post_id: postId,
+          }
+        })
+
+        return true
+      } catch (e) {
+        return false
+      }
+    }
+  })
