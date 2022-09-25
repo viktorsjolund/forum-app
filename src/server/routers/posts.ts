@@ -1,7 +1,6 @@
 import { z } from 'zod'
 import { createRouter } from '../createRouter'
 import { prisma } from '../prisma'
-import * as trpc from '@trpc/server'
 
 export const posts = createRouter()
   .query('byId', {
@@ -9,7 +8,7 @@ export const posts = createRouter()
       id: z.number(),
     }),
     async resolve({ input }) {
-      const post = await prisma.forum_post.findUnique({
+      const post = await prisma.post.findUnique({
         where: {
           id: input.id,
         },
@@ -23,7 +22,7 @@ export const posts = createRouter()
   })
   .query('all', {
     async resolve() {
-      return await prisma.forum_post.findMany({})
+      return await prisma.post.findMany({})
     }
   })
   .mutation('add', {
@@ -35,7 +34,7 @@ export const posts = createRouter()
     async resolve({ input, ctx }) {
       const { title, content, topic } = input
 
-      const result = await prisma.forum_post.create({
+      const result = await prisma.post.create({
         data: {
           title,
           content,

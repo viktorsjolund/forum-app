@@ -18,7 +18,7 @@ export const users = createRouter()
       const hashedPw = await argon2.hash(input.password)
 
       try {
-        await prisma.forum_user.create({
+        await prisma.user.create({
           data: {
             email: input.email,
             username: input.username,
@@ -49,7 +49,7 @@ export const users = createRouter()
       password: z.string(),
     }),
     async resolve({ input, ctx }) {
-      const user = await prisma.forum_user.findUnique({
+      const user = await prisma.user.findUnique({
         where: {
           email: input.email,
         },
@@ -100,7 +100,7 @@ export const users = createRouter()
         return null
       }
 
-      const user = await prisma.forum_user.findUnique({
+      const user = await prisma.user.findUnique({
         where: {
           id: parseInt(ctx.user.id)
         }

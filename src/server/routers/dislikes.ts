@@ -11,7 +11,7 @@ export const dislikes = createRouter()
     async resolve({ input, ctx }) {
       const { postId } = input
 
-      const result = await prisma.forum_post_dislikes.findFirst({
+      const result = await prisma.post_dislike.findFirst({
         where: {
           user_id: parseInt(ctx.user!.id),
           post_id: postId
@@ -20,7 +20,7 @@ export const dislikes = createRouter()
 
       if (!result) {
         try {
-          await prisma.forum_post_dislikes.create({
+          await prisma.post_dislike.create({
             data: {
               post_id: postId,
               user_id: parseInt(ctx.user!.id)
@@ -47,7 +47,7 @@ export const dislikes = createRouter()
       const { postId } = input
 
       try {
-        await prisma.forum_post_dislikes.deleteMany({
+        await prisma.post_dislike.deleteMany({
           where: {
             user_id: parseInt(ctx.user!.id),
             post_id: postId,
@@ -71,7 +71,7 @@ export const dislikes = createRouter()
       const { postId } = input
 
       try {
-        const result = await prisma.forum_post_dislikes.findMany({
+        const result = await prisma.post_dislike.findMany({
           where: {
             post_id: postId
           }
