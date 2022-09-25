@@ -86,3 +86,24 @@ export const dislikes = createRouter()
       }
     }
   })
+  .query('userHasLikedPost', {
+    input: z.object({
+      postId: z.number()
+    }),
+    async resolve({ input, ctx }) {
+      const { postId } = input
+
+      const result = await prisma.post_dislike.findFirst({
+        where: {
+          post_id: postId,
+          user_id: parseInt(ctx.user!.id)
+        }
+      })
+
+      if (result) {
+        return true
+      } else {
+        return false
+      }
+    }
+  })
