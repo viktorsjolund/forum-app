@@ -92,7 +92,7 @@ export const likes = createRouter()
     }),
     async resolve({ input, ctx }) {
       const { postId } = input
-
+      
       const result = await prisma.post_like.findFirst({
         where: {
           post_id: postId,

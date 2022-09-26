@@ -86,7 +86,7 @@ export const dislikes = createRouter()
       }
     }
   })
-  .query('userHasLikedPost', {
+  .query('userHasDislikedPost', {
     input: z.object({
       postId: z.number()
     }),

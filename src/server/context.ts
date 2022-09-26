@@ -15,7 +15,7 @@ export async function createContext({ req, res }: { req: NextApiRequest; res: Ne
       try {
         return decodeJwtToken<UserToken>(token)
       } catch (e) {
-        return null
+        throw e
       }
     }
 
