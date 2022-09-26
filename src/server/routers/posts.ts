@@ -14,7 +14,8 @@ export const posts = createRouter()
           id: input.id,
         },
         include: {
-          author: true
+          author: true,
+          comments: true
         }
       })
       
