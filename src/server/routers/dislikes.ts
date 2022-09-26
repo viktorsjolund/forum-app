@@ -9,6 +9,11 @@ export const dislikes = createRouter()
       postId: z.number()
     }),
     async resolve({ input, ctx }) {
+      if (!ctx.user) {
+        throw new trpc.TRPCError({
+          code: 'UNAUTHORIZED'
+        })
+      }
       const { postId } = input
 
       const result = await prisma.post_dislike.findFirst({
@@ -44,6 +49,11 @@ export const dislikes = createRouter()
       postId: z.number()
     }),
     async resolve ({ input, ctx }) {
+      if (!ctx.user) {
+        throw new trpc.TRPCError({
+          code: 'UNAUTHORIZED'
+        })
+      }
       const { postId } = input
 
       try {
@@ -91,6 +101,11 @@ export const dislikes = createRouter()
       postId: z.number()
     }),
     async resolve({ input, ctx }) {
+      if (!ctx.user) {
+        throw new trpc.TRPCError({
+          code: 'UNAUTHORIZED'
+        })
+      }
       const { postId } = input
 
       const result = await prisma.post_dislike.findFirst({

@@ -15,14 +15,16 @@ const Post = () => {
   const [likes, setLikes] = useState(0)
   const [dislikes, setDislikes] = useState(0)
 
-  const { data: isLikedData, isLoading: isLikedLoading } = trpc.useQuery([
-    'like.userHasLikedPost',
-    { postId },
-  ])
-  const { data: isDislikedData, isLoading: isDislikedLoading } = trpc.useQuery([
-    'dislike.userHasDislikedPost',
-    { postId },
-  ])
+  const {
+    data: isLikedData,
+    isLoading: isLikedLoading,
+    error: isLikedError,
+  } = trpc.useQuery(['like.userHasLikedPost', { postId }])
+  const {
+    data: isDislikedData,
+    isLoading: isDislikedLoading,
+    error: isDislikedError,
+  } = trpc.useQuery(['dislike.userHasDislikedPost', { postId }])
   const { data: likesData, isLoading: likesLoading } = trpc.useQuery([
     'like.totalCountByPostId',
     { postId },
@@ -33,6 +35,14 @@ const Post = () => {
   ])
 
   useEffect(() => {
+    if (isLikedError || isDislikedError) {
+      if (
+        isLikedError?.data?.code === 'UNAUTHORIZED' ||
+        isDislikedError?.data?.code === 'UNAUTHORIZED'
+      ) {
+        router.push('/account/login')
+      }
+    }
     if (!isLikedLoading && !isDislikedLoading) {
       setIsLiked(isLikedData!)
       setIsDisliked(isDislikedData!)
@@ -51,6 +61,9 @@ const Post = () => {
     dislikesData,
     likesLoading,
     dislikesLoading,
+    isDislikedError,
+    isLikedError,
+    router,
   ])
 
   const { data: post } = trpc.useQuery(['post.byId', { id: postId }])
