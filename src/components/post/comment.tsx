@@ -1,9 +1,11 @@
-import { Box, Typography } from '@mui/material'
+import { Box, Button, FormControl, TextField, Typography } from '@mui/material'
 import type { post_comment, user, post_reply } from '@prisma/client'
 import Link from 'next/link'
 import { ArrowDropDown, ArrowDropUp } from '@mui/icons-material'
-import { useState } from 'react'
+import { FormEvent, useState } from 'react'
 import { Replies } from './replies'
+import { purple } from '@mui/material/colors'
+import { trpc } from '@/utils/trpc'
 
 type TCommentProps = {
   comment: post_comment & {
@@ -17,13 +19,30 @@ type TCommentProps = {
 export const Comment = (props: TCommentProps) => {
   const { comment } = props
   const [showReplies, setShowReplies] = useState(false)
+  const [showReplyForm, setShowReplyForm] = useState(false)
+  const [content, setContent] = useState('')
+  const addReply = trpc.useMutation(['reply.add'])
 
   const toggleReplies = () => {
     setShowReplies(!showReplies)
   }
 
+  const toggleReplyForm = () => {
+    setShowReplyForm(!showReplyForm)
+  }
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    setShowReplyForm(false)
+
+    await addReply.mutateAsync({
+      commentId: comment.id,
+      content
+    })
+  }
+
   return (
-    <Box>
+    <Box bgcolor={purple[900]}>
       <Box>
         <Link
           href={`/account/${comment.author.username}`}
@@ -35,8 +54,33 @@ export const Comment = (props: TCommentProps) => {
       <Box>
         <Typography>{comment.content}</Typography>
       </Box>
+      <Typography
+        sx={{ cursor: 'pointer' }}
+        onClick={toggleReplyForm}
+      >
+        Reply
+      </Typography>
+      {showReplyForm && (
+        <FormControl
+          component='form'
+          onSubmit={handleSubmit}
+        >
+          <TextField
+            required
+            label='Make a reply'
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+          />
+          <Button
+            type='submit'
+            variant='contained'
+          >
+            Reply
+          </Button>
+        </FormControl>
+      )}
       <Box>
-        {comment.replies.length > 0 ?? (
+        {comment.replies.length > 0 && (
           <Typography
             sx={{ cursor: 'pointer' }}
             onClick={toggleReplies}
@@ -45,7 +89,7 @@ export const Comment = (props: TCommentProps) => {
             {comment.replies.length} replies
           </Typography>
         )}
-        {showReplies ?? <Replies replies={comment.replies} />}
+        {showReplies && <Replies replies={comment.replies} />}
       </Box>
     </Box>
   )

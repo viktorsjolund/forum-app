@@ -5,6 +5,7 @@ import { users } from './users'
 import { likes } from './likes'
 import { dislikes } from './dislikes'
 import { comments } from './comments'
+import { replies } from './replies'
 
 const createRouter = () => {
   return trpc.router<Context>()
@@ -16,5 +17,6 @@ export const appRouter = createRouter()
   .merge('like.', likes)
   .merge('dislike.', dislikes)
   .merge('comments.', comments)
+  .merge('reply.', replies)
 
 export type AppRouter = typeof appRouter
