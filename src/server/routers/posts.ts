@@ -9,13 +9,22 @@ export const posts = createRouter()
       id: z.number(),
     }),
     async resolve({ input }) {
-      const post = await prisma.post.findUnique({
+      const post = await prisma.post.findFirst({
         where: {
           id: input.id,
         },
         include: {
           author: true,
-          comments: true
+          comments: {
+            include: {
+              author: true,
+              replies: {
+                include: {
+                  author: true,
+                }
+              }
+            }
+          }
         }
       })
       

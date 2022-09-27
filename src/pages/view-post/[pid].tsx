@@ -4,6 +4,7 @@ import { Box, Typography } from '@mui/material'
 import { useRouter } from 'next/router'
 import { ThumbUpOffAlt, ThumbUpAlt, ThumbDownOffAlt, ThumbDownAlt } from '@mui/icons-material'
 import { useEffect, useState } from 'react'
+import { Comments } from '@/components/post/comments'
 
 const Post = () => {
   const router = useRouter()
@@ -165,6 +166,10 @@ const Post = () => {
           <Typography>{dislikes}</Typography>
         </Box>
       </Box>
+      <Comments
+        comments={post.comments}
+        postId={post.id}
+      />
     </div>
   )
 }

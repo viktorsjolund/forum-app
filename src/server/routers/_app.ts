@@ -15,6 +15,6 @@ export const appRouter = createRouter()
   .merge('user.', users)
   .merge('like.', likes)
   .merge('dislike.', dislikes)
-  .merge('comments', comments)
+  .merge('comments.', comments)
 
 export type AppRouter = typeof appRouter
