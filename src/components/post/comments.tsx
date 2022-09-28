@@ -1,8 +1,9 @@
 import { trpc } from '@/utils/trpc'
-import { Box, Button, FormControl, TextField } from '@mui/material'
+import { Box, Button, CircularProgress, FormControl, TextField } from '@mui/material'
 import type { post_comment, user, post_reply } from '@prisma/client'
-import { FormEvent, useState } from 'react'
+import { FormEvent, useEffect, useMemo, useRef, useState } from 'react'
 import { Comment } from './comment'
+import autoAnimate from '@formkit/auto-animate'
 
 type TCommentsProps = {
   comments: (post_comment & {
@@ -12,12 +13,20 @@ type TCommentsProps = {
     })[]
   })[]
   postId: number
+  refetchPost: () => Promise<void>
 }
 
 export const Comments = (props: TCommentsProps) => {
-  const { comments, postId } = props
+  const { comments, postId, refetchPost } = props
   const [content, setContent] = useState('')
+  const [isRefetching, setIsRefetching] = useState(false)
   const addComment = trpc.useMutation(['comments.add'])
+  const commentsRef = useRef(null)
+  const commentsReversed = useMemo(() => [...comments].reverse(), [comments])
+
+  useEffect(() => {
+    commentsRef.current && autoAnimate(commentsRef.current)
+  }, [commentsRef])
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -27,10 +36,13 @@ export const Comments = (props: TCommentsProps) => {
       content,
       postId,
     })
+    setIsRefetching(true)
+    await refetchPost()
+    setIsRefetching(false)
   }
 
   return (
-    <Box>
+    <Box ref={commentsRef}>
       <FormControl
         component='form'
         onSubmit={handleSubmit}
@@ -48,23 +60,23 @@ export const Comments = (props: TCommentsProps) => {
             sx={{ label: { color: 'white' } }}
             fullWidth
             size='small'
-
           />
           <Button
             type='submit'
             variant='contained'
             color='secondary'
-            sx={{ height: '100%', width: 'max-content', pr: 3, pl: 3, float: 'right', m: 2}}
+            sx={{ minHeight: '38px', width: '7%', pr: 3, pl: 3, float: 'right', m: 2 }}
           >
-            Comment
+            {isRefetching ? <CircularProgress size='1rem' /> : 'Comment'}
           </Button>
         </Box>
       </FormControl>
-      {comments.map((comment) => {
+      {commentsReversed.map((comment) => {
         return (
           <Comment
             comment={comment}
             key={comment.id}
+            refetchPost={refetchPost}
           />
         )
       })}

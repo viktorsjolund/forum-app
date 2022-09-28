@@ -1,16 +1,16 @@
-import { Box, Typography } from '@mui/material'
+import { Box } from '@mui/material'
 import type { post_reply, user } from '@prisma/client'
-import Link from 'next/link'
 import { UserCard } from './userCard'
 
 type TReplyProps = {
   reply: post_reply & {
     author: user
   }
+  refetchPost: () => Promise<void>
 }
 
 export const Reply = (props: TReplyProps) => {
-  const { reply } = props
+  const { reply, refetchPost } = props
 
   return (
     <Box
@@ -23,6 +23,7 @@ export const Reply = (props: TReplyProps) => {
         updatedAt={reply.updated_at}
         username={reply.author.username}
         commentId={reply.comment_id}
+        refetchPost={refetchPost}
       />
     </Box>
   )

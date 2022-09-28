@@ -6,10 +6,11 @@ type TRepliesProps = {
   replies: (post_reply & {
     author: user
   })[]
+  refetchPost: () => Promise<void>
 }
 
 export const Replies = (props: TRepliesProps) => {
-  const { replies } = props
+  const { replies, refetchPost } = props
 
   return (
     <Box>
@@ -18,6 +19,7 @@ export const Replies = (props: TRepliesProps) => {
           <Reply
             reply={reply}
             key={reply.id}
+            refetchPost={refetchPost}
           />
         )
       })}

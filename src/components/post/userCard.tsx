@@ -1,6 +1,6 @@
 import { grey400 } from '@/utils/colors'
 import { getDateAge } from '@/utils/timeCalculator'
-import { Avatar, Box, Button, FormControl, TextField, Typography } from '@mui/material'
+import { Avatar, Box, Button, CircularProgress, FormControl, TextField, Typography } from '@mui/material'
 import Link from 'next/link'
 import { FormEvent, useEffect, useRef, useState } from 'react'
 import autoAnimate from '@formkit/auto-animate'
@@ -12,13 +12,15 @@ type TUserCardProps = {
   updatedAt: Date
   content: string
   commentId: number
+  refetchPost: () => Promise<void>
 }
 
 export const UserCard = (props: TUserCardProps) => {
-  const { username, createdAt, updatedAt, content, commentId } = props
+  const { username, createdAt, updatedAt, content, commentId, refetchPost } = props
   const [age, setAge] = useState('')
   const [showReplyForm, setShowReplyForm] = useState(false)
-  const [replyFormContent, setReplyFormContent] = useState('')
+  const [replyFormContent, setReplyFormContent] = useState(`@${username}, `)
+  const [isRefetching, setIsRefetching] = useState(false)
   const replyFormRef = useRef(null)
   const addReply = trpc.useMutation(['reply.add'])
 
@@ -27,17 +29,23 @@ export const UserCard = (props: TUserCardProps) => {
       setAge(getDateAge(createdAt.toString()))
     }
 
-    replyFormRef.current && autoAnimate(replyFormRef.current)
+    replyFormRef.current && autoAnimate(replyFormRef.current, {
+      duration: 200,
+    })
   }, [createdAt, age])
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    setShowReplyForm(false)
+    setReplyFormContent('')
 
     await addReply.mutateAsync({
       commentId,
-      content,
+      content: replyFormContent,
     })
+
+    setIsRefetching(true)
+    await refetchPost()
+    setIsRefetching(false)
   }
 
   const toggleReplyForm = () => {
@@ -107,9 +115,9 @@ export const UserCard = (props: TUserCardProps) => {
                 type='submit'
                 variant='contained'
                 color='secondary'
-                sx={{ width: 'max-content', pr: 3, pl: 3, float: 'right', m: 2 }}
+                sx={{ minHeight: '38px', width: '5%', pr: 3, pl: 3, float: 'right', m: 2 }}
               >
-                Reply
+                {isRefetching ? <CircularProgress size='1rem' /> : 'Reply'}
               </Button>
             </Box>
           </FormControl>

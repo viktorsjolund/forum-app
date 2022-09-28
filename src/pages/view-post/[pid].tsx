@@ -68,7 +68,7 @@ const Post = () => {
     router,
   ])
 
-  const { data: post } = trpc.useQuery(['post.byId', { id: postId }])
+  const { data: post, refetch } = trpc.useQuery(['post.byId', { id: postId }])
 
   const addLike = trpc.useMutation(['like.add'])
   const removeLike = trpc.useMutation(['like.remove'])
@@ -125,6 +125,10 @@ const Post = () => {
     })
   }
 
+  const refetchPost = async () => {
+    await refetch()
+  }
+
   return (
     <>
       <Header />
@@ -171,6 +175,7 @@ const Post = () => {
           <Comments
             comments={post.comments}
             postId={post.id}
+            refetchPost={refetchPost}
           />
         </Box>
       </Box>
