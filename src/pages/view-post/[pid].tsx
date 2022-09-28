@@ -5,6 +5,7 @@ import { useRouter } from 'next/router'
 import { ThumbUpOffAlt, ThumbUpAlt, ThumbDownOffAlt, ThumbDownAlt } from '@mui/icons-material'
 import { useEffect, useState } from 'react'
 import { Comments } from '@/components/post/comments'
+import { grey800 } from '@/utils/colors'
 
 const Post = () => {
   const router = useRouter()
@@ -125,52 +126,55 @@ const Post = () => {
   }
 
   return (
-    <div>
+    <>
       <Header />
-      <Typography
-        variant='h2'
-        component='h1'
-        color='white'
-        gutterBottom
-      >
-        {post.title}
-      </Typography>
-      <Typography
-        color='white'
-        paragraph
-        width='60%'
-      >
-        {post.content}
-      </Typography>
-      <Typography color='white'>{post.created_at.toString()}</Typography>
-      <Typography color='white'>{post.updated_at.toString()}</Typography>
-      <Typography color='white'>{post.author.username}</Typography>
-      <Box
-        display='flex'
-        sx={{ svg: { cursor: 'pointer' } }}
-      >
-        <Box display='flex'>
-          <Typography>{likes}</Typography>
-          {isLiked ? (
-            <ThumbUpAlt onClick={handleRemoveLike} />
-          ) : (
-            <ThumbUpOffAlt onClick={handleAddLike} />
-          )}
-        </Box>
-        <Box display='flex'>
-          {isDisliked ? (
-            <ThumbDownAlt onClick={handleRemoveDislike} />
-          ) : (
-            <ThumbDownOffAlt onClick={handleAddDislike} />
-          )}
-          <Typography>{dislikes}</Typography>
+      <Box display='flex' justifyContent='center' height='max-content'>
+        <Box width='80%' bgcolor={grey800} p={10} height='100%'>
+          <Typography
+            variant='h2'
+            component='h1'
+            color='white'
+            gutterBottom
+          >
+            {post.title}
+          </Typography>
+          <Typography
+            paragraph
+            width='60%'
+          >
+            {post.content}
+          </Typography>
+          <Typography>{post.created_at.toString()}</Typography>
+          <Typography>{post.updated_at.toString()}</Typography>
+          <Typography>{post.author.username}</Typography>
+          <Box
+            display='flex'
+            sx={{ svg: { cursor: 'pointer' } }}
+          >
+            <Box display='flex'>
+              <Typography>{likes}</Typography>
+              {isLiked ? (
+                <ThumbUpAlt onClick={handleRemoveLike} />
+              ) : (
+                <ThumbUpOffAlt onClick={handleAddLike} />
+              )}
+            </Box>
+            <Box display='flex'>
+              {isDisliked ? (
+                <ThumbDownAlt onClick={handleRemoveDislike} />
+              ) : (
+                <ThumbDownOffAlt onClick={handleAddDislike} />
+              )}
+              <Typography>{dislikes}</Typography>
+            </Box>
+          </Box>
+          <Comments
+            comments={post.comments}
+            postId={post.id}
+          />
         </Box>
       </Box>
-      <Comments
-        comments={post.comments}
-        postId={post.id}
-      />
-    </div>
+    </>
   )
 }
 

@@ -1,11 +1,14 @@
-import { Box, Button, FormControl, TextField, Typography } from '@mui/material'
+import { Avatar, Box, Button, FormControl, TextField, Typography } from '@mui/material'
 import type { post_comment, user, post_reply } from '@prisma/client'
 import Link from 'next/link'
 import { ArrowDropDown, ArrowDropUp } from '@mui/icons-material'
-import { FormEvent, useState } from 'react'
+import { FormEvent, useEffect, useRef, useState } from 'react'
 import { Replies } from './replies'
-import { purple } from '@mui/material/colors'
 import { trpc } from '@/utils/trpc'
+import { grey400 } from '@/utils/colors'
+import { getDateAge } from '@/utils/timeCalculator'
+import autoAnimate from '@formkit/auto-animate'
+import { UserCard } from './userCard'
 
 type TCommentProps = {
   comment: post_comment & {
@@ -19,75 +22,45 @@ type TCommentProps = {
 export const Comment = (props: TCommentProps) => {
   const { comment } = props
   const [showReplies, setShowReplies] = useState(false)
-  const [showReplyForm, setShowReplyForm] = useState(false)
-  const [content, setContent] = useState('')
-  const addReply = trpc.useMutation(['reply.add'])
+  const repliesDropdownRef = useRef(null)
 
   const toggleReplies = () => {
     setShowReplies(!showReplies)
   }
 
-  const toggleReplyForm = () => {
-    setShowReplyForm(!showReplyForm)
-  }
-
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    setShowReplyForm(false)
-
-    await addReply.mutateAsync({
-      commentId: comment.id,
-      content
-    })
-  }
+  useEffect(() => {
+    repliesDropdownRef.current && autoAnimate(repliesDropdownRef.current)
+  }, [])
 
   return (
-    <Box bgcolor={purple[900]}>
-      <Box>
-        <Link
-          href={`/account/${comment.author.username}`}
-          passHref
-        >
-          <Typography sx={{ cursor: 'pointer' }}>{comment.author.username}</Typography>
-        </Link>
-      </Box>
-      <Box>
-        <Typography>{comment.content}</Typography>
-      </Box>
-      <Typography
-        sx={{ cursor: 'pointer' }}
-        onClick={toggleReplyForm}
+    <Box mb={4}>
+      <UserCard
+        content={comment.content}
+        createdAt={comment.created_at}
+        updatedAt={comment.updated_at}
+        username={comment.author.username}
+        commentId={comment.id}
+      />
+      <Box
+        m={1}
+        ref={repliesDropdownRef}
       >
-        Reply
-      </Typography>
-      {showReplyForm && (
-        <FormControl
-          component='form'
-          onSubmit={handleSubmit}
-        >
-          <TextField
-            required
-            label='Make a reply'
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-          />
-          <Button
-            type='submit'
-            variant='contained'
-          >
-            Reply
-          </Button>
-        </FormControl>
-      )}
-      <Box>
         {comment.replies.length > 0 && (
-          <Typography
-            sx={{ cursor: 'pointer' }}
+          <Box
+            sx={{ cursor: 'pointer', width: 'max-content' }}
             onClick={toggleReplies}
+            alignContent='center'
+            justifyContent='center'
+            display='flex'
+            color='blueviolet'
           >
-            {showReplies ? <ArrowDropUp /> : <ArrowDropDown />}
+            {showReplies ? (
+              <ArrowDropUp sx={{ fill: 'blueviolet' }} />
+            ) : (
+              <ArrowDropDown sx={{ fill: 'blueviolet' }} />
+            )}
             {comment.replies.length} replies
-          </Typography>
+          </Box>
         )}
         {showReplies && <Replies replies={comment.replies} />}
       </Box>

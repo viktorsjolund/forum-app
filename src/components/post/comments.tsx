@@ -25,7 +25,7 @@ export const Comments = (props: TCommentsProps) => {
 
     await addComment.mutateAsync({
       content,
-      postId
+      postId,
     })
   }
 
@@ -34,22 +34,31 @@ export const Comments = (props: TCommentsProps) => {
       <FormControl
         component='form'
         onSubmit={handleSubmit}
+        fullWidth
       >
-        <TextField
-          multiline
-          rows={3}
-          required
-          variant='filled'
-          label='Make a comment'
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-        />
-        <Button
-          type='submit'
-          variant='contained'
-        >
-          Post
-        </Button>
+        <Box width='100%'>
+          <TextField
+            multiline
+            required
+            variant='filled'
+            label='Make a comment'
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            color='secondary'
+            sx={{ label: { color: 'white' } }}
+            fullWidth
+            size='small'
+
+          />
+          <Button
+            type='submit'
+            variant='contained'
+            color='secondary'
+            sx={{ height: '100%', width: 'max-content', pr: 3, pl: 3, float: 'right', m: 2}}
+          >
+            Comment
+          </Button>
+        </Box>
       </FormControl>
       {comments.map((comment) => {
         return (
