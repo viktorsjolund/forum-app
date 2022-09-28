@@ -17,6 +17,7 @@ import NotificationsIcon from '@mui/icons-material/Notifications'
 import MoreIcon from '@mui/icons-material/MoreVert'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
+import { trpc } from '@/utils/trpc'
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -62,9 +63,15 @@ export default function Header() {
   const router = useRouter()
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState<null | HTMLElement>(null)
+  const logout = trpc.useMutation(['user.logout'])
 
   const isMenuOpen = Boolean(anchorEl)
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl)
+
+  const handleLogout = async () => {
+    await logout.mutateAsync()
+    router.push('/account/login')
+  }
 
   const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget)
@@ -104,6 +111,7 @@ export default function Header() {
     >
       <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
       <MenuItem onClick={handleMenuClose}>My account</MenuItem>
+      <MenuItem onClick={handleLogout}>Logout</MenuItem>
     </Menu>
   )
 

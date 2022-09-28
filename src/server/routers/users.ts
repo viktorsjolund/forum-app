@@ -70,28 +70,9 @@ export const users = createRouter()
         })
       }
 
-      const promise = new Promise((resolve, reject) => {
-        jwt.sign(
-          { id: user.id },
-          process.env.JWT_SECRET!,
-          { expiresIn: '24h' },
-          (err, token) => {
-            if (token) {
-              resolve(token)
-            } else if (err) {
-              reject(err)
-            }
-          }
-        )
-      })
-
-      let token = ''
-
-      await promise.then(result => {
-        token = result as string
-      })
+      const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET!, { expiresIn: '24h' })
       
-      ctx.res?.setHeader('Set-Cookie',  serialize('token', token, { path: '/' }))
+      ctx.res.setHeader('Set-Cookie',  serialize('token', token, { path: '/' }))
     },
   })
   .query('me', {
@@ -107,5 +88,10 @@ export const users = createRouter()
       })
       
       return user
+    }
+  })
+  .mutation('logout', {
+    async resolve({ ctx }) {
+      ctx.res.setHeader('Set-Cookie',  serialize('token', '', { maxAge: -1, path: '/' }))
     }
   })
