@@ -81,9 +81,7 @@ export default function Header() {
     setMobileMoreAnchorEl(null)
   }
 
-  const handleMenuClose = () => {
-    setAnchorEl(null)
-    handleMobileMenuClose()
+  const handleProfile = () => {
     router.push('/account/profile')
   }
 
@@ -106,11 +104,10 @@ export default function Header() {
         horizontal: 'right',
       }}
       open={isMenuOpen}
-      onClose={handleMenuClose}
       sx={{ li: { color: 'black' } }}
     >
-      <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-      <MenuItem onClick={handleMenuClose}>My account</MenuItem>
+      <MenuItem onClick={handleProfile}>Profile</MenuItem>
+      <MenuItem onClick={handleProfile}>My account</MenuItem>
       <MenuItem onClick={handleLogout}>Logout</MenuItem>
     </Menu>
   )
