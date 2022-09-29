@@ -59,7 +59,6 @@ export const UserCard = (props: TUserCardProps) => {
         alignItems='center'
       >
         <Avatar
-          src='/images/avatar.png'
           sx={{ position: 'absolute', ml: -5 }}
         />
         <Link
