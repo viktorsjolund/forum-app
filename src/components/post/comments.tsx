@@ -31,12 +31,13 @@ export const Comments = (props: TCommentsProps) => {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setContent('')
-
+    
+    setIsRefetching(true)
     await addComment.mutateAsync({
       content,
       postId,
     })
-    setIsRefetching(true)
+
     await refetchPost()
     setIsRefetching(false)
   }

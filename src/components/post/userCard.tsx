@@ -38,12 +38,12 @@ export const UserCard = (props: TUserCardProps) => {
     e.preventDefault()
     setReplyFormContent('')
 
+    setIsRefetching(true)
     await addReply.mutateAsync({
       commentId,
       content: replyFormContent,
     })
 
-    setIsRefetching(true)
     await refetchPost()
     setIsRefetching(false)
   }
