@@ -74,6 +74,11 @@ export default function Header() {
     router.push('/account/login')
   }
 
+  const handleMenuClose = () => {
+    setAnchorEl(null)
+    handleMobileMenuClose()
+  }
+
   const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget)
   }
@@ -105,6 +110,7 @@ export default function Header() {
         horizontal: 'right',
       }}
       open={isMenuOpen}
+      onClose={handleMenuClose}
       sx={{ li: { color: 'black' } }}
     >
       <MenuItem onClick={handleProfile}>Profile</MenuItem>
