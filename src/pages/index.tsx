@@ -1,14 +1,19 @@
 import Header from '@/components/header'
-import { Box } from '@mui/material'
+import { Box, Typography } from '@mui/material'
+import Link from 'next/link'
 
 const Home = () => {
   return (
     <>
       <Header />
       <Box display='flex'>
-        <Box>
-          <p>Trending</p>
-        </Box>
+        <Link href='/trending' passHref>
+          <Box sx={{ cursor: 'pointer' }}>
+            <Typography>
+              Trending
+            </Typography>
+          </Box>
+        </Link>
       </Box>
     </>
   )

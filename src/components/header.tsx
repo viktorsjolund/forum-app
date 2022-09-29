@@ -15,9 +15,10 @@ import AccountCircle from '@mui/icons-material/AccountCircle'
 import MailIcon from '@mui/icons-material/Mail'
 import NotificationsIcon from '@mui/icons-material/Notifications'
 import MoreIcon from '@mui/icons-material/MoreVert'
-import Link from 'next/link'
+import HomeIcon from '@mui/icons-material/Home'
 import { useRouter } from 'next/router'
 import { trpc } from '@/utils/trpc'
+import Link from 'next/link'
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -189,6 +190,11 @@ export default function Header() {
             sx={{ mr: 2 }}
           >
             <MenuIcon />
+          </IconButton>
+          <IconButton>
+            <Link href='/' passHref>
+              <HomeIcon />
+            </Link>
           </IconButton>
           <Typography
             variant='h6'
