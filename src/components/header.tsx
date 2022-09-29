@@ -182,7 +182,7 @@ export default function Header() {
   )
 
   return (
-    <Box sx={{ flexGrow: 1 }}>
+    <Box sx={{ flexGrow: 1 }} position='sticky' top={0} zIndex={9999}>
       <AppBar
         position='static'
         style={{ backgroundColor: '#1f1f1f', color: 'white' }}
