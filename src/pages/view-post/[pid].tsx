@@ -27,14 +27,7 @@ const Post = () => {
     isLoading: isDislikedLoading,
     error: isDislikedError,
   } = trpc.useQuery(['dislike.userHasDislikedPost', { postId }])
-  const { data: likesData, isLoading: likesLoading } = trpc.useQuery([
-    'like.totalCountByPostId',
-    { postId },
-  ])
-  const { data: dislikesData, isLoading: dislikesLoading } = trpc.useQuery([
-    'dislike.totalCountByPostId',
-    { postId },
-  ])
+  const { data: post, refetch } = trpc.useQuery(['post.byId', { id: postId }])
 
   useEffect(() => {
     if (isLikedError || isDislikedError) {
@@ -49,26 +42,20 @@ const Post = () => {
       setIsLiked(isLikedData!)
       setIsDisliked(isDislikedData!)
     }
-
-    if (!likesLoading && !dislikesLoading) {
-      setLikes(likesData!)
-      setDislikes(dislikesData!)
+    if (post) {
+      setLikes(post.likes.length)
+      setDislikes(post.dislikes.length)
     }
   }, [
     isLikedData,
     isDislikedData,
     isLikedLoading,
     isDislikedLoading,
-    likesData,
-    dislikesData,
-    likesLoading,
-    dislikesLoading,
     isDislikedError,
     isLikedError,
     router,
+    post
   ])
-
-  const { data: post, refetch } = trpc.useQuery(['post.byId', { id: postId }])
 
   const addLike = trpc.useMutation(['like.add'])
   const removeLike = trpc.useMutation(['like.remove'])

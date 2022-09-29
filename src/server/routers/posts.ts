@@ -15,6 +15,8 @@ export const posts = createRouter()
         },
         include: {
           author: true,
+          likes: true,
+          dislikes: true,
           comments: {
             include: {
               author: true,

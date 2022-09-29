@@ -73,29 +73,6 @@ export const dislikes = createRouter()
       }
     }
   })
-  .query('totalCountByPostId', {
-    input: z.object({
-      postId: z.number()
-    }),
-    async resolve({ input }) {
-      const { postId } = input
-
-      try {
-        const result = await prisma.post_dislike.findMany({
-          where: {
-            post_id: postId
-          }
-        })
-
-        return result.length
-      } catch (e) {
-        throw new trpc.TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Something went wrong...'
-        })
-      }
-    }
-  })
   .query('userHasDislikedPost', {
     input: z.object({
       postId: z.number()

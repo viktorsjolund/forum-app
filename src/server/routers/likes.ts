@@ -73,29 +73,6 @@ export const likes = createRouter()
       }
     }
   })
-  .query('totalCountByPostId', {
-    input: z.object({
-      postId: z.number()
-    }),
-    async resolve({ input }) {
-      const { postId } = input
-
-      try {
-        const result = await prisma.post_like.findMany({
-          where: {
-            post_id: postId
-          }
-        })
-
-        return result.length
-      } catch (e) {
-        throw new trpc.TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Something went wrong...'
-        })
-      }
-    }
-  })
   .query('userHasLikedPost', {
     input: z.object({
       postId: z.number()
