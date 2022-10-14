@@ -1,20 +1,29 @@
-import Header from '@/components/header'
-import { Box, Typography } from '@mui/material'
+import { Header } from '@/components/header'
 import Link from 'next/link'
 
 const Home = () => {
   return (
     <>
       <Header />
-      <Box display='flex'>
-        <Link href='/trending' passHref>
-          <Box sx={{ cursor: 'pointer' }}>
-            <Typography>
-              Trending
-            </Typography>
-          </Box>
+      <div className='flex'>
+        <Link
+          href='/trending'
+          passHref
+        >
+          <div>
+            <span>Trending</span>
+          </div>
         </Link>
-      </Box>
+      </div>
+      <div className='flex w-full h-full bg-black flex-col'>
+        <div className='h-20 w-full bg-midnight m-2'></div>
+        <div className='h-20 w-full bg-midnight m-2'></div>
+        <div className='h-20 w-full bg-midnight m-2'></div>
+        <div className='h-20 w-full bg-midnight m-2'></div>
+        <div className='h-20 w-full bg-midnight m-2'></div>
+        <div className='h-20 w-full bg-midnight m-2'></div>
+        <div className='h-20 w-full bg-midnight m-2'></div>
+      </div>
     </>
   )
 }

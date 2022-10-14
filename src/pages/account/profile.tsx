@@ -1,10 +1,7 @@
-import Header from '@/components/header'
+import { Header } from '@/components/header'
 import { trpc } from '@/utils/trpc'
-import { Box, Typography } from '@mui/material'
-import { useRouter } from 'next/router'
 
 const Profile = () => {
-  const router = useRouter()
   const user = trpc.useQuery(['user.me'])
 
   if (user.isLoading) {
@@ -14,14 +11,10 @@ const Profile = () => {
   return (
     <>
       <Header />
-      <Box>
-        <Typography>
-          {user.data?.username}
-        </Typography>
-        <Typography>
-          {user.data?.email}
-        </Typography>
-      </Box>
+      <div>
+        <span>{user.data?.username}</span>
+        <span>{user.data?.email}</span>
+      </div>
     </>
   )
 }

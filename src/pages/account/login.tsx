@@ -1,6 +1,5 @@
-import Header from '@/components/header'
+import { Header } from '@/components/header'
 import { trpc } from '@/utils/trpc'
-import { TextField, FormControl, Button, Box, Typography } from '@mui/material'
 import { useRouter } from 'next/router'
 import { FormEvent, useState } from 'react'
 
@@ -34,66 +33,29 @@ const Login = () => {
   return (
     <>
       <Header />
-      <Box
-        display='flex'
-        justifyContent='center'
-        alignItems='center'
-        minHeight='100vh'
-      >
-        <Box
-          sx={{ backgroundColor: '#110c21', width: '30%', boxShadow: 4 }}
-          display='flex'
-          justifyContent='center'
-          alignItems='center'
-          minHeight='70vh'
-        >
-          <FormControl
-            component='form'
+      <div className='flex justify-center items-center min-h-screen'>
+        <div className='bg-[#110c21] w-1/3 shadow flex justify-center items-center min-h-[70vh]'>
+          <form
             onSubmit={handleSubmit}
-            sx={{ label: { color: 'white' }, alignItems: 'center', justifyContent: 'center' }}
+            className='flex items-center justify-center flex-col'
           >
-            <Typography
-              variant='h4'
-              color='white'
-            >
-              Account
-            </Typography>
-            <TextField
-              id='outlined-basic'
-              label='Email'
-              variant='outlined'
-              required
-              margin='normal'
+            <span>Account</span>
+            <label>Email</label>
+            <input
               type='email'
               value={email}
-              onChange={e => setEmail(e.target.value)}
-              error={Boolean(emailErrorMessage)}
-              helperText={emailErrorMessage}
-              focused
+              onChange={(e) => setEmail(e.target.value)}
             />
-            <TextField
-              id='outlined-basic'
-              label='Password'
-              variant='outlined'
-              required
-              margin='normal'
+            <label>Password</label>
+            <input
               type='password'
               value={password}
-              onChange={e => setPassword(e.target.value)}
-              error={Boolean(passwordErrorMessage)}
-              helperText={passwordErrorMessage}
-              focused
+              onChange={(e) => setPassword(e.target.value)}
             />
-            <Button
-              type='submit'
-              variant='outlined'
-              sx={{ width: '170px', height: '40px', mt: '10px', bgcolor: 'white' }}
-            >
-              Submit
-            </Button>
-          </FormControl>
-        </Box>
-      </Box>
+            <button type='submit'>Login</button>
+          </form>
+        </div>
+      </div>
     </>
   )
 }

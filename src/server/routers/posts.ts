@@ -18,9 +18,15 @@ export const posts = createRouter()
           likes: true,
           dislikes: true,
           comments: {
+            orderBy: {
+              created_at: 'asc'
+            },
             include: {
               author: true,
               replies: {
+                orderBy: {
+                  created_at: 'desc'
+                },
                 include: {
                   author: true,
                 }

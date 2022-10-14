@@ -1,10 +1,9 @@
-import { Box } from '@mui/material'
 import type { post_comment, user, post_reply } from '@prisma/client'
-import { ArrowDropDown, ArrowDropUp } from '@mui/icons-material'
 import { useEffect, useRef, useState } from 'react'
 import { Replies } from './replies'
 import autoAnimate from '@formkit/auto-animate'
 import { UserCard } from './userCard'
+import { IoMdArrowDropup, IoMdArrowDropdown } from 'react-icons/io'
 
 type TCommentProps = {
   comment: post_comment & {
@@ -25,12 +24,16 @@ export const Comment = (props: TCommentProps) => {
     setShowReplies(!showReplies)
   }
 
+  const showAllReplies = () => {
+    setShowReplies(true)
+  }
+
   useEffect(() => {
     repliesDropdownRef.current && autoAnimate(repliesDropdownRef.current)
   }, [])
 
   return (
-    <Box mb={4}>
+    <div className='mb-8'>
       <UserCard
         content={comment.content}
         createdAt={comment.created_at}
@@ -38,35 +41,33 @@ export const Comment = (props: TCommentProps) => {
         username={comment.author.username}
         commentId={comment.id}
         refetchPost={refetchPost}
+        showReplies={showAllReplies}
       />
-      <Box
-        m={1}
+      <div
+        className='m-1'
         ref={repliesDropdownRef}
       >
         {comment.replies.length > 0 && (
-          <Box
-            sx={{ cursor: 'pointer', width: 'max-content' }}
+          <div
+            className='flex items-center justify-center cursor-pointer w-max'
             onClick={toggleReplies}
-            alignContent='center'
-            justifyContent='center'
-            display='flex'
-            color='blueviolet'
           >
             {showReplies ? (
-              <ArrowDropUp sx={{ fill: 'blueviolet' }} />
+              <IoMdArrowDropup fill='rgb(123 44 191)' />
             ) : (
-              <ArrowDropDown sx={{ fill: 'blueviolet' }} />
+              <IoMdArrowDropdown fill='rgb(123 44 191)' />
             )}
-            {comment.replies.length} replies
-          </Box>
+            <span className='text-main-purple-light'>{comment.replies.length} replies</span>
+          </div>
         )}
         {showReplies && (
           <Replies
             replies={comment.replies}
             refetchPost={refetchPost}
+            showReplies={showAllReplies}
           />
         )}
-      </Box>
-    </Box>
+      </div>
+    </div>
   )
 }

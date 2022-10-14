@@ -1,4 +1,3 @@
-import { Box } from '@mui/material'
 import type { post_reply, user } from '@prisma/client'
 import { Reply } from './reply'
 
@@ -7,22 +6,24 @@ type TRepliesProps = {
     author: user
   })[]
   refetchPost: () => Promise<void>
+  showReplies: () => void
 }
 
 export const Replies = (props: TRepliesProps) => {
-  const { replies, refetchPost } = props
+  const { replies, refetchPost, showReplies } = props
 
   return (
-    <Box>
+    <div>
       {replies.map((reply) => {
         return (
           <Reply
             reply={reply}
             key={reply.id}
             refetchPost={refetchPost}
+            showReplies={showReplies}
           />
         )
       })}
-    </Box>
+    </div>
   )
 }

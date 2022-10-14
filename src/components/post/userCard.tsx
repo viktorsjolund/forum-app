@@ -1,10 +1,11 @@
-import { grey400 } from '@/utils/colors'
 import { getDateAge } from '@/utils/timeCalculator'
-import { Avatar, Box, Button, CircularProgress, FormControl, TextField, Typography } from '@mui/material'
 import Link from 'next/link'
-import { FormEvent, useEffect, useRef, useState } from 'react'
+import { ChangeEvent, FormEvent, useEffect, useRef, useState } from 'react'
 import autoAnimate from '@formkit/auto-animate'
 import { trpc } from '@/utils/trpc'
+import Image from 'next/image'
+import { VscLoading } from 'react-icons/vsc'
+import { Avatar } from '../avatar'
 
 type TUserCardProps = {
   username: string
@@ -13,11 +14,13 @@ type TUserCardProps = {
   content: string
   commentId: number
   refetchPost: () => Promise<void>
+  showReplies: () => void
 }
 
 export const UserCard = (props: TUserCardProps) => {
-  const { username, createdAt, updatedAt, content, commentId, refetchPost } = props
+  const { username, createdAt, updatedAt, content, commentId, refetchPost, showReplies } = props
   const [age, setAge] = useState('')
+  const [rows, setRows] = useState(1)
   const [showReplyForm, setShowReplyForm] = useState(false)
   const [replyFormContent, setReplyFormContent] = useState(`@${username}, `)
   const [isRefetching, setIsRefetching] = useState(false)
@@ -29,9 +32,10 @@ export const UserCard = (props: TUserCardProps) => {
       setAge(getDateAge(createdAt.toString()))
     }
 
-    replyFormRef.current && autoAnimate(replyFormRef.current, {
-      duration: 200,
-    })
+    replyFormRef.current &&
+      autoAnimate(replyFormRef.current, {
+        duration: 200,
+      })
   }, [createdAt, age])
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -46,82 +50,76 @@ export const UserCard = (props: TUserCardProps) => {
 
     await refetchPost()
     setIsRefetching(false)
+    showReplies()
   }
 
   const toggleReplyForm = () => {
     setShowReplyForm(!showReplyForm)
   }
 
+  const handleTextarea = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    setReplyFormContent(e.target.value)
+    const rowCount = e.target.value.split('\n').length
+    setRows(rowCount)
+  }
+
   return (
-    <Box>
-      <Box
-        display='flex'
-        alignItems='center'
-      >
-        <Avatar
-          sx={{ position: 'absolute', ml: -5 }}
-        />
+    <div>
+      <div className='flex items-center relative'>
+        <div className='-left-11 absolute top-0 cursor-pointer'>
+          <Avatar username={username} />
+        </div>
         <Link
           href={`/account/${username}`}
           passHref
         >
-          <Typography
-            borderRight={1}
-            sx={{ cursor: 'pointer', width: 'max-content', pr: 1, fontWeight: 'bold', pl: 1 }}
-          >
+          <span className='cursor-pointer max-w-max pr-2 pl-2 font-bold'>
             {username}
-          </Typography>
+          </span>
         </Link>
-        <Typography
-          ml={1}
-          fontSize={12}
-          color='secondary'
-        >
-          {age}
-        </Typography>
-      </Box>
-      <Box m={1}>
-        <Typography sx={{ p: { whiteSpace: 'pre-line' } }}>{content}</Typography>
-      </Box>
-      <Typography
-        sx={{ cursor: 'pointer', width: 'max-content' }}
+        <span className='text-[#9a9a9a]'>&#8226;</span>
+        <span className='ml-2 text-sm text-gray-400'>{age}</span>
+      </div>
+      <div className='m-2'>
+        <p className='whitespace-pre-wrap'>{content}</p>
+      </div>
+      <span
+        className='cursor-pointer text-gray-400 max-w-max pl-2'
         onClick={toggleReplyForm}
-        color={grey400}
       >
         Reply
-      </Typography>
-      <Box ref={replyFormRef}>
+      </span>
+      <div ref={replyFormRef}>
         {showReplyForm && (
-          <FormControl
-            component='form'
+          <form
             onSubmit={handleSubmit}
-            fullWidth
+            className='w-full flex flex-col rounded-t-md mt-3 font-medium'
           >
-            <Box width='100%'>
-              <TextField
-                required
-                multiline
-                label='Make a reply'
-                value={replyFormContent}
-                variant='filled'
-                onChange={(e) => setReplyFormContent(e.target.value)}
-                color='secondary'
-                sx={{ label: { color: 'white' }, mt: 2 }}
-                fullWidth
-                size='small'
-              />
-              <Button
-                type='submit'
-                variant='contained'
-                color='secondary'
-                sx={{ minHeight: '38px', width: '5%', pr: 3, pl: 3, float: 'right', m: 2 }}
+            <div className='w-full flex flex-col bg-midnight rounded-t-md'>
+              <label
+                htmlFor='reply'
+                className='text-gray-300 text-sm pt-1 pb-1 pl-3 pr-3'
               >
-                {isRefetching ? <CircularProgress size='1rem' /> : 'Reply'}
-              </Button>
-            </Box>
-          </FormControl>
+                Make a reply
+              </label>
+              <textarea
+                value={replyFormContent}
+                onChange={handleTextarea}
+                id='reply'
+                required
+                rows={1}
+                style={{ height: `${rows * 1.5 + 1}rem` }}
+                className='bg-midnight pr-3 pb-1 pl-3 pt-1 focus:border-b-gray-50 hover:border-b-gray-50 focus:border-b-2 border-b-2 border-b-gray-900 overflow-hidden'
+              />
+            </div>
+            <div>
+              <button className='flex leading-6 justify-center items-center pr-3 pl-3 pb-1 pt-1 float-right rounded w-20 h-8 bg-main-purple hover:bg-main-purple-dark shadow-lg font-medium text-sm mt-3'>
+                {isRefetching ? <VscLoading size={20} className='animate-spin' /> : 'REPLY'}
+              </button>
+            </div>
+          </form>
         )}
-      </Box>
-    </Box>
+      </div>
+    </div>
   )
 }

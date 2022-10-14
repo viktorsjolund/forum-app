@@ -6,32 +6,15 @@ import '@fontsource/roboto/700.css'
 import { withTRPC } from '@trpc/next'
 import { AppType } from 'next/dist/shared/lib/utils'
 import type { AppRouter } from '@/server/routers/_app'
-import { createTheme, ThemeProvider } from '@mui/material'
-
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: '#5a189a',
-      light: '#7b2cbf',
-      dark: '#3c096c',
-      contrastText: '#ffffff'
-    },
-    secondary: {
-      main: '#ADB5BD',
-      light: '#F8F9FA',
-      dark: '#495057',
-    },
-    text: {
-      primary: '#ffffff',
-    },
-  },
-})
+import { trpc } from '@/utils/trpc'
+import Login from './account/login'
+import { RouteProtect } from '@/components/routeProtect'
 
 const MyApp: AppType = ({ Component, pageProps }) => {
   return (
-    <ThemeProvider theme={theme}>
+    <RouteProtect>
       <Component {...pageProps} />
-    </ThemeProvider>
+    </RouteProtect>
   )
 }
 
@@ -45,9 +28,9 @@ export default withTRPC<AppRouter>({
       url,
       headers() {
         return {
-          cookie: ctx?.req?.headers.cookie
+          cookie: ctx?.req?.headers.cookie,
         }
-      }
+      },
     }
   },
   ssr: true,

@@ -1,4 +1,3 @@
-import { Box } from '@mui/material'
 import type { post_reply, user } from '@prisma/client'
 import { UserCard } from './userCard'
 
@@ -7,16 +6,14 @@ type TReplyProps = {
     author: user
   }
   refetchPost: () => Promise<void>
+  showReplies: () => void
 }
 
 export const Reply = (props: TReplyProps) => {
-  const { reply, refetchPost } = props
+  const { reply, refetchPost, showReplies } = props
 
   return (
-    <Box
-      ml={4}
-      mt={2}
-    >
+    <div className='ml-12 mt-8'>
       <UserCard
         content={reply.content}
         createdAt={reply.created_at}
@@ -24,7 +21,8 @@ export const Reply = (props: TReplyProps) => {
         username={reply.author.username}
         commentId={reply.comment_id}
         refetchPost={refetchPost}
+        showReplies={showReplies}
       />
-    </Box>
+    </div>
   )
 }

@@ -1,6 +1,5 @@
-import Header from '@/components/header'
+import { Header } from '@/components/header'
 import { trpc } from '@/utils/trpc'
-import { Box, Button, FormControl, TextField } from '@mui/material'
 import { useRouter } from 'next/router'
 import { FormEvent, useState } from 'react'
 
@@ -18,7 +17,7 @@ const CreatePost = () => {
       const result = await addPost.mutateAsync({
         content,
         title,
-        topic
+        topic,
       })
 
       router.push(`/view-post/${result.id}`)
@@ -30,45 +29,26 @@ const CreatePost = () => {
   return (
     <>
       <Header />
-      <Box sx={{ p: 10 }}>
-        <FormControl component='form' fullWidth onSubmit={handleSubmit}>      
-          <TextField
-            required
-            variant='filled'
-            label='Title'
-            sx={{ label: { color: 'white' }, width: '400px'}}
-            color='secondary'
-            margin='normal'
+      <div className='p-10'>
+        <form onSubmit={handleSubmit}>
+          <label>Title</label>
+          <input
             value={title}
-            onChange={e => setTitle(e.target.value)}
+            onChange={(e) => setTitle(e.target.value)}
           />
-          <TextField
-            required
-            variant='filled'
-            label='Content'
-            sx={{ label: { color: 'white' }}}
-            color='secondary'
-            multiline={true}
-            rows={8}
-            margin='normal'
+          <label>Content</label>
+          <textarea
             value={content}
-            onChange={e => setContent(e.target.value)}
+            onChange={(e) => setContent(e.target.value)}
           />
-          <TextField
-            required
-            variant='filled'
-            label='Topic'
-            sx={{ label: { color: 'white' }, width: '400px'}}
-            color='secondary'
-            margin='normal'
+          <label>Topic</label>
+          <input
             value={topic}
-            onChange={e => setTopic(e.target.value)}
+            onChange={(e) => setTopic(e.target.value)}
           />
-          <Button type='submit' variant='contained' sx={{ width: '300px'}}>
-            Create Post
-          </Button>
-        </FormControl>
-      </Box>
+          <button type='submit'>Create post</button>
+        </form>
+      </div>
     </>
   )
 }
