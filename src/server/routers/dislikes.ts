@@ -86,12 +86,18 @@ export const dislikes = createRouter()
       const { postId } = input
 
       try {
-        await prisma.post_dislike.findFirst({
+        const result = await prisma.post_dislike.findFirst({
           where: {
             post_id: postId,
             user_id: parseInt(ctx.user!.id),
           },
         })
+
+        if (result) {
+          return true
+        } else {
+          return false
+        }
       } catch (e) {
         throw new trpc.TRPCError({
           code: 'INTERNAL_SERVER_ERROR',

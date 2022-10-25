@@ -1,56 +1,36 @@
-import {Header} from '@/components/header'
+import { Header } from '@/components/header'
 import { trpc } from '@/utils/trpc'
-import { Box, IconButton, Typography } from '@mui/material'
 import { useRouter } from 'next/router'
 import { Avatar } from '@/components/avatar'
-import {
-  ThumbUpOffAlt,
-  ThumbUpAlt,
-  ThumbDownOffAlt,
-  ThumbDownAlt,
-  BookmarkBorder,
-  Bookmark,
-  Visibility,
-  VisibilityOff,
-} from '@mui/icons-material'
 import { useEffect, useState } from 'react'
 import { Comments } from '@/components/post/comments'
-import { GREY400, GREY500, GREY600, GREY700, GREY800, GREY900 } from '@/utils/colors'
 import Link from 'next/link'
 import { getDateAge } from '@/utils/timeCalculator'
 import { AiFillDislike, AiFillLike, AiOutlineDislike, AiOutlineLike } from 'react-icons/ai'
-import { BsBookmarkFill, BsBookmark, BsBell, BsBellSlash, BsBellFill } from 'react-icons/bs'
+import { BsBookmarkFill, BsBookmark, BsBell, BsBellFill } from 'react-icons/bs'
+import { Loading } from '@/components/loading'
+import { usePostLiked } from '@/hooks/usePostLiked'
+import { usePostDisliked } from '@/hooks/usePostDisliked'
+import { useMutatePostLike } from '@/hooks/useMutatePostLike'
+import { useMutatePostDislike } from '@/hooks/useMutatePostDislike'
 
 const Post = () => {
   const router = useRouter()
-  const { pid } = router.query
-  const postId = Array.isArray(pid) ? parseInt(pid[0]) : parseInt(pid!)
+  const { pid } = router.query as { pid: string }
+  const postId = parseInt(pid)
 
   const [age, setAge] = useState('')
-  const [isLiked, setIsLiked] = useState(false)
-  const [isDisliked, setIsDisliked] = useState(false)
+  const [isLiked, setIsLiked] = usePostLiked(postId)
+  const [isDisliked, setIsDisliked] = usePostDisliked(postId)
   const [likes, setLikes] = useState(0)
   const [dislikes, setDislikes] = useState(0)
   const [isBookmarked, setIsBookmarked] = useState(false)
   const [isNotificationsOn, setIsNotificationsOn] = useState(false)
-
-  const {
-    data: isLikedData,
-    isLoading: isLikedLoading,
-    error: isLikedError,
-  } = trpc.useQuery(['like.userHasLikedPost', { postId }])
-  const {
-    data: isDislikedData,
-    isLoading: isDislikedLoading,
-    error: isDislikedError,
-  } = trpc.useQuery(['dislike.userHasDislikedPost', { postId }])
   const { data: post, refetch } = trpc.useQuery(['post.byId', { id: postId }])
+  const [addLike, removeLike] = useMutatePostLike(postId)
+  const [addDislike, removeDislike] = useMutatePostDislike(postId)
 
   useEffect(() => {
-    if (!isLikedLoading && !isDislikedLoading) {
-      setIsLiked(isLikedData!)
-      setIsDisliked(isDislikedData!)
-    }
     if (post) {
       if (!age) {
         setAge(getDateAge(post.created_at.toString()))
@@ -58,25 +38,10 @@ const Post = () => {
       setLikes(post.likes.length)
       setDislikes(post.dislikes.length)
     }
-  }, [
-    isLikedData,
-    isDislikedData,
-    isLikedLoading,
-    isDislikedLoading,
-    isDislikedError,
-    isLikedError,
-    router,
-    post,
-    age,
-  ])
-
-  const addLike = trpc.useMutation(['like.add'])
-  const removeLike = trpc.useMutation(['like.remove'])
-  const addDislike = trpc.useMutation(['dislike.add'])
-  const removeDislike = trpc.useMutation(['dislike.remove'])
+  }, [router, post, age])
 
   if (!post) {
-    return <div>Loading...</div>
+    return <Loading />
   }
 
   const handleAddLike = async () => {
@@ -86,12 +51,8 @@ const Post = () => {
     }
     setIsDisliked(false)
     setIsLiked(true)
-    await removeDislike.mutateAsync({
-      postId,
-    })
-    await addLike.mutateAsync({
-      postId,
-    })
+    await removeDislike()
+    await addLike()
   }
 
   const handleAddDislike = async () => {
@@ -101,28 +62,20 @@ const Post = () => {
     }
     setIsDisliked(true)
     setIsLiked(false)
-    await removeLike.mutateAsync({
-      postId,
-    })
-    await addDislike.mutateAsync({
-      postId,
-    })
+    await removeLike()
+    await addDislike()
   }
 
   const handleRemoveDislike = async () => {
     setDislikes(dislikes - 1)
     setIsDisliked(false)
-    await removeDislike.mutateAsync({
-      postId,
-    })
+    await removeDislike()
   }
 
   const handleRemoveLike = async () => {
     setLikes(likes - 1)
     setIsLiked(false)
-    await removeLike.mutateAsync({
-      postId,
-    })
+    await removeLike()
   }
 
   const handleAddBookmark = () => {
@@ -148,8 +101,8 @@ const Post = () => {
   return (
     <>
       <Header />
-      <div className='flex justify-center h-max'>
-        <div className='w-4/5 bg-[#212529] p-20 h-full'>
+      <div className='flex justify-center h-max min-h-full bg-gradient-to-tr from-main-purple-light to-main-purple via-main-purple-dark'>
+        <div className='w-4/5 bg-[#212529] p-20 min-h-full'>
           <div className='flex border-b-2 p-8 mb-12 items-center border-b-white border-opacity-50 rounded-sm'>
             <Avatar username={post.author.username} />
             <Link href={`/account/${post.author.username}`}>

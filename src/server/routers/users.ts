@@ -70,10 +70,32 @@ export const users = createRouter()
         })
       }
 
-      const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET!, { expiresIn: '24h' })
+      const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET!, { expiresIn: '240h' })
       
       ctx.res.setHeader('Set-Cookie',  serialize('token', token, { path: '/' }))
     },
+  })
+  .query('byUsername', {
+    input: z.object({
+      username: z.string()
+    }),
+    async resolve({ input }) {
+      const { username } = input
+
+      const user = await prisma.user.findUnique({
+        where: {
+          username
+        }
+      })
+
+      if (!user) {
+        throw new trpc.TRPCError({
+          code: 'NOT_FOUND'
+        })
+      }
+
+      return user
+    }
   })
   .query('me', {
     async resolve({ ctx }) {
@@ -88,6 +110,15 @@ export const users = createRouter()
       })
       
       return user
+    }
+  })
+  .query('isAuthorized', {
+    resolve({ ctx }) {
+      if (ctx.user) {
+        return true
+      } else {
+        return false
+      }
     }
   })
   .mutation('logout', {

@@ -1,11 +1,11 @@
 import { getDateAge } from '@/utils/timeCalculator'
 import Link from 'next/link'
-import { ChangeEvent, FormEvent, useEffect, useRef, useState } from 'react'
+import { ChangeEvent, FormEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import autoAnimate from '@formkit/auto-animate'
 import { trpc } from '@/utils/trpc'
-import Image from 'next/image'
 import { VscLoading } from 'react-icons/vsc'
 import { Avatar } from '../avatar'
+import { UserMention } from './userMention'
 
 type TUserCardProps = {
   username: string
@@ -22,10 +22,30 @@ export const UserCard = (props: TUserCardProps) => {
   const [age, setAge] = useState('')
   const [rows, setRows] = useState(1)
   const [showReplyForm, setShowReplyForm] = useState(false)
-  const [replyFormContent, setReplyFormContent] = useState(`@${username}, `)
+  const [replyFormContent, setReplyFormContent] = useState(`@${username} `)
   const [isRefetching, setIsRefetching] = useState(false)
   const replyFormRef = useRef(null)
   const addReply = trpc.useMutation(['reply.add'])
+
+  const filteredContent = useCallback(() => {
+    const words = content.split(' ')
+    return (
+      <span className='whitespace-pre-wrap'>
+        {words.map((word, i) => {
+          return (
+            <>
+              {word.includes('@') && word.length !== 1 ? (
+                <UserMention username={word}/>
+              ) : (
+                <>{word}</>
+              )}
+              <>{i !== words.length - 1 && ' '}</>
+            </>
+          )
+        })}
+      </span>
+    )
+  }, [content])
 
   useEffect(() => {
     if (!age) {
@@ -73,16 +93,12 @@ export const UserCard = (props: TUserCardProps) => {
           href={`/account/${username}`}
           passHref
         >
-          <span className='cursor-pointer max-w-max pr-2 pl-2 font-bold'>
-            {username}
-          </span>
+          <span className='cursor-pointer max-w-max pr-2 pl-2 font-bold'>{username}</span>
         </Link>
         <span className='text-[#9a9a9a]'>&#8226;</span>
         <span className='ml-2 text-sm text-gray-400'>{age}</span>
       </div>
-      <div className='m-2'>
-        <p className='whitespace-pre-wrap'>{content}</p>
-      </div>
+      <div className='m-2'>{filteredContent()}</div>
       <span
         className='cursor-pointer text-gray-400 max-w-max pl-2'
         onClick={toggleReplyForm}
@@ -114,7 +130,14 @@ export const UserCard = (props: TUserCardProps) => {
             </div>
             <div>
               <button className='flex leading-6 justify-center items-center pr-3 pl-3 pb-1 pt-1 float-right rounded w-20 h-8 bg-main-purple hover:bg-main-purple-dark shadow-lg font-medium text-sm mt-3'>
-                {isRefetching ? <VscLoading size={20} className='animate-spin' /> : 'REPLY'}
+                {isRefetching ? (
+                  <VscLoading
+                    size={20}
+                    className='animate-spin'
+                  />
+                ) : (
+                  'REPLY'
+                )}
               </button>
             </div>
           </form>

@@ -76,7 +76,7 @@ export const Comments = (props: TCommentsProps) => {
           />
         </div>
         <div>
-          <button className='flex leading-6 justify-center items-center pr-3 pl-3 pb-1 pt-1 float-right rounded w-20 h-8 bg-main-purple hover:bg-main-purple-dark shadow-lg font-medium text-sm mt-3'>
+          <button className='flex leading-6 justify-center items-center pr-4 pl-4 pb-1 pt-1 float-right rounded w-22 h-8 bg-main-purple hover:bg-main-purple-dark shadow-lg font-medium text-sm mt-3'>
             {isRefetching ? (
               <VscLoading
                 size={20}

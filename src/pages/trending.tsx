@@ -1,11 +1,12 @@
 import { Header } from '@/components/header'
+import { Loading } from '@/components/loading'
 import { trpc } from '@/utils/trpc'
 import Link from 'next/link'
 
 const Trending = () => {
   const posts = trpc.useQuery(['post.all'])
   if (!posts.data) {
-    return <div>Loading...</div>
+    return <Loading />
   }
 
   return (

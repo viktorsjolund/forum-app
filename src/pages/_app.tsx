@@ -3,11 +3,10 @@ import '@fontsource/roboto/300.css'
 import '@fontsource/roboto/400.css'
 import '@fontsource/roboto/500.css'
 import '@fontsource/roboto/700.css'
+import 'inter-ui/inter.css'
 import { withTRPC } from '@trpc/next'
 import { AppType } from 'next/dist/shared/lib/utils'
 import type { AppRouter } from '@/server/routers/_app'
-import { trpc } from '@/utils/trpc'
-import Login from './account/login'
 import { RouteProtect } from '@/components/routeProtect'
 
 const MyApp: AppType = ({ Component, pageProps }) => {
