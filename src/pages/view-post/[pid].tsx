@@ -113,7 +113,28 @@ const Post = () => {
           </div>
           <h1 className='mb-10 text-4xl'>{post.title}</h1>
           <p className='whitespace-pre-wrap w-3/5'>{post.content}</p>
-          <div className='flex h-[6rem] mt-20 w-full'>
+          <div className='bg-midnight flex mt-20 h-12 rounded'>
+            <div className='w-max pl-4 pr-4 pt-2 pb-2 flex items-center'>
+              <span>Topics</span>
+            </div>
+            <div className='flex items-center w-full'>
+              {post.topic.split(' ').map((topic, i) => {
+                return (
+                  <Link
+                    href={`/topic/${encodeURIComponent(topic)}`}
+                    key={i}
+                  >
+                    <a>
+                      <div className='bg-main-purple-light rounded-2xl h-max pt-1 pb-1 pr-3 pl-3 shadow-lg cursor-pointer mr-4'>
+                        {topic}
+                      </div>
+                    </a>
+                  </Link>
+                )
+              })}
+            </div>
+          </div>
+          <div className='flex h-[6rem] mt-14 w-full'>
             <div className='h-full w-max rounded-tl rounded-bl bg-midnight'>
               <div className='h-2/4 min-w-[4.5rem] flex justify-center items-center'>
                 {isLiked ? (

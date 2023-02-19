@@ -73,3 +73,23 @@ export const posts = createRouter()
       return result
     }
   })
+  .query('byTopic', {
+    input: z.object({
+      topic: z.string()
+    }),
+    async resolve({ input }) {
+      const { topic } = input
+      const posts = await prisma.post.findMany({
+        where: {
+          topic: {
+            contains: topic
+          }
+        },
+        include: {
+          author: true
+        }
+      })
+
+      return posts
+    }
+  })
