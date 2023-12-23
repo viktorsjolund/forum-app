@@ -12,7 +12,7 @@ const Trending = () => {
   return (
     <>
       <Header />
-      <div className='p-5'>
+      <div className='p-5 cursor-pointer'>
         {posts.data.map((post) => {
           return (
             <Link
