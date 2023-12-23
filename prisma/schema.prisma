@@ -61,6 +61,7 @@ model user {
   email    String @unique(map: "email_UNIQUE") @db.VarChar(255)
   username String @unique(map: "username_UNIQUE") @db.VarChar(255)
   password String @db.VarChar(255)
+  role     role?
   posts    post[]
   comments post_comment[]
   replies  post_reply[]
@@ -86,4 +87,9 @@ model post_dislike {
 
   @@index([post_id])
   @@map("forum_post_dislikes")
+}
+
+enum role {
+  ADMIN
+  READER
 }

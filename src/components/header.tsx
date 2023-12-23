@@ -4,6 +4,7 @@ import { useRouter } from 'next/router'
 import { trpc } from '@/utils/trpc'
 import Image from 'next/image'
 import { useState, useEffect } from 'react'
+import type { role } from '@prisma/client'
 
 const LoggedOut = () => {
   return (
@@ -17,10 +18,11 @@ const LoggedOut = () => {
 
 type TLoggedInProps = {
   username: string
+  role: role | null
 }
 
 const LoggedIn = (props: TLoggedInProps) => {
-  const { username } = props
+  const { username, role } = props
   const [showDropdown, setShowDropdown] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
   const logout = trpc.useMutation(['user.logout'])
@@ -82,8 +84,14 @@ const LoggedIn = (props: TLoggedInProps) => {
         </div>
       </div>
       {showDropdown && (
-        <ul className='absolute top-12 right-8 bg-gray-900 pr-2 pl-2 pt-1 pb-1 rounded shadow-black shadow border-[1px] border-slate-800' id='header-dropdown'>
-          <li className='pl-14 pr-14 pb-1 text-center'>{username}</li>
+        <ul
+          className='absolute top-12 right-8 bg-gray-900 pr-2 pl-2 pt-1 pb-1 rounded shadow-black shadow border-[1px] border-slate-800'
+          id='header-dropdown'
+        >
+          <li className='pl-14 pr-14 pb-1 text-center'>
+            <span className='pointer-events-none'>{username}</span>
+            {role && <span className='ml-2 border-[1px] rounded p-1 font-bold text-xs mt-auto mb-auto bg-purple-500 pointer-events-none'>{role}</span>}
+          </li>
           <li
             className='border-t-[1px] border-black pl-14 pr-14 pt-1 cursor-pointer text-center'
             onClick={handleLogout}
@@ -126,7 +134,14 @@ export const Header = () => {
         </Link>
       </div>
       <div className='ml-auto flex items-center'>
-        {isLoading || !user ? <LoggedOut /> : <LoggedIn username={user.username} />}
+        {isLoading || !user ? (
+          <LoggedOut />
+        ) : (
+          <LoggedIn
+            username={user.username}
+            role={user.role}
+          />
+        )}
       </div>
     </div>
   )
