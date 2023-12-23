@@ -2,16 +2,17 @@ import { z } from 'zod'
 import { createRouter } from '../createRouter'
 import { prisma } from '../prisma'
 import * as trpc from '@trpc/server'
+import { Prisma } from '@prisma/client'
 
 export const posts = createRouter()
   .query('byId', {
     input: z.object({
-      id: z.number(),
+      id: z.number()
     }),
     async resolve({ input }) {
       const post = await prisma.post.findFirst({
         where: {
-          id: input.id,
+          id: input.id
         },
         include: {
           author: true,
@@ -28,14 +29,14 @@ export const posts = createRouter()
                   created_at: 'desc'
                 },
                 include: {
-                  author: true,
+                  author: true
                 }
               }
             }
           }
         }
       })
-      
+
       return post
     }
   })
@@ -91,5 +92,31 @@ export const posts = createRouter()
       })
 
       return posts
+    }
+  })
+  .mutation('remove', {
+    input: z.object({
+      id: z.number()
+    }),
+    async resolve({ input, ctx }) {
+      if (!ctx.user) {
+        throw new trpc.TRPCError({
+          code: 'UNAUTHORIZED'
+        })
+      }
+      const { id } = input
+
+      try {
+        await prisma.post.delete({
+          where: {
+            id
+          }
+        })
+      } catch (e) {
+        throw new trpc.TRPCError({
+          code: 'NOT_FOUND',
+          message: `Post id ${id} could not be found.`
+        })
+      }
     }
   })
