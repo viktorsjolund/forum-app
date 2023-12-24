@@ -7,12 +7,13 @@ import { Comments } from '@/components/post/comments'
 import Link from 'next/link'
 import { getDateAge } from '@/utils/timeCalculator'
 import { AiFillDislike, AiFillLike, AiOutlineDislike, AiOutlineLike } from 'react-icons/ai'
-import { BsBookmarkFill, BsBookmark, BsBell, BsBellFill } from 'react-icons/bs'
+import { BsBookmarkFill, BsBookmark, BsBell, BsBellFill, BsThreeDots } from 'react-icons/bs'
 import { Loading } from '@/components/loading'
 import { usePostLiked } from '@/hooks/usePostLiked'
 import { usePostDisliked } from '@/hooks/usePostDisliked'
 import { useMutatePostLike } from '@/hooks/useMutatePostLike'
 import { useMutatePostDislike } from '@/hooks/useMutatePostDislike'
+import { PopupMessage } from '@/components/popupMessage'
 
 const Post = () => {
   const router = useRouter()
@@ -29,6 +30,10 @@ const Post = () => {
   const { data: post, refetch } = trpc.useQuery(['post.byId', { id: postId }])
   const [addLike, removeLike] = useMutatePostLike(postId)
   const [addDislike, removeDislike] = useMutatePostDislike(postId)
+  const [showPopup, setShowPopup] = useState(false)
+  const [showOptions, setShowOptions] = useState(false)
+  const { data: user } = trpc.useQuery(['user.me'])
+  const removePostMutation = trpc.useMutation(['post.remove'])
 
   useEffect(() => {
     if (post) {
@@ -37,6 +42,24 @@ const Post = () => {
       }
       setLikes(post.likes.length)
       setDislikes(post.dislikes.length)
+    }
+
+    const handleOptionsHide = (e: MouseEvent) => {
+      const target = e.target as HTMLElement
+      if (target.id === 'post-options' || target.id === 'post-options-icon') return
+      if (target.parentElement) {
+        if (
+          target.parentElement.id === 'post-options' ||
+          target.parentElement.id === 'post-options-icon'
+        )
+          return
+      }
+      setShowOptions(false)
+    }
+    document.addEventListener('click', handleOptionsHide)
+
+    return () => {
+      document.removeEventListener('click', handleOptionsHide)
     }
   }, [router, post, age])
 
@@ -98,6 +121,17 @@ const Post = () => {
     await refetch()
   }
 
+  const handleRemovePost = async () => {
+    try {
+      await removePostMutation.mutateAsync({
+        id: postId
+      })
+      router.push('/?postRemoved=true')
+    } catch (e) {
+      setShowPopup(true)
+    }
+  }
+
   return (
     <>
       <Header />
@@ -105,13 +139,42 @@ const Post = () => {
         <div className='w-4/5 bg-[#212529] p-20 min-h-full'>
           <div className='flex border-b-2 p-8 mb-12 items-center border-b-white border-opacity-50 rounded-sm'>
             <Avatar username={post.author.username} />
-            <Link href={`/account/${post.author.username}`}>
+            <Link
+              href={`/account/${post.author.username}`}
+              passHref
+            >
               <span className='ml-2 font-bold pr-2 cursor-pointer'>{post.author.username}</span>
             </Link>
             <span className='text-[#9a9a9a]'>&#8226;</span>
             <span className='pl-2 text-sm text-gray-500'>{age}</span>
           </div>
-          <h1 className='mb-10 text-4xl'>{post.title}</h1>
+          <div className='mb-10 flex'>
+            <h1 className='text-4xl'>{post.title}</h1>
+            <div className='ml-auto h-max relative'>
+              <div
+                id='post-options-icon'
+                className='cursor-pointer'
+                onClick={() => setShowOptions((s) => !s)}
+              >
+                <BsThreeDots size={24} />
+              </div>
+              {showOptions && (
+                <ul
+                  id='post-options'
+                  className='absolute bg-gray-900 p-1 rounded shadow-black shadow border-[1px] border-slate-800 right-0'
+                >
+                  {(user?.role === 'ADMIN' || user?.id === post.authorId) && (
+                    <li
+                      className='pl-2 pr-2 pb-1 pt-1 text-center whitespace-nowrap cursor-pointer text-sm'
+                      onClick={handleRemovePost}
+                    >
+                      Remove post
+                    </li>
+                  )}
+                </ul>
+              )}
+            </div>
+          </div>
           <p className='whitespace-pre-wrap w-3/5'>{post.content}</p>
           <div className='bg-midnight flex mt-20 h-12 rounded'>
             <div className='w-max pl-4 pr-4 pt-2 pb-2 flex items-center'>
@@ -220,6 +283,9 @@ const Post = () => {
           />
         </div>
       </div>
+      {showPopup && (
+        <PopupMessage message='Something went wrong while trying to remove the post. Please try again.' />
+      )}
     </>
   )
 }
