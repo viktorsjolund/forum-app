@@ -1,20 +1,36 @@
 import { Loading } from '@/components/loading'
+import { MinifiedPost } from '@/components/minifiedPost'
 import { ProfileTemplate } from '@/components/profileTemplate'
 import { trpc } from '@/utils/trpc'
 import { useRouter } from 'next/router'
+import { useEffect } from 'react'
 
 const Profile = () => {
   const router = useRouter()
   const { uname } = router.query as { uname: string }
-  const { data: user, isLoading, error } = trpc.useQuery(['user.byUsername', { username: uname }])
-  const { data: posts } = trpc.useQuery(['post.all'])
+  const {
+    data: user,
+    isLoading: isUserLoading,
+    error: userError
+  } = trpc.useQuery(['user.byUsername', { username: uname }])
+  const {
+    data: posts,
+    isLoading: isPostsLoading,
+    refetch
+  } = trpc.useQuery(['post.byUser', { userId: user?.id! }], { enabled: false })
   const { data: me } = trpc.useQuery(['user.me'])
 
-  if (isLoading) {
+  useEffect(() => {
+    if (user) {
+      refetch()
+    }
+  }, [user, refetch])
+
+  if (isUserLoading || isPostsLoading) {
     return <Loading />
   }
 
-  if (error) {
+  if (userError) {
     return <span>User not found.</span>
   }
 
@@ -23,7 +39,11 @@ const Profile = () => {
       me={me}
       username={uname}
     >
-      <h1>test</h1>
+      <div className='flex'>
+        {posts?.map((post) => (
+          <MinifiedPost key={post.id} post={post} />
+        ))}
+      </div>
     </ProfileTemplate>
   )
 }

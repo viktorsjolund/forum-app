@@ -6,6 +6,7 @@ module.exports = {
       colors: {
         'midnight-light': '#282e33',
         midnight: '#1f2327',
+        'midnight-dark': '#16191c',
         'main-purple': '#5a189a',
         'main-purple-light': '#7b2cbf',
         'main-purple-dark': '#3c096c',

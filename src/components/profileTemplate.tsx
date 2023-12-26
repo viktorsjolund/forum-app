@@ -12,7 +12,6 @@ type TProfileTemplateProps = {
 
 export const ProfileTemplate = ({ children, me, username }: TProfileTemplateProps) => {
   const router = useRouter()
-  console.log(router.pathname)
 
   return (
     <div>

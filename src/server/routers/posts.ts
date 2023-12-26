@@ -2,7 +2,6 @@ import { z } from 'zod'
 import { createRouter } from '../createRouter'
 import { prisma } from '../prisma'
 import * as trpc from '@trpc/server'
-import { Prisma } from '@prisma/client'
 
 export const posts = createRouter()
   .query('byId', {
@@ -43,6 +42,28 @@ export const posts = createRouter()
   .query('all', {
     async resolve() {
       return await prisma.post.findMany({})
+    }
+  })
+  .query('byUser', {
+    input: z.object({
+      userId: z.number()
+    }),
+    async resolve({ input }) {
+      const { userId } = input
+
+      const result = await prisma.post.findMany({
+        where: {
+          authorId: userId
+        },
+        include: {
+          likes: true,
+          dislikes: true,
+          author: true,
+          comments: true
+        }
+      })
+
+      return result
     }
   })
   .mutation('add', {
