@@ -106,6 +106,12 @@ export const users = createRouter()
       const user = await prisma.user.findUnique({
         where: {
           id: parseInt(ctx.user.id)
+        },
+        select: {
+          email: true,
+          username: true,
+          id: true,
+          role: true
         }
       })
       
