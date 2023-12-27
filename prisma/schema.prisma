@@ -89,6 +89,20 @@ model post_dislike {
   @@map("forum_post_dislikes")
 }
 
+model post_follow {
+  id       Int    @id @default(autoincrement())
+  user_id  Int
+  post_id  Int
+}
+
+model notification {
+  id       Int      @id @default(autoincrement())
+  post_id  Int
+  user_id  Int
+  details  String   @db.VarChar(400)
+  viewed   Boolean  @default(false)
+}
+
 enum role {
   ADMIN
   READER

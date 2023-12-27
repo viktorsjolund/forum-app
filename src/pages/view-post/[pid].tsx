@@ -14,6 +14,7 @@ import { usePostDisliked } from '@/hooks/usePostDisliked'
 import { useMutatePostLike } from '@/hooks/useMutatePostLike'
 import { useMutatePostDislike } from '@/hooks/useMutatePostDislike'
 import { PopupMessage } from '@/components/popupMessage'
+import { useIsPostFollowed } from '@/hooks/usePostDisliked copy'
 
 const Post = () => {
   const router = useRouter()
@@ -26,7 +27,7 @@ const Post = () => {
   const [likes, setLikes] = useState(0)
   const [dislikes, setDislikes] = useState(0)
   const [isBookmarked, setIsBookmarked] = useState(false)
-  const [isNotificationsOn, setIsNotificationsOn] = useState(false)
+  const [isNotificationsOn, setIsNotificationsOn] = useIsPostFollowed(postId)
   const { data: post, refetch } = trpc.useQuery(['post.byId', { id: postId }])
   const [addLike, removeLike] = useMutatePostLike(postId)
   const [addDislike, removeDislike] = useMutatePostDislike(postId)
@@ -34,6 +35,8 @@ const Post = () => {
   const [showOptions, setShowOptions] = useState(false)
   const { data: user } = trpc.useQuery(['user.me'])
   const removePostMutation = trpc.useMutation(['post.remove'])
+  const followPostMutation = trpc.useMutation(['post.follow'])
+  const unfollowPostMutation = trpc.useMutation(['post.unfollow'])
 
   useEffect(() => {
     if (post) {
@@ -109,12 +112,26 @@ const Post = () => {
     setIsBookmarked(false)
   }
 
-  const handleEnableNotifications = () => {
+  const handleEnableNotifications = async () => {
     setIsNotificationsOn(true)
+    try {
+      await followPostMutation.mutateAsync({
+        postId
+      })
+    } catch (e) {
+      setIsNotificationsOn(false)
+    }
   }
 
-  const handleDisableNotifications = () => {
+  const handleDisableNotifications = async () => {
     setIsNotificationsOn(false)
+    try {
+      await unfollowPostMutation.mutateAsync({
+        postId
+      })
+    } catch (e) {
+      setIsNotificationsOn(true)
+    }
   }
 
   const refetchPost = async () => {

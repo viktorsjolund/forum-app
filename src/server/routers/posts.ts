@@ -111,7 +111,7 @@ export const posts = createRouter()
           title,
           content,
           topic: topic.toLowerCase(),
-          authorId: parseInt(ctx.user!.id)
+          authorId: parseInt(ctx.user.id)
         },
         select: {
           id: true
@@ -165,5 +165,79 @@ export const posts = createRouter()
           message: `Post id ${id} could not be found.`
         })
       }
+    }
+  })
+  .mutation('follow', {
+    input: z.object({
+      postId: z.number()
+    }),
+    async resolve({ input, ctx }) {
+      if (!ctx.user) {
+        throw new trpc.TRPCError({
+          code: 'UNAUTHORIZED'
+        })
+      }
+      const { postId } = input
+
+      try {
+        await prisma.post_follow.create({
+          data: {
+            post_id: postId,
+            user_id: parseInt(ctx.user.id)
+          }
+        })
+      } catch (e) {
+        throw new trpc.TRPCError({
+          code: 'BAD_REQUEST'
+        })
+      }
+    }
+  })
+  .mutation('unfollow', {
+    input: z.object({
+      postId: z.number()
+    }),
+    async resolve({ input, ctx }) {
+      if (!ctx.user) {
+        throw new trpc.TRPCError({
+          code: 'UNAUTHORIZED'
+        })
+      }
+      const { postId } = input
+
+      try {
+        await prisma.post_follow.deleteMany({
+          where: {
+            post_id: postId,
+            user_id: parseInt(ctx.user.id)
+          }
+        })
+      } catch (e) {
+        throw new trpc.TRPCError({
+          code: 'BAD_REQUEST'
+        })
+      }
+    }
+  })
+  .query('isFollowed', {
+    input: z.object({
+      postId: z.number()
+    }),
+    async resolve({ input, ctx }) {
+      if (!ctx.user) {
+        throw new trpc.TRPCError({
+          code: 'UNAUTHORIZED'
+        })
+      }
+      const { postId } = input
+
+      const result = await prisma.post_follow.findFirst({
+        where: {
+          post_id: postId,
+          user_id: parseInt(ctx.user.id)
+        }
+      })
+
+      return !!result
     }
   })
