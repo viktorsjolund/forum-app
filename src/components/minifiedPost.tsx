@@ -34,7 +34,8 @@ export const MinifiedPost = (props: TMinifiedPostProps) => {
           <span className='font-extrabold text-2xl h-fit'>{post.title}</span>
           <span className='text-sm mt-auto text-gray-300'>Comments: {post.comments.length}</span>
         </div>
-        <span className='ml-auto text-sm'>
+        <div className='ml-auto flex flex-col'>
+        <span className='text-sm h-fit ml-auto'>
           by
           <Link
             href={`/account/${post.author.username}`}
@@ -45,6 +46,13 @@ export const MinifiedPost = (props: TMinifiedPostProps) => {
             </span>
           </Link>
         </span>
+        <span className='text-xs h-fit mt-auto ml-auto'>
+          Posted on: {post.created_at.toString()}
+        </span>
+        <span className='text-xs h-fit mt-auto'>
+          Last edited: {post.updated_at.toString()}
+        </span>
+        </div>
       </div>
     </Link>
   )
