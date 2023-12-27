@@ -32,7 +32,7 @@ const LoggedIn = (props: TLoggedInProps) => {
   useEffect(() => {
     const handleDropdownHide = (e: MouseEvent) => {
       const target = e.target as HTMLElement
-      if (target.id === 'header-avatar' || target.id === 'header-dropdown') return
+      if (target.id === 'header-dropdown' || target.id === 'header-profile') return
       if (target.parentElement) {
         if (target.parentElement.id === 'header-dropdown') return
       }
@@ -66,12 +66,13 @@ const LoggedIn = (props: TLoggedInProps) => {
         size={25}
         className='mr-5 cursor-pointer'
       />
-      <div className='mr-10 h-full flex items-center flex-col justify-center'>
-        <div
-          className='overflow-hidden rounded-full border-2 w-10 h-10 cursor-pointer'
-          id='header-avatar'
-          onClick={() => setShowDropdown((sd) => !sd)}
-        >
+      <div
+        className='mr-10 h-full flex items-center flex-row justify-center cursor-pointer'
+        onClick={() => setShowDropdown((sd) => !sd)}
+        id='header-profile'
+      >
+        <span className='pr-2 pointer-events-none'>{username}</span>
+        <div className='overflow-hidden rounded-full border-2 w-10 h-10 pointer-events-none'>
           <div className='pointer-events-none'>
             <Image
               src='/images/avatar.png'
@@ -90,8 +91,20 @@ const LoggedIn = (props: TLoggedInProps) => {
         >
           <li className='pl-14 pr-14 pb-1 text-center'>
             <span className='pointer-events-none'>{username}</span>
-            {role && <span className='ml-2 border-[1px] rounded p-1 font-bold text-xs mt-auto mb-auto bg-purple-500 pointer-events-none'>{role}</span>}
+            {role && (
+              <span className='ml-2 border-[1px] rounded p-1 font-bold text-xs mt-auto mb-auto bg-purple-500 pointer-events-none'>
+                {role}
+              </span>
+            )}
           </li>
+          <Link
+            href={`/account/${username}`}
+            passHref
+          >
+            <li className='pl-14 pr-14 pb-1 text-center cursor-pointer border-t-[1px] border-black'>
+              My Profile
+            </li>
+          </Link>
           <li
             className='border-t-[1px] border-black pl-14 pr-14 pt-1 cursor-pointer text-center'
             onClick={handleLogout}
