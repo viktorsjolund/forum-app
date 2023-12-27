@@ -1,6 +1,7 @@
 import { AiFillDislike, AiFillLike } from 'react-icons/ai'
 import type { post, post_like, post_dislike, user, post_comment } from '@prisma/client'
 import Link from 'next/link'
+import moment from 'moment'
 
 type TMinifiedPostProps = {
   post: post & {
@@ -47,10 +48,10 @@ export const MinifiedPost = (props: TMinifiedPostProps) => {
           </Link>
         </span>
         <span className='text-xs h-fit mt-auto ml-auto'>
-          Posted on: {post.created_at.toString()}
+          Posted on: {moment(post.created_at.toString(), 'YYYY-MM-DD HH:mm:ss').format('lll')}
         </span>
         <span className='text-xs h-fit mt-auto'>
-          Last edited: {post.updated_at.toString()}
+          Last edited: {moment(post.updated_at.toString(), 'YYYY-MM-DD HH:mm:ss').format('lll')}
         </span>
         </div>
       </div>
