@@ -14,7 +14,7 @@ import { usePostDisliked } from '@/hooks/usePostDisliked'
 import { useMutatePostLike } from '@/hooks/useMutatePostLike'
 import { useMutatePostDislike } from '@/hooks/useMutatePostDislike'
 import { PopupMessage } from '@/components/popupMessage'
-import { useIsPostFollowed } from '@/hooks/usePostDisliked copy'
+import { useIsPostFollowed } from '@/hooks/useIsPostFollowed'
 
 const Post = () => {
   const router = useRouter()
@@ -153,7 +153,7 @@ const Post = () => {
     <>
       <Header />
       <div className='flex justify-center h-max min-h-full bg-gradient-to-tr from-main-purple-light to-main-purple via-main-purple-dark'>
-        <div className='w-4/5 bg-[#212529] p-20 min-h-full'>
+        <div className='w-4/5 bg-[#212529] p-20 min-h-full pb-[100vh]'>
           <div className='flex border-b-2 p-8 mb-12 items-center border-b-white border-opacity-50 rounded-sm'>
             <Avatar username={post.author.username} />
             <Link
