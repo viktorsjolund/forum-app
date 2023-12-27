@@ -41,7 +41,10 @@ const Profile = () => {
     >
       <div className='flex'>
         {posts?.map((post) => (
-          <MinifiedPost key={post.id} post={post} />
+          <MinifiedPost
+            key={post.id}
+            post={post}
+          />
         ))}
       </div>
     </ProfileTemplate>

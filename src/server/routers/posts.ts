@@ -66,6 +66,32 @@ export const posts = createRouter()
       return result
     }
   })
+  .query('byUserLikes', {
+    input: z.object({
+      userId: z.number()
+    }),
+    async resolve({ input }) {
+      const { userId } = input
+
+      const result = await prisma.post.findMany({
+        where: {
+          likes: {
+            some: {
+              user_id: userId
+            }
+          }
+        },
+        include: {
+          likes: true,
+          dislikes: true,
+          author: true,
+          comments: true
+        }
+      })
+
+      return result
+    }
+  })
   .mutation('add', {
     input: z.object({
       title: z.string(),
