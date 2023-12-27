@@ -117,7 +117,7 @@ const LoggedIn = (props: TLoggedInProps) => {
                   passHref
                 >
                   <li
-                    className='cursor-pointer p-1 bg-gray-800 rounded leading-3 border-[1px] border-slate-700 mb-1 last-of-type:mb-0 hover:bg-slate-600'
+                    className='cursor-pointer p-1 bg-gray-800 rounded leading-3 border-[1px] border-slate-700 mb-1 last-of-type:mb-0 hover:bg-slate-600 transition-colors'
                     onClick={() => handleNotification(notification.id)}
                   >
                     {notification.trigger === 'COMMENT' && (

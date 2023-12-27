@@ -20,7 +20,7 @@ export const MinifiedPost = (props: TMinifiedPostProps) => {
       href={`/view-post/${post.id}`}
       passHref
     >
-      <div className='flex h-20 bg-midnight-dark border-b-[1px] rounded p-2 w-full cursor-pointer'>
+      <div className='flex h-20 bg-midnight-dark border-b-2 rounded p-2 w-full cursor-pointer hover:border-b-main-purple-light transition-colors'>
         <div className='flex flex-col h-full items-center justify-center border-r-2 pr-2'>
           <div className='flex items-center mb-2'>
             <AiFillLike />
@@ -42,15 +42,15 @@ export const MinifiedPost = (props: TMinifiedPostProps) => {
             href={`/account/${post.author.username}`}
             passHref
           >
-            <span className='font-bold underline pl-1 hover:text-main-purple-light'>
+            <span className='font-bold underline pl-1 hover:text-main-purple-light transition-colors'>
               {post.author.username}
             </span>
           </Link>
         </span>
-        <span className='text-xs h-fit mt-auto ml-auto'>
+        <span className='text-xs h-fit mt-auto ml-auto text-gray-500'>
           Posted on: {moment(post.created_at.toString(), 'YYYY-MM-DD HH:mm:ss').format('lll')}
         </span>
-        <span className='text-xs h-fit mt-auto'>
+        <span className='text-xs h-fit mt-auto text-gray-500'>
           Last edited: {moment(post.updated_at.toString(), 'YYYY-MM-DD HH:mm:ss').format('lll')}
         </span>
         </div>
