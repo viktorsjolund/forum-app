@@ -8,18 +8,19 @@ datasource db {
 }
 
 model post {
-  id         Int        @id @default(autoincrement())
-  title      String     @db.VarChar(255)
-  content    String     @db.VarChar(4000)
-  topic      String     @default("other") @db.VarChar(255)
-  views      Int        @default(0)
-  created_at DateTime   @default(now()) @db.DateTime(0)
-  updated_at DateTime   @default(now()) @db.DateTime(0)
-  author     user       @relation(fields: [authorId], references: [id])
-  likes      post_like[]
-  dislikes   post_dislike[]
-  authorId   Int
-  comments   post_comment[]
+  id            Int           @id @default(autoincrement())
+  title         String        @db.VarChar(255)
+  content       String        @db.VarChar(4000)
+  topic         String        @default("other") @db.VarChar(255)
+  views         Int           @default(0)
+  created_at    DateTime      @default(now()) @db.DateTime(0)
+  updated_at    DateTime      @default(now()) @db.DateTime(0)
+  author        user          @relation(fields: [authorId], references: [id])
+  likes         post_like[]
+  dislikes      post_dislike[]
+  authorId      Int
+  comments      post_comment[]
+  notifications notification[]
 
   @@index([authorId])
   @@map("forum_post")
@@ -57,14 +58,15 @@ model post_reply {
 }
 
 model user {
-  id       Int    @id @default(autoincrement())
-  email    String @unique(map: "email_UNIQUE") @db.VarChar(255)
-  username String @unique(map: "username_UNIQUE") @db.VarChar(255)
-  password String @db.VarChar(255)
-  role     role?
-  posts    post[]
-  comments post_comment[]
-  replies  post_reply[]
+  id            Int    @id @default(autoincrement())
+  email         String @unique(map: "email_UNIQUE") @db.VarChar(255)
+  username      String @unique(map: "username_UNIQUE") @db.VarChar(255)
+  password      String @db.VarChar(255)
+  role          role?
+  posts         post[]
+  comments      post_comment[]
+  replies       post_reply[]
+  notifications notification[]
 
   @@map("forum_user")
 }
@@ -96,14 +98,23 @@ model post_follow {
 }
 
 model notification {
-  id       Int      @id @default(autoincrement())
-  post_id  Int
-  user_id  Int
-  details  String   @db.VarChar(400)
-  viewed   Boolean  @default(false)
+  id           Int                    @id @default(autoincrement())
+  post_id      Int
+  user_id      Int
+  element_id   String?                @db.VarChar(255)
+  trigger      notification_trigger
+  viewed       Boolean                @default(false)
+  created_at   DateTime               @default(now()) @db.DateTime(0)
+  post         post                   @relation(fields: [post_id], references: [id])
+  user         user                   @relation(fields: [user_id], references: [id])
 }
 
 enum role {
   ADMIN
   READER
+}
+
+enum notification_trigger {
+  COMMENT
+  EDIT
 }
