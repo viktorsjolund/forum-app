@@ -5,6 +5,7 @@ import { trpc } from '@/utils/trpc'
 import Image from 'next/image'
 import { useState, useEffect } from 'react'
 import type { role } from '@prisma/client'
+import { getDateAge } from '@/utils/timeCalculator'
 
 const LoggedOut = () => {
   return (
@@ -23,25 +24,42 @@ type TLoggedInProps = {
 
 const LoggedIn = (props: TLoggedInProps) => {
   const { username, role } = props
-  const [showDropdown, setShowDropdown] = useState(false)
+  const [showAvatarDropdown, setShowAvatarDropdown] = useState(false)
+  const [showNotiDropdown, setShowNotiDropdown] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
   const logout = trpc.useMutation(['user.logout'])
   const router = useRouter()
   const [errorTimeoutRef, setErrorTimeoutRef] = useState<NodeJS.Timeout | null>(null)
+  const { data: notifications, refetch: refetchNotifications } = trpc.useQuery([
+    'notification.byUser'
+  ])
+  const viewedNotificationMutation = trpc.useMutation(['notification.viewed'])
 
   useEffect(() => {
-    const handleDropdownHide = (e: MouseEvent) => {
+    const handleAvatarDropdownHide = (e: MouseEvent) => {
       const target = e.target as HTMLElement
       if (target.id === 'header-dropdown' || target.id === 'header-profile') return
       if (target.parentElement) {
         if (target.parentElement.id === 'header-dropdown') return
       }
-      setShowDropdown(false)
+      setShowAvatarDropdown(false)
     }
-    document.addEventListener('click', handleDropdownHide)
+
+    const handleNotiDropdownHide = (e: MouseEvent) => {
+      const target = e.target as HTMLElement
+      if (target.id === 'header-noti-dropdown') return
+      if (target.parentElement) {
+        if (target.parentElement.id === 'header-noti-dropdown') return
+      }
+      setShowNotiDropdown(false)
+    }
+
+    document.addEventListener('click', handleAvatarDropdownHide)
+    document.addEventListener('click', handleNotiDropdownHide)
 
     return () => {
-      document.removeEventListener('click', handleDropdownHide)
+      document.removeEventListener('click', handleAvatarDropdownHide)
+      document.removeEventListener('click', handleNotiDropdownHide)
     }
   }, [])
 
@@ -60,15 +78,68 @@ const LoggedIn = (props: TLoggedInProps) => {
     }
   }
 
+  const handleNotification = async (notificationId: number) => {
+    await viewedNotificationMutation.mutateAsync({
+      notificationId
+    })
+    refetchNotifications()
+  }
+
   return (
     <>
-      <AiFillBell
-        size={25}
-        className='mr-5 cursor-pointer'
-      />
+      <div className='mr-5 relative'>
+        <div
+          className='cursor-pointer relative'
+          id='header-noti-dropdown'
+          onClick={() => setShowNotiDropdown((s) => !s)}
+        >
+          <div className='pointer-events-none'>
+            <AiFillBell size={30} />
+          </div>
+          {notifications && notifications.length > 0 && (
+            <div className='absolute h-4 w-4 top-0 right-0 bg-red-600 rounded-full flex justify-center items-center pointer-events-none'>
+              <span className='text-[0.6rem] font-bold h-fit w-fit text-center pointer-events-none'>
+                {notifications.length > 9 ? '9+' : notifications.length}
+              </span>
+            </div>
+          )}
+        </div>
+        {showNotiDropdown && (
+          <ul
+            className='absolute h-44 w-60 top-8 right-0 bg-gray-900 rounded shadow-black shadow border-[1px] border-slate-800 overflow-y-scroll'
+            id='header-dropdown'
+          >
+            {notifications?.map((notification) => {
+              return (
+                <Link
+                  href={`/view-post/${notification.post_id}#${notification.element_id}`}
+                  key={notification.id}
+                  passHref
+                >
+                  <li
+                    className='cursor-pointer p-1 bg-gray-800 rounded leading-3 border-[1px] border-slate-700 mb-1 last-of-type:mb-0'
+                    onClick={() => handleNotification(notification.id)}
+                  >
+                    {notification.trigger === 'COMMENT' && (
+                      <>
+                        <span className='text-xs'>
+                          User <span className='font-bold'>{notification.user.username}</span>{' '}
+                          commented on{' '}
+                          <span className='font-bold'>{`"${notification.post.title}"`}</span>{' '}
+                          <span>{getDateAge(notification.created_at.toString())}</span>
+                        </span>
+                      </>
+                    )}
+                  </li>
+                </Link>
+              )
+            })}
+          </ul>
+        )}
+      </div>
       <div
         className='mr-10 h-full flex items-center flex-row justify-center cursor-pointer'
-        onClick={() => setShowDropdown((sd) => !sd)}
+        onClick={() => setShowAvatarDropdown((sd) => !sd)}
         id='header-profile'
       >
         <span className='pr-2 pointer-events-none'>{username}</span>
@@ -84,7 +155,7 @@ const LoggedIn = (props: TLoggedInProps) => {
           </div>
         </div>
       </div>
-      {showDropdown && (
+      {showAvatarDropdown && (
         <ul
           className='absolute top-12 right-8 bg-gray-900 pr-2 pl-2 pt-1 pb-1 rounded shadow-black shadow border-[1px] border-slate-800'
           id='header-dropdown'

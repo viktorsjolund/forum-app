@@ -24,6 +24,7 @@ export const Comments = (props: TCommentsProps) => {
   const addComment = trpc.useMutation(['comments.add'])
   const commentsRef = useRef(null)
   const commentsReversed = useMemo(() => [...comments].reverse(), [comments])
+  const addNotificationMutation = trpc.useMutation(['notification.add'])
 
   useEffect(() => {
     commentsRef.current && autoAnimate(commentsRef.current)
@@ -34,9 +35,15 @@ export const Comments = (props: TCommentsProps) => {
     setContent('')
 
     setIsRefetching(true)
-    await addComment.mutateAsync({
+    const comment = await addComment.mutateAsync({
       content,
       postId,
+    })
+
+    await addNotificationMutation.mutateAsync({
+      trigger: 'COMMENT',
+      postId,
+      elementId: `comment-nr-${comment.id}`
     })
 
     await refetchPost()

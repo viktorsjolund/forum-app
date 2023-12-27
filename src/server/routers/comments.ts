@@ -19,13 +19,15 @@ export const comments = createRouter()
       const { content, postId } = input
 
       try {
-        await prisma.post_comment.create({
+        const result = await prisma.post_comment.create({
           data: {
             content,
             post_id: postId,
             user_id: parseInt(ctx.user.id)
           }
         })
+
+        return result
       } catch (e) {
         throw new trpc.TRPCError({
           code: 'INTERNAL_SERVER_ERROR'
