@@ -101,12 +101,13 @@ model notification {
   id           Int                    @id @default(autoincrement())
   post_id      Int
   user_id      Int
+  initiator_id Int
   element_id   String?                @db.VarChar(255)
   trigger      notification_trigger
   viewed       Boolean                @default(false)
   created_at   DateTime               @default(now()) @db.DateTime(0)
   post         post                   @relation(fields: [post_id], references: [id])
-  user         user                   @relation(fields: [user_id], references: [id])
+  user         user                   @relation(fields: [initiator_id], references: [id])
 }
 
 enum role {

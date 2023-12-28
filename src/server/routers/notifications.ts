@@ -9,6 +9,7 @@ type TNotificationInput = {
   user_id: number
   post_id: number
   element_id?: string
+  initiator_id: number
 }
 
 export const notifications = createRouter()
@@ -39,7 +40,8 @@ export const notifications = createRouter()
           post_id: postId,
           trigger,
           user_id: follower.user_id,
-          element_id: elementId
+          element_id: elementId,
+          initiator_id: parseInt(ctx.user.id)
         })
       }
 
