@@ -142,7 +142,7 @@ const LoggedIn = (props: TLoggedInProps) => {
         onClick={() => setShowAvatarDropdown((sd) => !sd)}
         id='header-profile'
       >
-        <span className='pr-2 pointer-events-none'>{username}</span>
+        <span className='pr-2 pointer-events-none text-sm font-bold'>{username}</span>
         <div className='overflow-hidden rounded-full border-2 w-10 h-10 pointer-events-none'>
           <div className='pointer-events-none'>
             <Image
@@ -172,12 +172,12 @@ const LoggedIn = (props: TLoggedInProps) => {
             href={`/account/${username}`}
             passHref
           >
-            <li className='pl-14 pr-14 pb-1 text-center cursor-pointer border-t-[1px] border-black'>
+            <li className='pl-14 pr-14 pb-1 text-center cursor-pointer border-t-[1px] border-black hover:bg-gray-800 transition-colors'>
               My Profile
             </li>
           </Link>
           <li
-            className='border-t-[1px] border-black pl-14 pr-14 pt-1 cursor-pointer text-center'
+            className='border-t-[1px] border-black pl-14 pr-14 pt-1 cursor-pointer text-center hover:bg-gray-800 transition-colors'
             onClick={handleLogout}
           >
             Logout

@@ -39,7 +39,7 @@ const Liked = () => {
       me={me}
       username={uname}
     >
-      <div className='flex'>
+      <div className='flex flex-col'>
         {posts?.map((post) => (
           <MinifiedPost
             key={post.id}

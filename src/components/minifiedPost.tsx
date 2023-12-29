@@ -23,11 +23,11 @@ export const MinifiedPost = (props: TMinifiedPostProps) => {
       <div className='flex h-20 bg-midnight-dark border-b-2 rounded p-2 w-full cursor-pointer hover:border-b-main-purple-light transition-colors'>
         <div className='flex flex-col h-full items-center justify-center border-r-2 pr-2'>
           <div className='flex items-center mb-2'>
-            <AiFillLike />
+            <AiFillLike fill='#0477db' />
             <span className='pl-2 text-gray-300 text-sm'>{post.likes.length}</span>
           </div>
           <div className='flex items-center'>
-            <AiFillDislike />
+            <AiFillDislike fill='#8a0000'/>
             <span className='pl-2 text-gray-300 text-sm'>{post.dislikes.length}</span>
           </div>
         </div>

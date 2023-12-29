@@ -33,7 +33,10 @@ export const Comment = (props: TCommentProps) => {
   }, [])
 
   return (
-    <div className='mb-8 scroll-m-14' id={`comment-nr-${comment.id}`}>
+    <div
+      className='mb-8 scroll-m-14'
+      id={`comment-nr-${comment.id}`}
+    >
       <UserCard
         content={comment.content}
         createdAt={comment.created_at}
