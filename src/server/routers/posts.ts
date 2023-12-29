@@ -106,11 +106,13 @@ export const posts = createRouter()
       }
       const { title, content, topic } = input
 
+      const filteredTopics = topic.split(',').filter(String).join(',').toLowerCase()
+
       const result = await prisma.post.create({
         data: {
-          title,
-          content,
-          topic: topic.toLowerCase(),
+          title: title.trim(),
+          content: content.trim(),
+          topic: filteredTopics || undefined,
           authorId: parseInt(ctx.user.id)
         },
         select: {
