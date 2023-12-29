@@ -26,6 +26,7 @@ const Post = () => {
   const [isDisliked, setIsDisliked] = usePostDisliked(postId)
   const [likes, setLikes] = useState(0)
   const [dislikes, setDislikes] = useState(0)
+  const [scrolled, setScrolled] = useState(false)
   const [isBookmarked, setIsBookmarked] = useState(false)
   const [isNotificationsOn, setIsNotificationsOn] = useIsPostFollowed(postId)
   const { data: post, refetch } = trpc.useQuery(['post.byId', { id: postId }])
@@ -45,6 +46,10 @@ const Post = () => {
       }
       setLikes(post.likes.length)
       setDislikes(post.dislikes.length)
+      if (!scrolled) {
+        document.querySelector(`#${router.asPath.split('#')[1]}`)?.scrollIntoView()
+        setScrolled(true)
+      }
     }
 
     const handleOptionsHide = (e: MouseEvent) => {
@@ -59,12 +64,13 @@ const Post = () => {
       }
       setShowOptions(false)
     }
+
     document.addEventListener('click', handleOptionsHide)
 
     return () => {
       document.removeEventListener('click', handleOptionsHide)
     }
-  }, [router, post, age])
+  }, [router, post, age, scrolled])
 
   if (!post) {
     return <Loading />
@@ -198,17 +204,16 @@ const Post = () => {
               <span>Topics</span>
             </div>
             <div className='flex items-center w-full'>
-              {post.topic.split(' ').map((topic, i) => {
+              {post.topic?.split(',').map((topic, i) => {
                 return (
                   <Link
                     href={`/topic/${encodeURIComponent(topic)}`}
                     key={i}
+                    passHref
                   >
-                    <a>
-                      <div className='bg-main-purple-light rounded-2xl h-max pt-1 pb-1 pr-3 pl-3 shadow-lg cursor-pointer mr-4'>
-                        {topic}
-                      </div>
-                    </a>
+                    <div className='bg-main-purple-light rounded-2xl h-max pt-1 pb-1 pr-3 pl-3 shadow-lg cursor-pointer mr-4'>
+                      {topic}
+                    </div>
                   </Link>
                 )
               })}
@@ -301,7 +306,10 @@ const Post = () => {
         </div>
       </div>
       {showPopup && (
-        <PopupMessage message='Something went wrong while trying to remove the post. Please try again.' />
+        <PopupMessage
+          message='Something went wrong while trying to remove the post. Please try again.'
+          showPopup={true}
+        />
       )}
     </>
   )
