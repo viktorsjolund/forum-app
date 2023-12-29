@@ -1,17 +1,23 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { AiOutlineCloseCircle } from 'react-icons/ai'
-import autoAnimate from '@formkit/auto-animate'
 
 type TPopupMessageProps = {
   message: string
+  showPopup: boolean
+  handlePopupClose?: () => void
 }
 
 export const PopupMessage = (props: TPopupMessageProps) => {
-  const { message } = props
-  const [showPopup, setShowPopup] = useState(true)
+  const { message, showPopup: propShowPopup, handlePopupClose } = props
+  const [showPopup, setShowPopup] = useState(propShowPopup)
+
+  useEffect(() => {
+    setShowPopup(propShowPopup)
+  }, [propShowPopup])
 
   const handleRemovePopup = () => {
-    setShowPopup((s) => !s)
+    setShowPopup(false)
+    handlePopupClose && handlePopupClose()
   }
 
   return (
