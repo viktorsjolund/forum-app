@@ -243,3 +243,26 @@ export const posts = createRouter()
       return !!result
     }
   })
+  .query('isAuthor', {
+    input: z.object({
+      postId: z.number()
+    }),
+    async resolve({ input, ctx }) {
+      if (!ctx.user) {
+        throw new trpc.TRPCError({
+          code: 'UNAUTHORIZED'
+        })
+      }
+
+      const { postId } = input
+
+      const result = await prisma.post.findFirst({
+        where: {
+          id: postId,
+          authorId: parseInt(ctx.user.id)
+        }
+      })
+
+      return !!result
+    }
+  })
