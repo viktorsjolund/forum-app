@@ -1,4 +1,4 @@
-import { ChangeEvent, useState } from 'react'
+import { ChangeEvent, useEffect, useState } from 'react'
 
 type TStyledTextareaProps = {
   value: string
@@ -14,6 +14,10 @@ type TStyledTextareaProps = {
 export const StyledTextarea = (props: TStyledTextareaProps) => {
   const { elementId, label, onChange, value, required, placeholder, maxLength, maxRows } = props
   const [rows, setRows] = useState(1)
+
+  useEffect(() => {
+    setRows(value.split('\n').length)
+  }, [value])
 
   const handleTextarea = (e: ChangeEvent<HTMLTextAreaElement>) => {
     const rowCount = e.target.value.split('\n').length
