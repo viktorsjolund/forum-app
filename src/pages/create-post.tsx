@@ -85,16 +85,18 @@ const CreatePost = () => {
                 maxRows={50}
               />
             </div>
-            <StyledButton type='submit'>
-              {isCreatingPost ? (
-                <VscLoading
-                  size={20}
-                  className='animate-spin'
-                />
-              ) : (
-                'CREATE POST'
-              )}
-            </StyledButton>
+            <div className='w-fit h-8'>
+              <StyledButton type='submit'>
+                {isCreatingPost ? (
+                  <VscLoading
+                    size={20}
+                    className='animate-spin'
+                  />
+                ) : (
+                  'CREATE POST'
+                )}
+              </StyledButton>
+            </div>
           </form>
         </div>
       </div>
