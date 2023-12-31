@@ -157,10 +157,10 @@ const LoggedIn = (props: TLoggedInProps) => {
       </div>
       {showAvatarDropdown && (
         <ul
-          className='absolute top-12 right-8 bg-gray-900 pr-2 pl-2 pt-1 pb-1 rounded shadow-black shadow border-[1px] border-slate-800'
+          className='absolute top-12 right-8 bg-gray-900 rounded shadow-black shadow border-[1px] border-slate-800 font-medium'
           id='header-dropdown'
         >
-          <li className='pl-14 pr-14 pb-1 text-center'>
+          <li className='pl-14 pr-14 pb-1 pt-1 text-center'>
             <span className='pointer-events-none'>{username}</span>
             {role && (
               <span className='ml-2 border-[1px] rounded p-1 font-bold text-xs mt-auto mb-auto bg-purple-500 pointer-events-none'>
@@ -172,12 +172,12 @@ const LoggedIn = (props: TLoggedInProps) => {
             href={`/account/${username}`}
             passHref
           >
-            <li className='pl-14 pr-14 pb-1 text-center cursor-pointer border-t-[1px] border-black hover:bg-gray-800 transition-colors'>
+            <li className='pl-14 pr-14 pb-1 pt-1 text-center cursor-pointer border-t-[1px] border-slate-800 hover:bg-gray-800 transition-colors '>
               My Profile
             </li>
           </Link>
           <li
-            className='border-t-[1px] border-black pl-14 pr-14 pt-1 cursor-pointer text-center hover:bg-gray-800 transition-colors'
+            className='border-t-[1px] border-slate-800 pl-14 pr-14 pb-1 pt-1 cursor-pointer text-center hover:bg-gray-800 transition-colors'
             onClick={handleLogout}
           >
             Logout
