@@ -22,6 +22,7 @@ const Post = () => {
   const postId = parseInt(pid)
 
   const [age, setAge] = useState('')
+  const [editedAge, setEditedAge] = useState('')
   const [isLiked, setIsLiked] = usePostLiked(postId)
   const [isDisliked, setIsDisliked] = usePostDisliked(postId)
   const [likes, setLikes] = useState(0)
@@ -42,7 +43,13 @@ const Post = () => {
   useEffect(() => {
     if (post) {
       if (!age) {
-        setAge(getDateAge(post.created_at.toString()))
+        const createdAt = post.created_at.toString()
+        const updatedAt = post.updated_at?.toString()
+        setAge(getDateAge(createdAt))
+
+        if (createdAt !== updatedAt && updatedAt) {
+          setEditedAge(getDateAge(updatedAt))
+        }
       }
       setLikes(post.likes.length)
       setDislikes(post.dislikes.length)
@@ -168,27 +175,45 @@ const Post = () => {
             >
               <span className='ml-2 font-bold pr-2 cursor-pointer'>{post.author.username}</span>
             </Link>
-            <span className='text-[#9a9a9a]'>&#8226;</span>
+            <span className='text-gray-400 text-xs'>&#8226;</span>
             <span className='pl-2 text-sm text-gray-500'>{age}</span>
+            {editedAge && (
+              <>
+                <span className='pl-2 pr-2 text-gray-500'>|</span>
+                <span className='text-sm text-gray-500'>Edited {editedAge}</span>
+              </>
+            )}
           </div>
           <div className='mb-10 flex'>
-            <h1 className='text-4xl'>{post.title}</h1>
+            <h1 className='text-4xl break-words w-5/6'>{post.title}</h1>
             <div className='ml-auto h-max relative'>
               <div
                 id='post-options-icon'
                 className='cursor-pointer'
                 onClick={() => setShowOptions((s) => !s)}
               >
-                <BsThreeDots size={24} />
+                <div className='pointer-events-none'>
+                  <BsThreeDots size={24} />
+                </div>
               </div>
               {showOptions && (
                 <ul
                   id='post-options'
-                  className='absolute bg-gray-900 p-1 rounded shadow-black shadow border-[1px] border-slate-800 right-0'
+                  className='absolute bg-gray-900 rounded shadow-black shadow border-[1px] border-slate-800 right-0 font-medium'
                 >
+                  {user?.id === post.authorId && (
+                    <Link
+                      href={`/view-post/${postId}/edit`}
+                      passHref
+                    >
+                      <li className='pl-3 pr-3 pb-1 pt-1 text-center whitespace-nowrap cursor-pointer text-sm border-b-[1px] border-slate-800 hover:bg-gray-800'>
+                        Edit post
+                      </li>
+                    </Link>
+                  )}
                   {(user?.role === 'ADMIN' || user?.id === post.authorId) && (
                     <li
-                      className='pl-2 pr-2 pb-1 pt-1 text-center whitespace-nowrap cursor-pointer text-sm'
+                      className='pl-3 pr-3 pb-1 pt-1 text-center whitespace-nowrap cursor-pointer text-sm hover:bg-gray-800'
                       onClick={handleRemovePost}
                     >
                       Remove post
@@ -198,7 +223,7 @@ const Post = () => {
               )}
             </div>
           </div>
-          <p className='whitespace-pre-wrap w-3/5'>{post.content}</p>
+          <p className='whitespace-pre-wrap w-5/6 break-words'>{post.content}</p>
           <div className='bg-midnight flex mt-20 h-12 rounded'>
             <div className='w-max pl-4 pr-4 pt-2 pb-2 flex items-center'>
               <span>Topics</span>
