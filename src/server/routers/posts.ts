@@ -266,3 +266,27 @@ export const posts = createRouter()
       return !!result
     }
   })
+  .mutation('update', {
+    input: z.object({
+      postId: z.number(),
+      title: z.string().optional(),
+      topic: z.string().optional(),
+      content: z.string().optional()
+    }),
+    async resolve({ input }) {
+      const { postId, content, title, topic } = input
+
+      const result = await prisma.post.update({
+        where: {
+          id: postId
+        },
+        data: {
+          title,
+          topic,
+          content
+        }
+      })
+
+      return result
+    }
+  })
