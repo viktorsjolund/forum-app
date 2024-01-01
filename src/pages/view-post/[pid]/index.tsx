@@ -51,8 +51,8 @@ const Post = () => {
           setEditedAge(getDateAge(updatedAt))
         }
       }
-      setLikes(post.likes.length)
-      setDislikes(post.dislikes.length)
+      setLikes(post._count.likes)
+      setDislikes(post._count.dislikes)
       if (!scrolled) {
         document.querySelector(`#${router.asPath.split('#')[1]}`)?.scrollIntoView()
         setScrolled(true)
