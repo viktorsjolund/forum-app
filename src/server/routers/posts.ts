@@ -71,6 +71,11 @@ export const posts = createRouter()
       return result
     }
   })
+  .query('count', {
+    async resolve() {
+      return await prisma.post.count()
+    }
+  })
   .query('byUser', {
     input: z.object({
       userId: z.number()
