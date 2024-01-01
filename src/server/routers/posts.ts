@@ -55,7 +55,7 @@ export const posts = createRouter()
       const result = await prisma.post.findMany({
         orderBy: {
           likes: {
-            _count: 'asc'
+            _count: 'desc'
           }
         },
         skip,
