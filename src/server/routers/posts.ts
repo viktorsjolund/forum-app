@@ -15,8 +15,12 @@ export const posts = createRouter()
         },
         include: {
           author: true,
-          likes: true,
-          dislikes: true,
+          _count: {
+            select: {
+              dislikes: true,
+              likes: true
+            }
+          },
           comments: {
             orderBy: {
               created_at: 'asc'
@@ -44,6 +48,35 @@ export const posts = createRouter()
       return await prisma.post.findMany({})
     }
   })
+  .query('allByNew', {
+    input: z.object({
+      skip: z.number(),
+      take: z.number()
+    }),
+    async resolve({ input }) {
+      const { skip, take } = input
+
+      const result = await prisma.post.findMany({
+        orderBy: {
+          created_at: 'desc'
+        },
+        skip,
+        take,
+        include: {
+          author: true,
+          _count: {
+            select: {
+              comments: true,
+              dislikes: true,
+              likes: true
+            }
+          }
+        }
+      })
+
+      return result
+    }
+  })
   .query('allByLikes', {
     input: z.object({
       skip: z.number(),
@@ -61,10 +94,14 @@ export const posts = createRouter()
         skip,
         take,
         include: {
-          likes: true,
-          dislikes: true,
           author: true,
-          comments: true
+          _count: {
+            select: {
+              comments: true,
+              dislikes: true,
+              likes: true
+            }
+          }
         }
       })
 
@@ -88,10 +125,14 @@ export const posts = createRouter()
           authorId: userId
         },
         include: {
-          likes: true,
-          dislikes: true,
           author: true,
-          comments: true
+          _count: {
+            select: {
+              comments: true,
+              dislikes: true,
+              likes: true
+            }
+          }
         }
       })
 
@@ -114,10 +155,14 @@ export const posts = createRouter()
           }
         },
         include: {
-          likes: true,
-          dislikes: true,
           author: true,
-          comments: true
+          _count: {
+            select: {
+              comments: true,
+              dislikes: true,
+              likes: true
+            }
+          }
         }
       })
 
