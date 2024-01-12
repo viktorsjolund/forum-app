@@ -3,7 +3,10 @@ import { MinifiedPost } from '@/components/minifiedPost'
 import { trpc } from '@/utils/trpc'
 import { useRouter } from 'next/router'
 import { useEffect, useMemo, useState } from 'react'
-const LIMIT = 20
+import { MdKeyboardArrowRight, MdKeyboardArrowLeft } from 'react-icons/md'
+import { FaSearch } from 'react-icons/fa'
+import { VscLoading } from 'react-icons/vsc'
+const POST_LIMIT = 20 as const
 
 type TPaginationButtonsProps = {
   pageNr: number
@@ -45,12 +48,15 @@ const PagnationButtons = (props: TPaginationButtonsProps) => {
   return (
     <div className='flex'>
       {pageNr > 1 && (
-        <button
+        <div
           onClick={handlePrevBtn}
-          className='bg-midnight-dark min-w-[2rem] flex justify-center items-center w-fit rounded-sm border-[1px] border-slate-600 text-sm h-5 font-medium pr-2 pl-2 mr-3 hover:border-main-purple-light'
+          className='bg-midnight-dark min-w-[2rem] cursor-pointer flex justify-center items-center w-fit rounded-sm border-[1px] border-slate-600 text-sm h-5 font-medium pr-2 pl-1 mr-3 hover:border-main-purple-light'
         >
-          PREV
-        </button>
+          <div>
+            <MdKeyboardArrowLeft size={17} />
+          </div>
+          <span>PREV</span>
+        </div>
       )}
       {pageNumbers().map((nr, i) => (
         <button
@@ -66,12 +72,15 @@ const PagnationButtons = (props: TPaginationButtonsProps) => {
         </button>
       ))}
       {numberOfPages !== pageNr && (
-        <button
+        <div
           onClick={handleNextBtn}
-          className='bg-midnight-dark min-w-[2rem] flex justify-center items-center w-fit rounded-sm border-[1px] border-slate-600 text-sm h-5 font-medium pr-2 pl-2 ml-3 hover:border-main-purple-light'
+          className='bg-midnight-dark min-w-[2rem] cursor-pointer flex justify-center items-center w-fit rounded-sm border-[1px] border-slate-600 text-sm h-5 font-medium pr-1 pl-2 ml-3 hover:border-main-purple-light'
         >
-          NEXT
-        </button>
+          <span>NEXT</span>
+          <div>
+            <MdKeyboardArrowRight size={17} />
+          </div>
+        </div>
       )}
     </div>
   )
@@ -79,7 +88,7 @@ const PagnationButtons = (props: TPaginationButtonsProps) => {
 
 const Browse = () => {
   const router = useRouter()
-  const { sort, page } = router.query as { sort?: string; page?: string }
+  const { sort, page, q } = router.query as { sort?: string; page?: string; q?: string }
   let pageNr = page ? parseInt(page) : 1
   if (isNaN(pageNr)) {
     pageNr = 1
@@ -89,19 +98,43 @@ const Browse = () => {
 
   const [posts, setPosts] = useState<any[]>([])
   const [isInitialFetch, setIsIntitialFetch] = useState(true)
+  const [search, setSearch] = useState('')
   const { data: topPosts, refetch: topPostsRefetch } = trpc.useQuery(
-    ['post.allByLikes', { skip: (pageNr - 1) * LIMIT, take: LIMIT }],
+    ['post.allByLikes', { skip: (pageNr - 1) * POST_LIMIT, take: POST_LIMIT }],
     { enabled: false }
   )
   const { data: newPosts, refetch: newPostsRefetch } = trpc.useQuery(
-    ['post.allByNew', { skip: (pageNr - 1) * LIMIT, take: LIMIT }],
+    ['post.allByNew', { skip: (pageNr - 1) * POST_LIMIT, take: POST_LIMIT }],
+    { enabled: false }
+  )
+  const {
+    data: searchedPosts,
+    refetch: searchedPostsRefetch,
+    isLoading: searchIsLoading
+  } = trpc.useQuery(
+    [
+      'search.posts',
+      { skip: (pageNr - 1) * POST_LIMIT, take: POST_LIMIT, search: decodeURIComponent(q || '') }
+    ],
     { enabled: false }
   )
   const { data: postCount } = trpc.useQuery(['post.count'])
-  const numberOfPages = useMemo(() => Math.ceil((postCount || 1) / LIMIT), [postCount])
+  const { data: searchPostCount, refetch: searchPostCountRefetch } = trpc.useQuery(
+    ['search.postCount', { search: decodeURIComponent(q || '') }],
+    { enabled: false }
+  )
+  const numberOfPages = useMemo(() => {
+    if (typeof searchPostCount !== undefined && q) {
+      return Math.ceil((searchPostCount || 1) / POST_LIMIT)
+    } else {
+      return Math.ceil((postCount || 1) / POST_LIMIT)
+    }
+  }, [postCount, searchPostCount, q])
 
   useEffect(() => {
-    if (topPosts && sort === 'top') {
+    if (searchedPosts && q) {
+      setPosts([...searchedPosts])
+    } else if (topPosts && sort === 'top') {
       setPosts([...topPosts])
     } else if (newPosts && (sort === 'new' || !sort)) {
       setPosts([...newPosts])
@@ -113,34 +146,53 @@ const Browse = () => {
       })
     }
 
-    if (isInitialFetch && pageNr <= numberOfPages) {
-      switch (sort) {
-        case 'top':
-          topPostsRefetch()
-          break
-        case 'new':
-          newPostsRefetch()
-          break
-        default:
-          newPostsRefetch()
-          break
+    if (isInitialFetch) {
+      if (q) {
+        searchedPostsRefetch()
+        searchPostCountRefetch()
+      } else if (pageNr <= numberOfPages) {
+        switch (sort) {
+          case 'top':
+            topPostsRefetch()
+            break
+          case 'new':
+            newPostsRefetch()
+            break
+          default:
+            newPostsRefetch()
+            break
+        }
       }
       setIsIntitialFetch(false)
     }
-  }, [sort, newPosts, topPosts, isInitialFetch, topPostsRefetch, newPostsRefetch, numberOfPages, pageNr, router])
+  }, [
+    sort,
+    newPosts,
+    topPosts,
+    isInitialFetch,
+    topPostsRefetch,
+    newPostsRefetch,
+    numberOfPages,
+    pageNr,
+    router,
+    searchedPosts,
+    searchedPostsRefetch,
+    q,
+    searchPostCountRefetch
+  ])
 
   const handleSortTop = async () => {
-    if (sort === 'top') return
+    if (sort === 'top' && !q) return
     await router.replace({
-      query: { ...router.query, sort: 'top', page: '1' }
+      query: { sort: 'top', page: '1' }
     })
     topPostsRefetch()
   }
 
   const handleSortNew = async () => {
-    if (sort === 'new') return
+    if (sort === 'new' && !q) return
     await router.replace({
-      query: { ...router.query, sort: 'new', page: '1' }
+      query: { sort: 'new', page: '1' }
     })
     newPostsRefetch()
   }
@@ -150,6 +202,12 @@ const Browse = () => {
     await router.replace({
       query: { ...router.query, page: nr }
     })
+
+    if (q) {
+      searchedPostsRefetch()
+      return
+    }
+
     switch (sort) {
       case 'top':
         topPostsRefetch()
@@ -167,6 +225,12 @@ const Browse = () => {
     await router.replace({
       query: { ...router.query, page: ++pageNr }
     })
+
+    if (q) {
+      searchedPostsRefetch()
+      return
+    }
+
     switch (sort) {
       case 'top':
         topPostsRefetch()
@@ -184,6 +248,12 @@ const Browse = () => {
     await router.replace({
       query: { ...router.query, page: --pageNr }
     })
+
+    if (q) {
+      searchedPostsRefetch()
+      return
+    }
+
     switch (sort) {
       case 'top':
         topPostsRefetch()
@@ -195,6 +265,18 @@ const Browse = () => {
         newPostsRefetch()
         break
     }
+  }
+
+  const handleSearch = async (e?: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e && e.key !== 'Enter') return
+    if (!search) return
+
+    await router.replace({
+      query: { q: encodeURIComponent(search), page: '1' }
+    })
+
+    searchedPostsRefetch()
+    searchPostCountRefetch()
   }
 
   return (
@@ -215,26 +297,62 @@ const Browse = () => {
           <div className='flex mb-4'>
             <button
               onClick={handleSortNew}
-              className='flex transition-colors justify-center items-center w-14 h-6 rounded-md bg-main-purple hover:bg-main-purple-dark font-medium text-sm'
+              className={`flex transition-colors justify-center items-center w-14 h-6 rounded-md bg-main-purple font-medium text-sm ${
+                sort === 'new' ? 'border-2 cursor-default' : 'hover:bg-main-purple-dark'
+              }`}
             >
               NEW
             </button>
             <button
               onClick={handleSortTop}
-              className='flex transition-colors justify-center items-center ml-2 w-14 h-6 rounded-md bg-main-purple hover:bg-main-purple-dark font-medium text-sm'
+              className={`flex transition-colors justify-center items-center ml-2 w-14 h-6 rounded-md bg-main-purple font-medium text-sm ${
+                sort === 'top' ? 'border-2 cursor-default' : 'hover:bg-main-purple-dark'
+              }`}
             >
               TOP
             </button>
-          </div>
-          {posts?.map((post) => (
-            <div
-              key={post.id}
-              className='mb-2'
-            >
-              <MinifiedPost post={post} />
+            <div className='ml-auto flex items-center bg-midnight-dark rounded border-[1px] pr-1 pl-1 border-slate-700'>
+              <div className='pl-2 pr-2'>
+                <FaSearch />
+              </div>
+              <input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className='bg-midnight-dark pr-2 pt-2 pb-2'
+                onKeyDown={handleSearch}
+              />
+              <div
+                onClick={() => handleSearch()}
+                className='flex transition-colors justify-center items-center w-20 h-4/5 rounded cursor-pointer pr-2 pl-2 bg-main-purple font-medium text-sm hover:bg-main-purple-dark'
+              >
+                {searchIsLoading ? (
+                  <VscLoading
+                    size={20}
+                    className='animate-spin'
+                  />
+                ) : (
+                  'SEARCH'
+                )}
+              </div>
             </div>
-          ))}
-          <div className={`${posts.length < LIMIT ? 'mt-24' : 'mt-4'}`}>
+          </div>
+          <div className='bg-midnight-light rounded p-1 min-h-[5rem]'>
+            {posts.length > 0 ? (
+              posts.map((post) => (
+                <div
+                  key={post.id}
+                  className='mb-2 last:mb-0'
+                >
+                  <MinifiedPost post={post} />
+                </div>
+              ))
+            ) : (
+              <div className='text-center w-full leading-[5rem]'>
+                <span>No results found.</span>
+              </div>
+            )}
+          </div>
+          <div className={`${posts.length < POST_LIMIT ? 'mt-24' : 'mt-4'}`}>
             <PagnationButtons
               handlePageBtn={handlePageBtn}
               handleNextBtn={handleNextBtn}
