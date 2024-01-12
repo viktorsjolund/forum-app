@@ -39,12 +39,14 @@ const Profile = () => {
       me={me}
       username={uname}
     >
-      <div className='flex flex-col'>
+      <div className='flex flex-col p-4'>
         {posts?.map((post) => (
-          <MinifiedPost
+          <div
+            className='mb-2'
             key={post.id}
-            post={post}
-          />
+          >
+            <MinifiedPost post={post} />
+          </div>
         ))}
       </div>
     </ProfileTemplate>
