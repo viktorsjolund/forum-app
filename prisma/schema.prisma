@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["fullTextSearch", "fullTextIndex"]
 }
 
 datasource db {
@@ -22,6 +23,8 @@ model post {
   comments      post_comment[]
   notifications notification[]
 
+  @@fulltext([title])
+  @@fulltext([title, content])
   @@index([authorId])
   @@map("forum_post")
 }
