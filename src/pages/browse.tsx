@@ -1,90 +1,12 @@
 import { Header } from '@/components/header'
 import { MinifiedPost } from '@/components/minifiedPost'
+import { PaginationButtons } from '@/components/paginationButtons'
 import { trpc } from '@/utils/trpc'
 import { useRouter } from 'next/router'
 import { useEffect, useMemo, useState } from 'react'
-import { MdKeyboardArrowRight, MdKeyboardArrowLeft } from 'react-icons/md'
 import { FaSearch } from 'react-icons/fa'
 import { VscLoading } from 'react-icons/vsc'
-const POST_LIMIT = 20 as const
-
-type TPaginationButtonsProps = {
-  pageNr: number
-  handlePageBtn: (nr: number) => void
-  handleNextBtn: () => Promise<void>
-  handlePrevBtn: () => Promise<void>
-  numberOfPages: number
-  postCount: number
-}
-
-const PagnationButtons = (props: TPaginationButtonsProps) => {
-  const { pageNr, handlePageBtn, numberOfPages, postCount, handleNextBtn, handlePrevBtn } = props
-
-  const pageNumbers = () => {
-    const pageNumbers = []
-    const startPage = Math.max(1, pageNr - 2)
-    const endPage = Math.min(postCount, pageNr + 2)
-    const endPageNr = endPage > numberOfPages ? numberOfPages : endPage
-
-    if (startPage !== 1) {
-      pageNumbers.push(1)
-    }
-
-    for (let i = startPage; i <= endPageNr; i++) {
-      pageNumbers.push(i)
-    }
-
-    if (endPageNr !== numberOfPages) {
-      pageNumbers.push(numberOfPages)
-    }
-
-    if (pageNumbers.length === 0) {
-      pageNumbers.push(1)
-    }
-
-    return pageNumbers
-  }
-
-  return (
-    <div className='flex'>
-      {pageNr > 1 && (
-        <div
-          onClick={handlePrevBtn}
-          className='bg-midnight-dark min-w-[2rem] cursor-pointer flex justify-center items-center w-fit rounded-sm border-[1px] border-slate-600 text-sm h-5 font-medium pr-2 pl-1 mr-3 hover:border-main-purple-light'
-        >
-          <div>
-            <MdKeyboardArrowLeft size={17} />
-          </div>
-          <span>PREV</span>
-        </div>
-      )}
-      {pageNumbers().map((nr, i) => (
-        <button
-          key={i}
-          className={`min-w-[2rem] w-fit rounded-sm border-[1px] flex justify-center items-center border-slate-600 text-sm h-5 font-medium ${
-            pageNr === nr
-              ? 'border-main-purple bg-main-purple-dark font-bold cursor-default'
-              : 'bg-midnight-dark hover:border-main-purple-light'
-          }`}
-          onClick={() => handlePageBtn(nr)}
-        >
-          {nr}
-        </button>
-      ))}
-      {numberOfPages !== pageNr && (
-        <div
-          onClick={handleNextBtn}
-          className='bg-midnight-dark min-w-[2rem] cursor-pointer flex justify-center items-center w-fit rounded-sm border-[1px] border-slate-600 text-sm h-5 font-medium pr-1 pl-2 ml-3 hover:border-main-purple-light'
-        >
-          <span>NEXT</span>
-          <div>
-            <MdKeyboardArrowRight size={17} />
-          </div>
-        </div>
-      )}
-    </div>
-  )
-}
+const POST_LIMIT = 2 as const
 
 const Browse = () => {
   const router = useRouter()
@@ -197,58 +119,7 @@ const Browse = () => {
     newPostsRefetch()
   }
 
-  const handlePageBtn = async (nr: number) => {
-    if (pageNr === nr) return
-    await router.replace({
-      query: { ...router.query, page: nr }
-    })
-
-    if (q) {
-      searchedPostsRefetch()
-      return
-    }
-
-    switch (sort) {
-      case 'top':
-        topPostsRefetch()
-        break
-      case 'new':
-        newPostsRefetch()
-        break
-      default:
-        newPostsRefetch()
-        break
-    }
-  }
-
-  const handleNextBtn = async () => {
-    await router.replace({
-      query: { ...router.query, page: ++pageNr }
-    })
-
-    if (q) {
-      searchedPostsRefetch()
-      return
-    }
-
-    switch (sort) {
-      case 'top':
-        topPostsRefetch()
-        break
-      case 'new':
-        newPostsRefetch()
-        break
-      default:
-        newPostsRefetch()
-        break
-    }
-  }
-
-  const handlePrevBtn = async () => {
-    await router.replace({
-      query: { ...router.query, page: --pageNr }
-    })
-
+  const handleNewPage = async () => {
     if (q) {
       searchedPostsRefetch()
       return
@@ -285,10 +156,8 @@ const Browse = () => {
       <div className='flex justify-center h-max min-h-full bg-gradient-to-tr from-main-purple-light to-main-purple via-main-purple-dark'>
         <div className='w-4/5 bg-[#212529] p-4 min-h-[100vh] h-fit'>
           <div className='mb-4'>
-            <PagnationButtons
-              handlePageBtn={handlePageBtn}
-              handleNextBtn={handleNextBtn}
-              handlePrevBtn={handlePrevBtn}
+            <PaginationButtons
+              handleNewPage={handleNewPage}
               numberOfPages={numberOfPages}
               pageNr={pageNr}
               postCount={postCount || 1}
@@ -353,10 +222,8 @@ const Browse = () => {
             )}
           </div>
           <div className={`${posts.length < POST_LIMIT ? 'mt-24' : 'mt-4'}`}>
-            <PagnationButtons
-              handlePageBtn={handlePageBtn}
-              handleNextBtn={handleNextBtn}
-              handlePrevBtn={handlePrevBtn}
+            <PaginationButtons
+              handleNewPage={handleNewPage}
               numberOfPages={numberOfPages}
               pageNr={pageNr}
               postCount={postCount || 1}
