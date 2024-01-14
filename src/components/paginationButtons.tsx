@@ -92,7 +92,7 @@ export const PaginationButtons = (props: TPaginationButtonsProps) => {
     }
 
     if (endPageNr !== numberOfPages) {
-      if (endPageNr - 1 !== numberOfPages) {
+      if (endPageNr + 1 !== numberOfPages) {
         pageNumbers.push({ nr: 1, type: 'dots' })
       }
       pageNumbers.push({ nr: numberOfPages })
