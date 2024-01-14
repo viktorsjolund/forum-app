@@ -173,7 +173,9 @@ const Post = () => {
               href={`/account/${post.author.username}`}
               passHref
             >
-              <span className='ml-2 font-bold pr-2 cursor-pointer'>{post.author.username}</span>
+              <a>
+                <span className='ml-2 font-bold pr-2 cursor-pointer'>{post.author.username}</span>
+              </a>
             </Link>
             <span className='text-gray-400 text-xs'>&#8226;</span>
             <span className='pl-2 text-sm text-gray-500'>{age}</span>
@@ -236,9 +238,11 @@ const Post = () => {
                     key={i}
                     passHref
                   >
-                    <div className='bg-main-purple-light rounded-2xl h-max pt-1 pb-1 pr-3 pl-3 shadow-lg cursor-pointer mr-4'>
-                      {topic}
-                    </div>
+                    <a>
+                      <div className='bg-main-purple-light rounded-2xl h-max pt-1 pb-1 pr-3 pl-3 shadow-lg cursor-pointer mr-4'>
+                        {topic}
+                      </div>
+                    </a>
                   </Link>
                 )
               })}
