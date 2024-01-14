@@ -4,6 +4,7 @@ import type { post, user } from '@prisma/client'
 import Link from 'next/link'
 import moment from 'moment'
 import { usePostRating } from '@/hooks/usePostRating'
+import { IconContext } from 'react-icons'
 
 type TMinifiedPostProps = {
   post: post & {
@@ -24,21 +25,25 @@ export const MinifiedPost = (props: TMinifiedPostProps) => {
     <div className='flex h-22 bg-midnight-dark border-[1px] border-slate-700 rounded p-2 w-full cursor-pointer hover:border-main-purple-light transition-colors'>
       <div className='flex flex-col h-full justify-center border-r-2 border-slate-800 pr-2 w-fit min-w-[5rem]'>
         <div className='flex items-center mb-1'>
-          <div
-            className='hover:bg-midnight rounded p-1'
-            onClick={handleLike}
-          >
-            {isLiked ? <AiFillLike /> : <AiOutlineLike />}
-          </div>
+          <IconContext.Provider value={{ className: 'hover:fill-blue-500 w-full h-full p-1 transition-colors' }}>
+            <div
+              className='hover:bg-midnight rounded'
+              onClick={handleLike}
+            >
+              {isLiked ? <AiFillLike /> : <AiOutlineLike />}
+            </div>
+          </IconContext.Provider>
           <span className='pl-2 text-gray-300 text-sm'>{post._count.likes}</span>
         </div>
         <div className='flex items-center mb-1'>
-          <div
-            className='hover:bg-midnight rounded p-1'
-            onClick={handleDislike}
-          >
-            {isDisliked ? <AiFillDislike /> : <AiOutlineDislike />}
-          </div>
+          <IconContext.Provider value={{ className: 'hover:fill-red-500 w-full h-full p-1 transition-colors' }}>
+            <div
+              className='hover:bg-midnight rounded'
+              onClick={handleDislike}
+            >
+              {isDisliked ? <AiFillDislike /> : <AiOutlineDislike />}
+            </div>
+          </IconContext.Provider>
           <span className='pl-2 text-gray-300 text-sm'>{post._count.dislikes}</span>
         </div>
         <div className='flex items-center'>

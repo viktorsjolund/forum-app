@@ -11,11 +11,11 @@ const Home = () => {
       <div className='min-h-full'>
         <Header />
         <Link
-          href='/trending'
+          href='/browse'
           passHref
         >
           <div>
-            <span className='cursor-pointer'>Trending</span>
+            <span className='cursor-pointer'>Browse</span>
           </div>
         </Link>
         {router.query.postRemoved === 'true' && (

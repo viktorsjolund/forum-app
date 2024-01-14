@@ -4,6 +4,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        'midnight-lighter': '#373f45',
         'midnight-light': '#282e33',
         midnight: '#1f2327',
         'midnight-dark': '#16191c',

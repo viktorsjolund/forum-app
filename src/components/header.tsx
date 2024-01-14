@@ -6,6 +6,8 @@ import Image from 'next/image'
 import { useState, useEffect } from 'react'
 import type { role } from '@prisma/client'
 import { getDateAge } from '@/utils/timeCalculator'
+import { CgProfile, CgUser } from 'react-icons/cg'
+import { IoIosLogOut } from 'react-icons/io'
 
 const LoggedOut = () => {
   return (
@@ -87,6 +89,18 @@ const LoggedIn = (props: TLoggedInProps) => {
 
   return (
     <>
+      <div className='mr-5'>
+        <Link
+          href='/create-post'
+          passHref
+        >
+          <a>
+            <div className='flex leading-6 transition-colors justify-center items-center pr-4 pl-4 pb-1 pt-1 w-full h-full rounded bg-main-purple hover:bg-main-purple-dark shadow-lg font-medium text-sm'>
+              Create a post
+            </div>
+          </a>
+        </Link>
+      </div>
       <div className='mr-5 relative'>
         <div
           className='cursor-pointer relative'
@@ -160,7 +174,10 @@ const LoggedIn = (props: TLoggedInProps) => {
           className='absolute top-12 right-8 bg-gray-900 rounded shadow-black shadow border-[1px] border-slate-800 font-medium'
           id='header-dropdown'
         >
-          <li className='pl-14 pr-14 pb-1 pt-1 text-center'>
+          <li className='pb-1 pt-1 text-center flex items-center pr-8'>
+            <div className='pl-4 pr-4'>
+              <CgUser />
+            </div>
             <span className='pointer-events-none'>{username}</span>
             {role && (
               <span className='ml-2 border-[1px] rounded p-1 font-bold text-xs mt-auto mb-auto bg-purple-500 pointer-events-none'>
@@ -172,15 +189,23 @@ const LoggedIn = (props: TLoggedInProps) => {
             href={`/account/${username}`}
             passHref
           >
-            <li className='pl-14 pr-14 pb-1 pt-1 text-center cursor-pointer border-t-[1px] border-slate-800 hover:bg-gray-800 transition-colors '>
-              My Profile
-            </li>
+            <a>
+              <li className='pb-1 pt-1 text-center cursor-pointer border-t-[1px] border-slate-800 hover:bg-gray-800 transition-colors flex items-center pr-4'>
+                <div className='pl-4 pr-4'>
+                  <CgProfile />
+                </div>
+                <span>My Profile</span>
+              </li>
+            </a>
           </Link>
           <li
-            className='border-t-[1px] border-slate-800 pl-14 pr-14 pb-1 pt-1 cursor-pointer text-center hover:bg-gray-800 transition-colors'
+            className='border-t-[1px] border-slate-800 pb-1 pt-1 cursor-pointer text-center hover:bg-gray-800 transition-colors flex items-center'
             onClick={handleLogout}
           >
-            Logout
+            <div className='pl-4 pr-4'>
+              <IoIosLogOut />
+            </div>
+            <span>Logout</span>
           </li>
         </ul>
       )}
