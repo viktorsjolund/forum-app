@@ -10,8 +10,8 @@ import { AiFillDislike, AiFillLike, AiOutlineDislike, AiOutlineLike } from 'reac
 import { BsBookmarkFill, BsBookmark, BsBell, BsBellFill, BsThreeDots } from 'react-icons/bs'
 import { Loading } from '@/components/loading'
 import { PopupMessage } from '@/components/popupMessage'
-import { useIsPostFollowed } from '@/hooks/useIsPostFollowed'
 import { usePostRating } from '@/hooks/usePostRating'
+import { usePostFollow } from '@/hooks/usePostFollow'
 
 const Post = () => {
   const router = useRouter()
@@ -22,14 +22,12 @@ const Post = () => {
   const [editedAge, setEditedAge] = useState('')
   const [scrolled, setScrolled] = useState(false)
   const [isBookmarked, setIsBookmarked] = useState(false)
-  const [isNotificationsOn, setIsNotificationsOn] = useIsPostFollowed(postId)
   const { data: post, refetch } = trpc.useQuery(['post.byId', { id: postId }])
   const [showPopup, setShowPopup] = useState(false)
   const [showOptions, setShowOptions] = useState(false)
   const { data: user } = trpc.useQuery(['user.me'])
   const removePostMutation = trpc.useMutation(['post.remove'])
-  const followPostMutation = trpc.useMutation(['post.follow'])
-  const unfollowPostMutation = trpc.useMutation(['post.unfollow'])
+  const [handleFollow, isFollowed] = usePostFollow(postId)
   const [handleLike, handleDislike, isLiked, isDisliked] = usePostRating(postId)
 
   useEffect(() => {
@@ -79,28 +77,6 @@ const Post = () => {
 
   const handleRemoveBookmark = () => {
     setIsBookmarked(false)
-  }
-
-  const handleEnableNotifications = async () => {
-    setIsNotificationsOn(true)
-    try {
-      await followPostMutation.mutateAsync({
-        postId
-      })
-    } catch (e) {
-      setIsNotificationsOn(false)
-    }
-  }
-
-  const handleDisableNotifications = async () => {
-    setIsNotificationsOn(false)
-    try {
-      await unfollowPostMutation.mutateAsync({
-        postId
-      })
-    } catch (e) {
-      setIsNotificationsOn(true)
-    }
   }
 
   const refetchPost = async () => {
@@ -264,16 +240,16 @@ const Post = () => {
             </div>
             <div className='h-full w-max'>
               <div className='h-2/4 min-w-[4.5rem] flex justify-center items-center bg-midnight'>
-                {isNotificationsOn ? (
+                {isFollowed ? (
                   <BsBellFill
                     size={25}
-                    onClick={handleDisableNotifications}
+                    onClick={handleFollow}
                     className='cursor-pointer'
                   />
                 ) : (
                   <BsBell
                     size={25}
-                    onClick={handleEnableNotifications}
+                    onClick={handleFollow}
                     className='cursor-pointer'
                   />
                 )}
