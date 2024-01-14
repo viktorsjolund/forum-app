@@ -62,12 +62,6 @@ const Browse = () => {
       setPosts([...newPosts])
     }
 
-    if (pageNr > numberOfPages) {
-      router.replace({
-        query: { ...router.query, page: '1' }
-      })
-    }
-
     if (isInitialFetch) {
       if (q) {
         searchedPostsRefetch()
