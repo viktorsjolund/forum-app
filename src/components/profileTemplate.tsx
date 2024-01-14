@@ -20,12 +20,12 @@ export const ProfileTemplate = ({ children, me, username }: TProfileTemplateProp
         <div className='w-4/5 bg-[#212529] min-h-full pb-[100vh]'>
           <ul className='flex bg-midnight w-full border-t-2 border-l-2 border-midnight'>
             <Link
-              href={`/account/${username}`}
+              href={`/user/${username}`}
               passHref
             >
               <li
                 className={`pl-4 pt-1 pr-4 pb-1 cursor-pointer border-b-2 bg-midnight-light border-midnight ${
-                  router.pathname === '/account/[uname]'
+                  router.pathname === '/user/[uname]'
                     ? 'border-b-2 border-b-main-purple-light'
                     : 'hover:border-b-main-purple hover:bg-midnight-lighter'
                 }`}
@@ -34,12 +34,12 @@ export const ProfileTemplate = ({ children, me, username }: TProfileTemplateProp
               </li>
             </Link>
             <Link
-              href={`/account/${username}/liked`}
+              href={`/user/${username}/liked`}
               passHref
             >
               <li
                 className={`pl-4 pt-1 pr-4 pb-1 cursor-pointer border-b-2 bg-midnight-light border-midnight hover:border-b-main-purple ${
-                  router.pathname === '/account/[uname]/liked'
+                  router.pathname === '/user/[uname]/liked'
                     ? 'border-b-2 border-b-main-purple-light'
                     : 'hover:border-b-main-purple hover:bg-midnight-lighter'
                 }`}
@@ -48,12 +48,12 @@ export const ProfileTemplate = ({ children, me, username }: TProfileTemplateProp
               </li>
             </Link>
             <Link
-              href={`/account/${username}/saved`}
+              href={`/user/${username}/saved`}
               passHref
             >
               <li
                 className={`pl-4 pt-1 pr-4 pb-1 cursor-pointer  border-b-2 bg-midnight-light border-midnight hover:border-b-main-purple ${
-                  router.pathname === '/account/[uname]/saved'
+                  router.pathname === '/user/[uname]/saved'
                     ? 'border-b-2 border-b-main-purple-light'
                     : 'hover:border-b-main-purple hover:bg-midnight-lighter'
                 }`}

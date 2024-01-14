@@ -3,7 +3,7 @@ import { useRouter } from 'next/router'
 import { useEffect } from 'react'
 import { Loading } from './loading'
 
-const permittedRoutes = ['/account/login' , '/account/register']
+const permittedRoutes = ['/login', '/register']
 
 export const RouteProtect = ({ children }: { children: any }) => {
   const router = useRouter()
@@ -12,8 +12,8 @@ export const RouteProtect = ({ children }: { children: any }) => {
   useEffect(() => {
     if (!isLoading) {
       if (!isAuthorized && !permittedRoutes.includes(router.pathname)) {
-        router.push('/account/login')
-      } else if (isAuthorized && router.pathname === '/account/login') {
+        router.push('/login')
+      } else if (isAuthorized && router.pathname === '/login') {
         router.push('/')
       }
       refetch()

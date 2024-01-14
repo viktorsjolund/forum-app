@@ -10,7 +10,10 @@ export const Avatar = (props: AvatarProps) => {
 
   return (
     <>
-      <Link href={`/account/${username}`} passHref>
+      <Link
+        href={`/user/${username}`}
+        passHref
+      >
         <a>
           <Image
             src='/images/avatar.png'

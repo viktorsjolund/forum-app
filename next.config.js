@@ -4,7 +4,7 @@ const nextConfig = {
   async redirects() {
     return [
       {
-        source: '/account/login',
+        source: '/login',
         has: [
           {
             type: 'cookie',

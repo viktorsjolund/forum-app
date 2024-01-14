@@ -92,7 +92,7 @@ const Login = () => {
                 {passwordErrorMessage && passwordErrorMessage}
               </span>
             </div>
-            <Link href={'/account/register'}>
+            <Link href={'/register'}>
               <span className='underline mb-6 cursor-pointer'>Create an account</span>
             </Link>
             <button

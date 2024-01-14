@@ -35,7 +35,7 @@ export const UserCard = (props: TUserCardProps) => {
           return (
             <>
               {word.includes('@') && word.length !== 1 ? (
-                <UserMention username={word}/>
+                <UserMention username={word} />
               ) : (
                 <>{word}</>
               )}
@@ -54,7 +54,7 @@ export const UserCard = (props: TUserCardProps) => {
 
     replyFormRef.current &&
       autoAnimate(replyFormRef.current, {
-        duration: 200,
+        duration: 200
       })
   }, [createdAt, age])
 
@@ -65,7 +65,7 @@ export const UserCard = (props: TUserCardProps) => {
     setIsRefetching(true)
     await addReply.mutateAsync({
       commentId,
-      content: replyFormContent,
+      content: replyFormContent
     })
 
     await refetchPost()
@@ -90,7 +90,7 @@ export const UserCard = (props: TUserCardProps) => {
           <Avatar username={username} />
         </div>
         <Link
-          href={`/account/${username}`}
+          href={`/user/${username}`}
           passHref
         >
           <span className='cursor-pointer max-w-max pr-2 pl-2 font-bold'>{username}</span>

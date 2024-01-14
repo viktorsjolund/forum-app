@@ -41,7 +41,7 @@ const Register = () => {
       return
     }
 
-    router.push('/account/login')
+    router.push('/login')
   }
 
   return (
@@ -138,7 +138,7 @@ const Register = () => {
                 {passwordErrorMessage && passwordErrorMessage}
               </span>
             </div>
-            <Link href={'/account/login'}>
+            <Link href={'/login'}>
               <span className='underline cursor-pointer mb-6'>Already have an account?</span>
             </Link>
             <button

@@ -13,7 +13,7 @@ const LoggedOut = () => {
   return (
     <div className='pr-10'>
       <span className='text-lg hover:font-bold'>
-        <Link href='/account/login'>Login</Link>
+        <Link href='/login'>Login</Link>
       </span>
     </div>
   )
@@ -70,7 +70,7 @@ const LoggedIn = (props: TLoggedInProps) => {
 
     try {
       await logout.mutateAsync()
-      router.push('/account/login')
+      router.push('/login')
     } catch (e) {
       if (errorTimeoutRef) {
         clearTimeout(errorTimeoutRef)
@@ -186,7 +186,7 @@ const LoggedIn = (props: TLoggedInProps) => {
             )}
           </li>
           <Link
-            href={`/account/${username}`}
+            href={`/user/${username}`}
             passHref
           >
             <a>

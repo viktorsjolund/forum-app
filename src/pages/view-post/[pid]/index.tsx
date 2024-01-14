@@ -102,7 +102,7 @@ const Post = () => {
           <div className='flex border-b-2 p-8 mb-12 items-center border-b-white border-opacity-50 rounded-sm'>
             <Avatar username={post.author.username} />
             <Link
-              href={`/account/${post.author.username}`}
+              href={`/user/${post.author.username}`}
               passHref
             >
               <a>
