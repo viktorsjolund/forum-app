@@ -9,12 +9,9 @@ import { getDateAge } from '@/utils/timeCalculator'
 import { AiFillDislike, AiFillLike, AiOutlineDislike, AiOutlineLike } from 'react-icons/ai'
 import { BsBookmarkFill, BsBookmark, BsBell, BsBellFill, BsThreeDots } from 'react-icons/bs'
 import { Loading } from '@/components/loading'
-import { usePostLiked } from '@/hooks/usePostLiked'
-import { usePostDisliked } from '@/hooks/usePostDisliked'
-import { useMutatePostLike } from '@/hooks/useMutatePostLike'
-import { useMutatePostDislike } from '@/hooks/useMutatePostDislike'
 import { PopupMessage } from '@/components/popupMessage'
 import { useIsPostFollowed } from '@/hooks/useIsPostFollowed'
+import { usePostRating } from '@/hooks/usePostRating'
 
 const Post = () => {
   const router = useRouter()
@@ -23,22 +20,17 @@ const Post = () => {
 
   const [age, setAge] = useState('')
   const [editedAge, setEditedAge] = useState('')
-  const [isLiked, setIsLiked] = usePostLiked(postId)
-  const [isDisliked, setIsDisliked] = usePostDisliked(postId)
-  const [likes, setLikes] = useState(0)
-  const [dislikes, setDislikes] = useState(0)
   const [scrolled, setScrolled] = useState(false)
   const [isBookmarked, setIsBookmarked] = useState(false)
   const [isNotificationsOn, setIsNotificationsOn] = useIsPostFollowed(postId)
   const { data: post, refetch } = trpc.useQuery(['post.byId', { id: postId }])
-  const [addLike, removeLike] = useMutatePostLike(postId)
-  const [addDislike, removeDislike] = useMutatePostDislike(postId)
   const [showPopup, setShowPopup] = useState(false)
   const [showOptions, setShowOptions] = useState(false)
   const { data: user } = trpc.useQuery(['user.me'])
   const removePostMutation = trpc.useMutation(['post.remove'])
   const followPostMutation = trpc.useMutation(['post.follow'])
   const unfollowPostMutation = trpc.useMutation(['post.unfollow'])
+  const [handleLike, handleDislike, isLiked, isDisliked] = usePostRating(postId)
 
   useEffect(() => {
     if (post) {
@@ -51,8 +43,6 @@ const Post = () => {
           setEditedAge(getDateAge(updatedAt))
         }
       }
-      setLikes(post._count.likes)
-      setDislikes(post._count.dislikes)
       if (!scrolled) {
         document.querySelector(`#${router.asPath.split('#')[1]}`)?.scrollIntoView()
         setScrolled(true)
@@ -81,40 +71,6 @@ const Post = () => {
 
   if (!post) {
     return <Loading />
-  }
-
-  const handleAddLike = async () => {
-    setLikes(likes + 1)
-    if (isDisliked) {
-      setDislikes(dislikes - 1)
-    }
-    setIsDisliked(false)
-    setIsLiked(true)
-    await removeDislike()
-    await addLike()
-  }
-
-  const handleAddDislike = async () => {
-    setDislikes(dislikes + 1)
-    if (isLiked) {
-      setLikes(likes - 1)
-    }
-    setIsDisliked(true)
-    setIsLiked(false)
-    await removeLike()
-    await addDislike()
-  }
-
-  const handleRemoveDislike = async () => {
-    setDislikes(dislikes - 1)
-    setIsDisliked(false)
-    await removeDislike()
-  }
-
-  const handleRemoveLike = async () => {
-    setLikes(likes - 1)
-    setIsLiked(false)
-    await removeLike()
   }
 
   const handleAddBookmark = () => {
@@ -254,19 +210,19 @@ const Post = () => {
                 {isLiked ? (
                   <AiFillLike
                     size={25}
-                    onClick={handleRemoveLike}
+                    onClick={handleLike}
                     className='cursor-pointer'
                   />
                 ) : (
                   <AiOutlineLike
                     size={25}
-                    onClick={handleAddLike}
+                    onClick={handleLike}
                     className='cursor-pointer'
                   />
                 )}
               </div>
               <div className='h-2/4 p-4 flex justify-center items-center'>
-                <span>{likes}</span>
+                <span>{post._count.likes}</span>
               </div>
             </div>
             <div className='h-full w-max rounded-bl bg-midnight'>
@@ -274,19 +230,19 @@ const Post = () => {
                 {isDisliked ? (
                   <AiFillDislike
                     size={25}
-                    onClick={handleRemoveDislike}
+                    onClick={handleDislike}
                     className='cursor-pointer'
                   />
                 ) : (
                   <AiOutlineDislike
                     size={25}
-                    onClick={handleAddDislike}
+                    onClick={handleDislike}
                     className='cursor-pointer'
                   />
                 )}
               </div>
               <div className='h-2/4 p-4 flex justify-center items-center'>
-                <span>{dislikes}</span>
+                <span>{post._count.dislikes}</span>
               </div>
             </div>
             <div className='h-full w-max'>
