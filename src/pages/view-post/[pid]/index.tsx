@@ -181,8 +181,8 @@ const Post = () => {
             </div>
           </div>
           <div className='flex h-[6rem] mt-14 w-full'>
-            <div className='h-full w-max rounded-tl rounded-bl bg-midnight'>
-              <div className='h-2/4 min-w-[4.5rem] flex justify-center items-center'>
+            <div className='h-full w-fit min-w-[4.5rem] rounded-tl rounded-bl bg-midnight'>
+              <div className='h-2/4 w-full flex justify-center items-center'>
                 {isLiked ? (
                   <AiFillLike
                     size={25}
@@ -197,12 +197,12 @@ const Post = () => {
                   />
                 )}
               </div>
-              <div className='h-2/4 p-4 flex justify-center items-center'>
+              <div className='h-2/4 w-full p-4 flex justify-center items-center'>
                 <span>{post._count.likes}</span>
               </div>
             </div>
-            <div className='h-full w-max rounded-bl bg-midnight'>
-              <div className='h-2/4 min-w-[4.5rem] flex justify-center items-center'>
+            <div className='h-full min-w-[4.5rem] w-fit rounded-bl bg-midnight'>
+              <div className='h-2/4 w-full flex justify-center items-center'>
                 {isDisliked ? (
                   <AiFillDislike
                     size={25}
@@ -217,12 +217,12 @@ const Post = () => {
                   />
                 )}
               </div>
-              <div className='h-2/4 p-4 flex justify-center items-center'>
+              <div className='h-2/4 w-full p-4 flex justify-center items-center'>
                 <span>{post._count.dislikes}</span>
               </div>
             </div>
-            <div className='h-full w-max'>
-              <div className='h-2/4 min-w-[4.5rem] flex justify-center items-center bg-midnight'>
+            <div className='h-full w-[4.5rem]'>
+              <div className='h-2/4 w-full flex justify-center items-center bg-midnight'>
                 {isBookmarked ? (
                   <BsBookmarkFill
                     size={25}
@@ -238,8 +238,8 @@ const Post = () => {
                 )}
               </div>
             </div>
-            <div className='h-full w-max'>
-              <div className='h-2/4 min-w-[4.5rem] flex justify-center items-center bg-midnight'>
+            <div className='h-full w-[4.5rem]'>
+              <div className='h-2/4 w-full flex justify-center items-center bg-midnight'>
                 {isFollowed ? (
                   <BsBellFill
                     size={25}

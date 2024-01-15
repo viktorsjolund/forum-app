@@ -46,4 +46,5 @@ a {
 * {
   box-sizing: border-box;
   color: white;
+  min-width: 0;
 }

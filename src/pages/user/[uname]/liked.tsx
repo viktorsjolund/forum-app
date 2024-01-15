@@ -67,23 +67,43 @@ const Liked = () => {
       username={uname}
     >
       <div className='p-5'>
-        {postCount && (
-          <PaginationButtons
-            handleNewPage={handleNewPage}
-            pageNr={pageNr}
-            postCount={postCount}
-            postLimit={POST_LIMIT}
-          />
-        )}
-        <div className='flex flex-col'>
-          {posts?.map((post) => (
-            <MinifiedPost
-              key={post.id}
-              post={post}
-              ratingChangeCb={handleRatingChange}
+        {!!postCount && (
+          <div className='mb-5'>
+            <PaginationButtons
+              handleNewPage={handleNewPage}
+              pageNr={pageNr}
+              postCount={postCount}
+              postLimit={POST_LIMIT}
             />
-          ))}
+          </div>
+        )}
+        <div className='flex flex-col bg-midnight-light rounded p-2 border-[1px] border-midnight-lighter'>
+          {posts && posts.length > 0 ? (
+            posts.map((post) => (
+              <div
+                key={post.id}
+                className='mb-2 last:mb-0'
+              >
+                <MinifiedPost
+                  post={post}
+                  ratingChangeCb={handleRatingChange}
+                />
+              </div>
+            ))
+          ) : (
+            <div>no results</div>
+          )}
         </div>
+        {!!postCount && (
+          <div className='mt-5'>
+            <PaginationButtons
+              handleNewPage={handleNewPage}
+              pageNr={pageNr}
+              postCount={postCount}
+              postLimit={POST_LIMIT}
+            />
+          </div>
+        )}
       </div>
     </ProfileTemplate>
   )

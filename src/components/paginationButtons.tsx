@@ -132,7 +132,7 @@ export const PaginationButtons = (props: TPaginationButtonsProps) => {
 
   return (
     <div className='flex relative'>
-      {pageNr > 1 && (
+      {pageNr > 1 && numberOfPages > 0 && (
         <div
           onClick={handlePrevBtn}
           className='bg-midnight-dark min-w-[2rem] cursor-pointer flex justify-center items-center w-fit rounded-sm border-[1px] border-slate-600 text-sm h-5 font-medium pr-2 pl-1 mr-3 hover:border-main-purple-light'
@@ -171,7 +171,7 @@ export const PaginationButtons = (props: TPaginationButtonsProps) => {
           )
         }
       })}
-      {numberOfPages !== pageNr && (
+      {numberOfPages !== pageNr && numberOfPages > 0 && (
         <div
           onClick={handleNextBtn}
           className='bg-midnight-dark min-w-[2rem] cursor-pointer flex justify-center items-center w-fit rounded-sm border-[1px] border-slate-600 text-sm h-5 font-medium pr-1 pl-2 ml-3 hover:border-main-purple-light'

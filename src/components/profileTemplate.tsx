@@ -17,17 +17,17 @@ export const ProfileTemplate = ({ children, me, username }: TProfileTemplateProp
     <div>
       <Header />
       <div className='flex justify-center h-max min-h-full bg-gradient-to-tr from-main-purple-light to-main-purple via-main-purple-dark'>
-        <div className='w-4/5 bg-[#212529] min-h-full pb-[100vh]'>
+        <div className='w-4/5 bg-[#212529] min-h-full'>
           <ul className='flex bg-midnight w-full border-t-2 border-l-2 border-midnight'>
             <Link
               href={`/user/${username}`}
               passHref
             >
               <li
-                className={`pl-4 pt-1 pr-4 pb-1 cursor-pointer border-b-2 bg-midnight-light border-midnight ${
+                className={`pl-4 pt-1 pr-4 pb-1 border-b-2 bg-midnight-light border-midnight ${
                   router.pathname === '/user/[uname]'
-                    ? 'border-b-2 border-b-main-purple-light'
-                    : 'hover:border-b-main-purple hover:bg-midnight-lighter'
+                    ? 'border-b-2 border-b-main-purple-light cursor-default'
+                    : 'hover:border-b-main-purple hover:bg-midnight-lighter cursor-pointer'
                 }`}
               >
                 Posts
@@ -38,10 +38,10 @@ export const ProfileTemplate = ({ children, me, username }: TProfileTemplateProp
               passHref
             >
               <li
-                className={`pl-4 pt-1 pr-4 pb-1 cursor-pointer border-b-2 bg-midnight-light border-midnight hover:border-b-main-purple ${
+                className={`pl-4 pt-1 pr-4 pb-1 border-b-2 bg-midnight-light border-midnight ${
                   router.pathname === '/user/[uname]/liked'
-                    ? 'border-b-2 border-b-main-purple-light'
-                    : 'hover:border-b-main-purple hover:bg-midnight-lighter'
+                    ? 'border-b-2 border-b-main-purple-light cursor-default'
+                    : 'hover:border-b-main-purple hover:bg-midnight-lighter cursor-pointer'
                 }`}
               >
                 Liked
@@ -52,10 +52,10 @@ export const ProfileTemplate = ({ children, me, username }: TProfileTemplateProp
               passHref
             >
               <li
-                className={`pl-4 pt-1 pr-4 pb-1 cursor-pointer  border-b-2 bg-midnight-light border-midnight hover:border-b-main-purple ${
+                className={`pl-4 pt-1 pr-4 pb-1 border-b-2 bg-midnight-light border-midnight hover:border-b-main-purple ${
                   router.pathname === '/user/[uname]/saved'
-                    ? 'border-b-2 border-b-main-purple-light'
-                    : 'hover:border-b-main-purple hover:bg-midnight-lighter'
+                    ? 'border-b-2 border-b-main-purple-light cursor-default'
+                    : 'hover:border-b-main-purple hover:bg-midnight-lighter cursor-pointer'
                 }`}
               >
                 Saved

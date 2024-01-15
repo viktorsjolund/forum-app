@@ -6,7 +6,7 @@ import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { FaSearch } from 'react-icons/fa'
 import { VscLoading } from 'react-icons/vsc'
-const POST_LIMIT = 2 as const
+const POST_LIMIT = 10 as const
 
 const Browse = () => {
   const router = useRouter()
@@ -137,9 +137,9 @@ const Browse = () => {
   }
 
   const getPostCount = () => {
-    if (q && searchPostCount) {
+    if (q && typeof searchPostCount !== 'undefined') {
       return searchPostCount
-    } else if (postCount) {
+    } else if (typeof postCount !== 'undefined') {
       return postCount
     } else {
       return 0
@@ -152,12 +152,14 @@ const Browse = () => {
       <div className='flex justify-center h-max min-h-full bg-gradient-to-tr from-main-purple-light to-main-purple via-main-purple-dark'>
         <div className='w-4/5 bg-[#212529] p-4 min-h-[100vh] h-fit'>
           <div className='mb-4'>
-            <PaginationButtons
-              handleNewPage={handleNewPage}
-              pageNr={pageNr}
-              postCount={getPostCount()}
-              postLimit={POST_LIMIT}
-            />
+            {getPostCount() > 0 && (
+              <PaginationButtons
+                handleNewPage={handleNewPage}
+                pageNr={pageNr}
+                postCount={getPostCount()}
+                postLimit={POST_LIMIT}
+              />
+            )}
           </div>
           <div className='flex mb-4'>
             <button
@@ -201,7 +203,7 @@ const Browse = () => {
               </div>
             </div>
           </div>
-          <div className='bg-midnight-light rounded p-1 min-h-[5rem]'>
+          <div className='bg-midnight-light rounded p-2 min-h-[5rem] border-[1px] border-midnight-lighter'>
             {posts.length > 0 ? (
               posts.map((post) => (
                 <div
@@ -218,12 +220,14 @@ const Browse = () => {
             )}
           </div>
           <div className={`${posts.length < POST_LIMIT ? 'mt-24' : 'mt-4'}`}>
-            <PaginationButtons
-              handleNewPage={handleNewPage}
-              pageNr={pageNr}
-              postCount={getPostCount()}
-              postLimit={POST_LIMIT}
-            />
+            {getPostCount() > 0 && (
+              <PaginationButtons
+                handleNewPage={handleNewPage}
+                pageNr={pageNr}
+                postCount={getPostCount()}
+                postLimit={POST_LIMIT}
+              />
+            )}
           </div>
         </div>
       </div>

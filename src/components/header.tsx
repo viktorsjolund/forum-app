@@ -1,4 +1,4 @@
-import { AiOutlineMenu, AiFillBell } from 'react-icons/ai'
+import { AiOutlineMenu, AiFillBell, AiOutlineBell } from 'react-icons/ai'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { trpc } from '@/utils/trpc'
@@ -108,7 +108,7 @@ const LoggedIn = (props: TLoggedInProps) => {
           onClick={() => setShowNotiDropdown((s) => !s)}
         >
           <div className='pointer-events-none'>
-            <AiFillBell size={30} />
+            {showNotiDropdown ? <AiFillBell size={30} /> : <AiOutlineBell size={30} />}
           </div>
           {notifications && notifications.length > 0 && (
             <div className='absolute h-4 w-4 top-0 right-0 bg-red-600 rounded-full flex justify-center items-center pointer-events-none'>
@@ -156,7 +156,6 @@ const LoggedIn = (props: TLoggedInProps) => {
         onClick={() => setShowAvatarDropdown((sd) => !sd)}
         id='header-profile'
       >
-        <span className='pr-2 pointer-events-none text-sm font-bold'>{username}</span>
         <div className='overflow-hidden rounded-full border-2 w-10 h-10 pointer-events-none'>
           <div className='pointer-events-none'>
             <Image
