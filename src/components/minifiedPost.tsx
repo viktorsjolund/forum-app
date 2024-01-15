@@ -22,13 +22,13 @@ export const MinifiedPost = (props: TMinifiedPostProps) => {
   const { post, ratingChangeCb } = props
   const [handleLike, handleDislike, isLiked, isDisliked] = usePostRating(post.id)
 
-  const handleLikeClick = () => {
-    handleLike()
+  const handleLikeClick = async () => {
+    await handleLike()
     ratingChangeCb && ratingChangeCb()
   }
 
-  const handleDislikeClick = () => {
-    handleDislike()
+  const handleDislikeClick = async () => {
+    await handleDislike()
     ratingChangeCb && ratingChangeCb()
   }
 
@@ -36,7 +36,9 @@ export const MinifiedPost = (props: TMinifiedPostProps) => {
     <div className='flex h-22 bg-midnight-dark border-[1px] border-slate-700 rounded p-2 w-full cursor-pointer hover:border-main-purple-light transition-colors'>
       <div className='flex flex-col h-full justify-center border-r-2 border-slate-800 pr-2 w-fit min-w-[5rem]'>
         <div className='flex items-center mb-1'>
-          <IconContext.Provider value={{ className: 'hover:fill-blue-500 w-full h-full p-1 transition-colors' }}>
+          <IconContext.Provider
+            value={{ className: 'hover:fill-blue-500 w-full h-full p-1 transition-colors' }}
+          >
             <div
               className='hover:bg-midnight rounded'
               onClick={handleLikeClick}
@@ -47,7 +49,9 @@ export const MinifiedPost = (props: TMinifiedPostProps) => {
           <span className='pl-2 text-gray-300 text-sm'>{post._count.likes}</span>
         </div>
         <div className='flex items-center mb-1'>
-          <IconContext.Provider value={{ className: 'hover:fill-red-500 w-full h-full p-1 transition-colors' }}>
+          <IconContext.Provider
+            value={{ className: 'hover:fill-red-500 w-full h-full p-1 transition-colors' }}
+          >
             <div
               className='hover:bg-midnight rounded'
               onClick={handleDislikeClick}
@@ -69,26 +73,39 @@ export const MinifiedPost = (props: TMinifiedPostProps) => {
         passHref
       >
         <a className='w-full'>
-          <div className='flex'>
-            <div className='pl-4 flex flex-col w-3/4'>
-              <span className='font-extrabold text-[1em] leading-5 h-fit break-words'>
-                {post.title}
-              </span>
-            </div>
-            <div className='ml-auto flex flex-col'>
-              <span className='text-sm h-fit ml-auto'>
-                <span>by</span>
-                <span className='font-bold underline pl-1 transition-colors'>
-                  {post.author.username}
+          <div className='w-full h-full flex-col'>
+            <div className='flex'>
+              <div className='pl-4 flex flex-col w-3/4'>
+                <span className='font-extrabold text-[1em] leading-5 h-fit break-words'>
+                  {post.title}
                 </span>
-              </span>
-              <span className='text-xs h-fit mt-auto ml-auto text-gray-500'>
-                Posted on: {moment(post.created_at.toString(), 'YYYY-MM-DD HH:mm:ss').format('lll')}
-              </span>
-              <span className='text-xs h-fit mt-auto text-gray-500'>
-                Last edited:{' '}
-                {moment(post.updated_at?.toString(), 'YYYY-MM-DD HH:mm:ss').format('lll')}
-              </span>
+              </div>
+              <div className='ml-auto flex flex-col'>
+                <span className='text-sm h-fit ml-auto'>
+                  <span>by</span>
+                  <span className='font-bold underline pl-1 transition-colors'>
+                    {post.author.username}
+                  </span>
+                </span>
+                <span className='text-xs h-fit mt-auto ml-auto text-gray-500'>
+                  Posted on:{' '}
+                  {moment(post.created_at.toString(), 'YYYY-MM-DD HH:mm:ss').format('lll')}
+                </span>
+                <span className='text-xs h-fit mt-auto text-gray-500'>
+                  Last edited:{' '}
+                  {moment(post.updated_at?.toString(), 'YYYY-MM-DD HH:mm:ss').format('lll')}
+                </span>
+              </div>
+            </div>
+            <div className='w-full pl-4 pr-4 flex'>
+              {post.topic?.split(',').map((t, i) => (
+                <div
+                  key={i}
+                  className='bg-slate-800 rounded-2xl pt-1 pb-1 pr-3 pl-3 shadow-lg w-fit text-sm text-gray-300 font-semibold mr-2 last:mr-0'
+                >
+                  {t}
+                </div>
+              ))}
             </div>
           </div>
         </a>
