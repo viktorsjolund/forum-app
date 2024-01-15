@@ -141,10 +141,12 @@ export const posts = createRouter()
   })
   .query('byUserLikes', {
     input: z.object({
-      userId: z.number()
+      userId: z.number(),
+      skip: z.number(),
+      take: z.number()
     }),
     async resolve({ input }) {
-      const { userId } = input
+      const { userId, skip, take } = input
 
       const result = await prisma.post.findMany({
         where: {
@@ -154,6 +156,8 @@ export const posts = createRouter()
             }
           }
         },
+        skip,
+        take,
         include: {
           author: true,
           _count: {
@@ -161,6 +165,26 @@ export const posts = createRouter()
               comments: true,
               dislikes: true,
               likes: true
+            }
+          }
+        }
+      })
+
+      return result
+    }
+  })
+  .query('countByUserLikes', {
+    input: z.object({
+      userId: z.number()
+    }),
+    async resolve({ input }) {
+      const { userId } = input
+
+      const result = await prisma.post.count({
+        where: {
+          likes: {
+            some: {
+              user_id: userId
             }
           }
         }
