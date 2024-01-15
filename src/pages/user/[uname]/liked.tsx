@@ -57,6 +57,10 @@ const Liked = () => {
     refetchLikes()
   }
 
+  const handleRatingChange = () => {
+    refetchCount()
+  }
+
   return (
     <ProfileTemplate
       me={me}
@@ -76,6 +80,7 @@ const Liked = () => {
             <MinifiedPost
               key={post.id}
               post={post}
+              ratingChangeCb={handleRatingChange}
             />
           ))}
         </div>

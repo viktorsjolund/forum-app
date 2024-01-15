@@ -15,11 +15,22 @@ type TMinifiedPostProps = {
       comments: number
     }
   }
+  ratingChangeCb?: () => void
 }
 
 export const MinifiedPost = (props: TMinifiedPostProps) => {
-  const { post } = props
+  const { post, ratingChangeCb } = props
   const [handleLike, handleDislike, isLiked, isDisliked] = usePostRating(post.id)
+
+  const handleLikeClick = () => {
+    handleLike()
+    ratingChangeCb && ratingChangeCb()
+  }
+
+  const handleDislikeClick = () => {
+    handleDislike()
+    ratingChangeCb && ratingChangeCb()
+  }
 
   return (
     <div className='flex h-22 bg-midnight-dark border-[1px] border-slate-700 rounded p-2 w-full cursor-pointer hover:border-main-purple-light transition-colors'>
@@ -28,7 +39,7 @@ export const MinifiedPost = (props: TMinifiedPostProps) => {
           <IconContext.Provider value={{ className: 'hover:fill-blue-500 w-full h-full p-1 transition-colors' }}>
             <div
               className='hover:bg-midnight rounded'
-              onClick={handleLike}
+              onClick={handleLikeClick}
             >
               {isLiked ? <AiFillLike /> : <AiOutlineLike />}
             </div>
@@ -39,7 +50,7 @@ export const MinifiedPost = (props: TMinifiedPostProps) => {
           <IconContext.Provider value={{ className: 'hover:fill-red-500 w-full h-full p-1 transition-colors' }}>
             <div
               className='hover:bg-midnight rounded'
-              onClick={handleDislike}
+              onClick={handleDislikeClick}
             >
               {isDisliked ? <AiFillDislike /> : <AiOutlineDislike />}
             </div>
