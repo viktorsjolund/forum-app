@@ -3,7 +3,7 @@ import { MinifiedPost } from '@/components/minifiedPost'
 import { PaginationButtons } from '@/components/paginationButtons'
 import { trpc } from '@/utils/trpc'
 import { useRouter } from 'next/router'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { FaSearch } from 'react-icons/fa'
 import { VscLoading } from 'react-icons/vsc'
 const POST_LIMIT = 2 as const
@@ -45,13 +45,6 @@ const Browse = () => {
     ['search.postCount', { search: decodeURIComponent(q || '') }],
     { enabled: false }
   )
-  const numberOfPages = useMemo(() => {
-    if (typeof searchPostCount !== undefined && q) {
-      return Math.ceil((searchPostCount || 1) / POST_LIMIT)
-    } else {
-      return Math.ceil((postCount || 1) / POST_LIMIT)
-    }
-  }, [postCount, searchPostCount, q])
 
   useEffect(() => {
     if (searchedPosts && q) {
@@ -66,7 +59,7 @@ const Browse = () => {
       if (q) {
         searchedPostsRefetch()
         searchPostCountRefetch()
-      } else if (pageNr <= numberOfPages) {
+      } else {
         switch (sort) {
           case 'top':
             topPostsRefetch()
@@ -88,7 +81,6 @@ const Browse = () => {
     isInitialFetch,
     topPostsRefetch,
     newPostsRefetch,
-    numberOfPages,
     pageNr,
     router,
     searchedPosts,
@@ -144,6 +136,16 @@ const Browse = () => {
     searchPostCountRefetch()
   }
 
+  const getPostCount = () => {
+    if (q && searchPostCount) {
+      return searchPostCount
+    } else if (postCount) {
+      return postCount
+    } else {
+      return 0
+    }
+  }
+
   return (
     <>
       <Header />
@@ -152,9 +154,9 @@ const Browse = () => {
           <div className='mb-4'>
             <PaginationButtons
               handleNewPage={handleNewPage}
-              numberOfPages={numberOfPages}
               pageNr={pageNr}
-              postCount={postCount || 1}
+              postCount={getPostCount()}
+              postLimit={POST_LIMIT}
             />
           </div>
           <div className='flex mb-4'>
@@ -218,9 +220,9 @@ const Browse = () => {
           <div className={`${posts.length < POST_LIMIT ? 'mt-24' : 'mt-4'}`}>
             <PaginationButtons
               handleNewPage={handleNewPage}
-              numberOfPages={numberOfPages}
               pageNr={pageNr}
-              postCount={postCount || 1}
+              postCount={getPostCount()}
+              postLimit={POST_LIMIT}
             />
           </div>
         </div>

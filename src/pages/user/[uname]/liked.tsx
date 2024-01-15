@@ -4,7 +4,7 @@ import { PaginationButtons } from '@/components/paginationButtons'
 import { ProfileTemplate } from '@/components/profileTemplate'
 import { trpc } from '@/utils/trpc'
 import { useRouter } from 'next/router'
-import { useEffect, useMemo } from 'react'
+import { useEffect } from 'react'
 const POST_LIMIT = 2 as const
 
 const Liked = () => {
@@ -37,7 +37,6 @@ const Liked = () => {
       enabled: false
     }
   )
-  const numberOfPages = useMemo(() => Math.ceil((postCount || 1) / POST_LIMIT), [postCount])
 
   useEffect(() => {
     if (user) {
@@ -67,9 +66,9 @@ const Liked = () => {
         {postCount && (
           <PaginationButtons
             handleNewPage={handleNewPage}
-            numberOfPages={numberOfPages}
             pageNr={pageNr}
             postCount={postCount}
+            postLimit={POST_LIMIT}
           />
         )}
         <div className='flex flex-col'>

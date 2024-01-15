@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router'
-import { ChangeEvent, useEffect, useState } from 'react'
+import { ChangeEvent, useEffect, useMemo, useState } from 'react'
 import { MdKeyboardArrowRight, MdKeyboardArrowLeft } from 'react-icons/md'
 import { FaPlusCircle, FaMinusCircle } from 'react-icons/fa'
 import { StyledButton } from './styledButton'
@@ -7,16 +7,17 @@ import { StyledButton } from './styledButton'
 type TPaginationButtonsProps = {
   pageNr: number
   handleNewPage: () => void
-  numberOfPages: number
   postCount: number
+  postLimit: number
 }
 
 export const PaginationButtons = (props: TPaginationButtonsProps) => {
-  const { numberOfPages, postCount, handleNewPage, pageNr } = props
+  const { postCount, handleNewPage, pageNr, postLimit } = props
 
   const router = useRouter()
   const [showPageMenu, setShowPageMenu] = useState(false)
   const [customPageNr, setCustomPageNr] = useState(pageNr.toString())
+  const numberOfPages = useMemo(() => Math.ceil(postCount / postLimit), [postCount, postLimit])
 
   useEffect(() => {
     const handlePageMenuHide = (e: MouseEvent) => {
