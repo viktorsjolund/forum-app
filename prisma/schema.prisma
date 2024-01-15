@@ -1,5 +1,5 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["fullTextSearch", "fullTextIndex"]
 }
 
@@ -23,9 +23,9 @@ model post {
   comments      post_comment[]
   notifications notification[]
 
+  @@index([authorId])
   @@fulltext([title])
   @@fulltext([title, content])
-  @@index([authorId])
   @@map("forum_post")
 }
 
@@ -75,20 +75,22 @@ model user {
 }
 
 model post_like {
-  id      Int  @id @default(autoincrement())
-  user_id Int
-  post_id Int
-  post    post @relation(fields: [post_id], references: [id])
+  id         Int      @id @default(autoincrement())
+  user_id    Int
+  post_id    Int
+  created_at DateTime @default(now()) @db.DateTime(0)
+  post       post     @relation(fields: [post_id], references: [id])
 
   @@index([post_id])
   @@map("forum_post_likes")
 }
 
 model post_dislike {
-  id      Int  @id @default(autoincrement())
-  user_id Int
-  post_id Int
-  post    post @relation(fields: [post_id], references: [id])
+  id         Int      @id @default(autoincrement())
+  user_id    Int
+  post_id    Int
+  created_at DateTime @default(now()) @db.DateTime(0)
+  post       post     @relation(fields: [post_id], references: [id])
 
   @@index([post_id])
   @@map("forum_post_dislikes")
