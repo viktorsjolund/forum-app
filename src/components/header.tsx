@@ -94,11 +94,9 @@ const LoggedIn = (props: TLoggedInProps) => {
           href='/create-post'
           passHref
         >
-          <a>
-            <div className='flex leading-6 transition-colors justify-center items-center pr-4 pl-4 pb-1 pt-1 w-full h-full rounded bg-main-purple hover:bg-main-purple-dark shadow-lg font-medium text-sm'>
-              Create a post
-            </div>
-          </a>
+          <div className='flex leading-6 transition-colors justify-center items-center pr-4 pl-4 pb-1 pt-1 w-full h-full rounded bg-main-purple hover:bg-main-purple-dark shadow-lg font-medium text-sm'>
+            Create a post
+          </div>
         </Link>
       </div>
       <div className='mr-5 relative'>
@@ -188,14 +186,12 @@ const LoggedIn = (props: TLoggedInProps) => {
             href={`/user/${username}`}
             passHref
           >
-            <a>
-              <li className='pb-1 pt-1 text-center cursor-pointer border-t-[1px] border-slate-800 hover:bg-gray-800 transition-colors flex items-center pr-4'>
-                <div className='pl-4 pr-4'>
-                  <CgProfile />
-                </div>
-                <span>My Profile</span>
-              </li>
-            </a>
+            <li className='pb-1 pt-1 text-center cursor-pointer border-t-[1px] border-slate-800 hover:bg-gray-800 transition-colors flex items-center pr-4'>
+              <div className='pl-4 pr-4'>
+                <CgProfile />
+              </div>
+              <span>My Profile</span>
+            </li>
           </Link>
           <li
             className='border-t-[1px] border-slate-800 pb-1 pt-1 cursor-pointer text-center hover:bg-gray-800 transition-colors flex items-center'
@@ -227,18 +223,19 @@ export const Header = () => {
         <div className='ml-3 cursor-pointer rounded-full hover:bg-[#343434] p-3 transition-colors'>
           <AiOutlineMenu size={25} />
         </div>
-        <Link href='/'>
-          <a>
-            <span
-              className={`pl-3 pt-2 pr-3 pb-2 ml-6 font-semibold text-lg rounded ${
-                router.pathname === '/'
-                  ? 'bg-main-purple-dark'
-                  : 'hover:bg-[#343434] transition-colors'
-              }`}
-            >
-              Astrom
-            </span>
-          </a>
+        <Link
+          href='/'
+          passHref
+        >
+          <span
+            className={`pl-3 pt-2 pr-3 pb-2 ml-6 font-semibold text-lg rounded ${
+              router.pathname === '/'
+                ? 'bg-main-purple-dark'
+                : 'hover:bg-[#343434] transition-colors'
+            }`}
+          >
+            Astrom
+          </span>
         </Link>
       </div>
       <div className='ml-auto flex items-center'>

@@ -70,45 +70,43 @@ export const MinifiedPost = (props: TMinifiedPostProps) => {
       </div>
       <Link
         href={`/view-post/${post.id}`}
+        className='w-full'
         passHref
       >
-        <a className='w-full'>
-          <div className='w-full h-full flex-col'>
-            <div className='flex'>
-              <div className='pl-4 flex flex-col w-3/4'>
-                <span className='font-extrabold text-[1em] leading-5 h-fit break-words'>
-                  {post.title}
-                </span>
-              </div>
-              <div className='ml-auto flex flex-col'>
-                <span className='text-sm h-fit ml-auto'>
-                  <span>by</span>
-                  <span className='font-bold underline pl-1 transition-colors'>
-                    {post.author.username}
-                  </span>
-                </span>
-                <span className='text-xs h-fit mt-auto ml-auto text-gray-500'>
-                  Posted on:{' '}
-                  {moment(post.created_at.toString(), 'YYYY-MM-DD HH:mm:ss').format('lll')}
-                </span>
-                <span className='text-xs h-fit mt-auto text-gray-500'>
-                  Last edited:{' '}
-                  {moment(post.updated_at?.toString(), 'YYYY-MM-DD HH:mm:ss').format('lll')}
-                </span>
-              </div>
+        <div className='w-full h-full flex-col'>
+          <div className='flex'>
+            <div className='pl-4 flex flex-col w-3/4'>
+              <span className='font-extrabold text-[1em] leading-5 h-fit break-words'>
+                {post.title}
+              </span>
             </div>
-            <div className='w-full pl-4 pr-4 flex'>
-              {post.topic?.split(',').map((t, i) => (
-                <div
-                  key={i}
-                  className='bg-slate-800 rounded-2xl pt-1 pb-1 pr-3 pl-3 shadow-lg w-fit text-sm text-gray-300 font-semibold mr-2 last:mr-0'
-                >
-                  {t}
-                </div>
-              ))}
+            <div className='ml-auto flex flex-col'>
+              <span className='text-sm h-fit ml-auto'>
+                <span>by</span>
+                <span className='font-bold underline pl-1 transition-colors'>
+                  {post.author.username}
+                </span>
+              </span>
+              <span className='text-xs h-fit mt-auto ml-auto text-gray-500'>
+                Posted on: {moment(post.created_at.toString(), 'YYYY-MM-DD HH:mm:ss').format('lll')}
+              </span>
+              <span className='text-xs h-fit mt-auto text-gray-500'>
+                Last edited:{' '}
+                {moment(post.updated_at?.toString(), 'YYYY-MM-DD HH:mm:ss').format('lll')}
+              </span>
             </div>
           </div>
-        </a>
+          <div className='w-full pl-4 pr-4 flex'>
+            {post.topic?.split(',').map((t, i) => (
+              <div
+                key={i}
+                className='bg-slate-800 rounded-2xl pt-1 pb-1 pr-3 pl-3 shadow-lg w-fit text-sm text-gray-300 font-semibold mr-2 last:mr-0'
+              >
+                {t}
+              </div>
+            ))}
+          </div>
+        </div>
       </Link>
     </div>
   )
