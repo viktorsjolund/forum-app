@@ -1,16 +1,18 @@
 import { z } from 'zod'
-import { createRouter } from '../createRouter'
 import { prisma } from '../prisma'
 import * as trpc from '@trpc/server'
+import { publicProcedure, router } from '../trpc'
 
-export const search = createRouter()
-  .query('posts', {
-    input: z.object({
-      search: z.string(),
-      take: z.number(),
-      skip: z.number()
-    }),
-    async resolve({ input }) {
+export const searchRouter = router({
+  posts: publicProcedure
+    .input(
+      z.object({
+        search: z.string(),
+        take: z.number(),
+        skip: z.number()
+      })
+    )
+    .query(async ({ input }) => {
       const { search, skip, take } = input
 
       const formatedSearch = `"${search}"`
@@ -46,13 +48,14 @@ export const search = createRouter()
       })
 
       return result
-    }
-  })
-  .query('postCount', {
-    input: z.object({
-      search: z.string()
     }),
-    async resolve({ input }) {
+  postCount: publicProcedure
+    .input(
+      z.object({
+        search: z.string()
+      })
+    )
+    .query(async ({ input }) => {
       const { search } = input
 
       const formatedSearch = `"${search}"`
@@ -69,5 +72,5 @@ export const search = createRouter()
       })
 
       return result
-    }
-  })
+    })
+})

@@ -1,14 +1,16 @@
 import { z } from 'zod'
-import { createRouter } from '../createRouter'
 import { prisma } from '../prisma'
 import * as trpc from '@trpc/server'
+import { publicProcedure, router } from '../trpc'
 
-export const posts = createRouter()
-  .query('byId', {
-    input: z.object({
-      id: z.number()
-    }),
-    async resolve({ input }) {
+export const postsRouter = router({
+  byId: publicProcedure
+    .input(
+      z.object({
+        id: z.number()
+      })
+    )
+    .query(async ({ input }) => {
       const post = await prisma.post.findFirst({
         where: {
           id: input.id
@@ -41,19 +43,18 @@ export const posts = createRouter()
       })
 
       return post
-    }
-  })
-  .query('all', {
-    async resolve() {
-      return await prisma.post.findMany({})
-    }
-  })
-  .query('allByNew', {
-    input: z.object({
-      skip: z.number(),
-      take: z.number()
     }),
-    async resolve({ input }) {
+  all: publicProcedure.query(async () => {
+    return await prisma.post.findMany({})
+  }),
+  allByNew: publicProcedure
+    .input(
+      z.object({
+        skip: z.number(),
+        take: z.number()
+      })
+    )
+    .query(async ({ input }) => {
       const { skip, take } = input
 
       const result = await prisma.post.findMany({
@@ -75,14 +76,15 @@ export const posts = createRouter()
       })
 
       return result
-    }
-  })
-  .query('allByLikes', {
-    input: z.object({
-      skip: z.number(),
-      take: z.number()
     }),
-    async resolve({ input }) {
+  allByLikes: publicProcedure
+    .input(
+      z.object({
+        skip: z.number(),
+        take: z.number()
+      })
+    )
+    .query(async ({ input }) => {
       const { skip, take } = input
 
       const result = await prisma.post.findMany({
@@ -106,20 +108,19 @@ export const posts = createRouter()
       })
 
       return result
-    }
-  })
-  .query('count', {
-    async resolve() {
-      return await prisma.post.count()
-    }
-  })
-  .query('byUser', {
-    input: z.object({
-      userId: z.number(),
-      skip: z.number(),
-      take: z.number()
     }),
-    async resolve({ input }) {
+  count: publicProcedure.query(async () => {
+    return await prisma.post.count()
+  }),
+  byUser: publicProcedure
+    .input(
+      z.object({
+        userId: z.number(),
+        skip: z.number(),
+        take: z.number()
+      })
+    )
+    .query(async ({ input }) => {
       const { userId, skip, take } = input
 
       const result = await prisma.post.findMany({
@@ -144,13 +145,14 @@ export const posts = createRouter()
       })
 
       return result
-    }
-  })
-  .query('countByUser', {
-    input: z.object({
-      userId: z.number()
     }),
-    async resolve({ input }) {
+  countByUser: publicProcedure
+    .input(
+      z.object({
+        userId: z.number()
+      })
+    )
+    .query(async ({ input }) => {
       const { userId } = input
 
       const result = await prisma.post.count({
@@ -160,15 +162,16 @@ export const posts = createRouter()
       })
 
       return result
-    }
-  })
-  .query('byUserLikes', {
-    input: z.object({
-      userId: z.number(),
-      skip: z.number(),
-      take: z.number()
     }),
-    async resolve({ input }) {
+  byUserLikes: publicProcedure
+    .input(
+      z.object({
+        userId: z.number(),
+        skip: z.number(),
+        take: z.number()
+      })
+    )
+    .query(async ({ input }) => {
       const { userId, skip, take } = input
 
       const result = await prisma.post.findMany({
@@ -194,13 +197,14 @@ export const posts = createRouter()
       })
 
       return result
-    }
-  })
-  .query('countByUserLikes', {
-    input: z.object({
-      userId: z.number()
     }),
-    async resolve({ input }) {
+  countByUserLikes: publicProcedure
+    .input(
+      z.object({
+        userId: z.number()
+      })
+    )
+    .query(async ({ input }) => {
       const { userId } = input
 
       const result = await prisma.post.count({
@@ -214,15 +218,16 @@ export const posts = createRouter()
       })
 
       return result
-    }
-  })
-  .mutation('add', {
-    input: z.object({
-      title: z.string(),
-      content: z.string(),
-      topic: z.string()
     }),
-    async resolve({ input, ctx }) {
+  add: publicProcedure
+    .input(
+      z.object({
+        title: z.string(),
+        content: z.string(),
+        topic: z.string()
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
       if (!ctx.user) {
         throw new trpc.TRPCError({
           code: 'UNAUTHORIZED'
@@ -245,13 +250,14 @@ export const posts = createRouter()
       })
 
       return result
-    }
-  })
-  .query('byTopic', {
-    input: z.object({
-      topic: z.string()
     }),
-    async resolve({ input }) {
+  byTopic: publicProcedure
+    .input(
+      z.object({
+        topic: z.string()
+      })
+    )
+    .query(async ({ input }) => {
       const { topic } = input
       const posts = await prisma.post.findMany({
         where: {
@@ -265,13 +271,14 @@ export const posts = createRouter()
       })
 
       return posts
-    }
-  })
-  .mutation('remove', {
-    input: z.object({
-      id: z.number()
     }),
-    async resolve({ input, ctx }) {
+  remove: publicProcedure
+    .input(
+      z.object({
+        id: z.number()
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
       if (!ctx.user) {
         throw new trpc.TRPCError({
           code: 'UNAUTHORIZED'
@@ -291,13 +298,14 @@ export const posts = createRouter()
           message: `Post id ${id} could not be found.`
         })
       }
-    }
-  })
-  .mutation('follow', {
-    input: z.object({
-      postId: z.number()
     }),
-    async resolve({ input, ctx }) {
+  follow: publicProcedure
+    .input(
+      z.object({
+        postId: z.number()
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
       if (!ctx.user) {
         throw new trpc.TRPCError({
           code: 'UNAUTHORIZED'
@@ -317,13 +325,14 @@ export const posts = createRouter()
           code: 'BAD_REQUEST'
         })
       }
-    }
-  })
-  .mutation('unfollow', {
-    input: z.object({
-      postId: z.number()
     }),
-    async resolve({ input, ctx }) {
+  unfollow: publicProcedure
+    .input(
+      z.object({
+        postId: z.number()
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
       if (!ctx.user) {
         throw new trpc.TRPCError({
           code: 'UNAUTHORIZED'
@@ -343,13 +352,14 @@ export const posts = createRouter()
           code: 'BAD_REQUEST'
         })
       }
-    }
-  })
-  .query('isFollowed', {
-    input: z.object({
-      postId: z.number()
     }),
-    async resolve({ input, ctx }) {
+  isFollowed: publicProcedure
+    .input(
+      z.object({
+        postId: z.number()
+      })
+    )
+    .query(async ({ input, ctx }) => {
       if (!ctx.user) {
         throw new trpc.TRPCError({
           code: 'UNAUTHORIZED'
@@ -365,13 +375,14 @@ export const posts = createRouter()
       })
 
       return !!result
-    }
-  })
-  .query('isAuthor', {
-    input: z.object({
-      postId: z.number()
     }),
-    async resolve({ input, ctx }) {
+  isAuthor: publicProcedure
+    .input(
+      z.object({
+        postId: z.number()
+      })
+    )
+    .query(async ({ input, ctx }) => {
       if (!ctx.user) {
         throw new trpc.TRPCError({
           code: 'UNAUTHORIZED'
@@ -388,16 +399,17 @@ export const posts = createRouter()
       })
 
       return !!result
-    }
-  })
-  .mutation('update', {
-    input: z.object({
-      postId: z.number(),
-      title: z.string().optional(),
-      topic: z.string().optional(),
-      content: z.string().optional()
     }),
-    async resolve({ input }) {
+  update: publicProcedure
+    .input(
+      z.object({
+        postId: z.number(),
+        title: z.string().optional(),
+        topic: z.string().optional(),
+        content: z.string().optional()
+      })
+    )
+    .mutation(async ({ input }) => {
       const { postId, content, title, topic } = input
 
       const result = await prisma.post.update({
@@ -412,5 +424,5 @@ export const posts = createRouter()
       })
 
       return result
-    }
-  })
+    })
+})

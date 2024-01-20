@@ -18,9 +18,9 @@ const Edit = () => {
   const [content, setContent] = useState('')
   const [topic, setTopic] = useState('')
   const [isUpdatingPost, setIsUpdatingPost] = useState(false)
-  const { data: isAuthor } = trpc.useQuery(['post.isAuthor', { postId }])
-  const { data: post, isLoading } = trpc.useQuery(['post.byId', { id: postId }])
-  const updatePostMutation = trpc.useMutation(['post.update'])
+  const { data: isAuthor } = trpc.post.isAuthor.useQuery({ postId })
+  const { data: post, isLoading } = trpc.post.byId.useQuery({ id: postId })
+  const updatePostMutation = trpc.post.update.useMutation()
 
   useEffect(() => {
     if (typeof isAuthor !== 'undefined' && !isAuthor) {

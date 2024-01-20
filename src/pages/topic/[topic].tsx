@@ -8,7 +8,7 @@ import { useRouter } from 'next/router'
 const PostTopic = () => {
   const router = useRouter()
   const { topic } = router.query as { topic: string }
-  const { data: posts, isLoading } = trpc.useQuery(['post.byTopic', { topic }])
+  const { data: posts, isLoading } = trpc.post.byTopic.useQuery({ topic })
 
   if (isLoading) {
     return <Loading />

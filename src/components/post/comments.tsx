@@ -21,10 +21,10 @@ export const Comments = (props: TCommentsProps) => {
   const [content, setContent] = useState('')
   const [isRefetching, setIsRefetching] = useState(false)
   const [rows, setRows] = useState(1)
-  const addComment = trpc.useMutation(['comments.add'])
+  const addComment = trpc.comments.add.useMutation()
   const commentsRef = useRef(null)
   const commentsReversed = useMemo(() => [...comments].reverse(), [comments])
-  const addNotificationMutation = trpc.useMutation(['notification.add'])
+  const addNotificationMutation = trpc.notification.add.useMutation()
 
   useEffect(() => {
     commentsRef.current && autoAnimate(commentsRef.current)

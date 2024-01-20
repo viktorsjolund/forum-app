@@ -1,8 +1,8 @@
 import { z } from 'zod'
-import { createRouter } from '../createRouter'
 import { prisma } from '../prisma'
 import * as trpc from '@trpc/server'
 import { notification_trigger } from '@prisma/client'
+import { publicProcedure, router } from '../trpc'
 
 type TNotificationInput = {
   trigger: notification_trigger
@@ -12,14 +12,16 @@ type TNotificationInput = {
   initiator_id: number
 }
 
-export const notifications = createRouter()
-  .mutation('add', {
-    input: z.object({
-      postId: z.number(),
-      trigger: z.nativeEnum(notification_trigger),
-      elementId: z.string().optional()
-    }),
-    async resolve({ input, ctx }) {
+export const notificationsRouter = router({
+  add: publicProcedure
+    .input(
+      z.object({
+        postId: z.number(),
+        trigger: z.nativeEnum(notification_trigger),
+        elementId: z.string().optional()
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
       if (!ctx.user) {
         throw new trpc.TRPCError({
           code: 'UNAUTHORIZED'
@@ -48,39 +50,38 @@ export const notifications = createRouter()
       await prisma.notification.createMany({
         data
       })
-    }
-  })
-  .query('byUser', {
-    async resolve({ ctx }) {
-      if (!ctx.user) {
-        throw new trpc.TRPCError({
-          code: 'UNAUTHORIZED'
-        })
-      }
-
-      const result = await prisma.notification.findMany({
-        where: {
-          user_id: parseInt(ctx.user.id),
-          viewed: false
-        },
-        include: {
-          post: true,
-          user: true
-        },
-        orderBy: {
-          created_at: 'desc'
-        }
-        // TODO: ignore getting the logged in user's own comments etc
-      })
-
-      return result
-    }
-  })
-  .mutation('viewed', {
-    input: z.object({
-      notificationId: z.number()
     }),
-    async resolve({ input }) {
+  byUser: publicProcedure.query(async ({ ctx }) => {
+    if (!ctx.user) {
+      throw new trpc.TRPCError({
+        code: 'UNAUTHORIZED'
+      })
+    }
+
+    const result = await prisma.notification.findMany({
+      where: {
+        user_id: parseInt(ctx.user.id),
+        viewed: false
+      },
+      include: {
+        post: true,
+        user: true
+      },
+      orderBy: {
+        created_at: 'desc'
+      }
+      // TODO: ignore getting the logged in user's own comments etc
+    })
+
+    return result
+  }),
+  viewed: publicProcedure
+    .input(
+      z.object({
+        notificationId: z.number()
+      })
+    )
+    .mutation(async ({ input }) => {
       const { notificationId } = input
 
       await prisma.notification.update({
@@ -91,5 +92,5 @@ export const notifications = createRouter()
           id: notificationId
         }
       })
-    }
-  })
+    })
+})

@@ -21,22 +21,22 @@ const Profile = () => {
     data: user,
     isLoading: isUserLoading,
     error: userError
-  } = trpc.useQuery(['user.byUsername', { username: uname }])
+  } = trpc.user.byUsername.useQuery({ username: uname })
   const {
     data: posts,
     isLoading: isPostsLoading,
     refetch: refetchPosts
-  } = trpc.useQuery(
-    ['post.byUser', { userId: user?.id!, skip: (pageNr - 1) * POST_LIMIT, take: POST_LIMIT }],
-    { enabled: false }
+  } = trpc.post.byUser.useQuery(
+    { userId: user?.id!, skip: (pageNr - 1) * POST_LIMIT, take: POST_LIMIT },
+      { enabled: false }
   )
-  const { data: postCount, refetch: refetchCount } = trpc.useQuery(
-    ['post.countByUser', { userId: user?.id! }],
-    {
-      enabled: false
-    }
+  const { data: postCount, refetch: refetchCount } = trpc.post.countByUser.useQuery(
+    { userId: user?.id! },
+      {
+          enabled: false
+      }
   )
-  const { data: me } = trpc.useQuery(['user.me'])
+  const { data: me } = trpc.user.me.useQuery()
 
   useEffect(() => {
     if (user) {

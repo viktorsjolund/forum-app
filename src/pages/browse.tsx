@@ -21,29 +21,26 @@ const Browse = () => {
   const [posts, setPosts] = useState<any[]>([])
   const [isInitialFetch, setIsIntitialFetch] = useState(true)
   const [search, setSearch] = useState('')
-  const { data: topPosts, refetch: topPostsRefetch } = trpc.useQuery(
-    ['post.allByLikes', { skip: (pageNr - 1) * POST_LIMIT, take: POST_LIMIT }],
-    { enabled: false }
+  const [searchIsLoading, setSearchIsLoading] = useState(false)
+  const { data: topPosts, refetch: topPostsRefetch } = trpc.post.allByLikes.useQuery(
+    { skip: (pageNr - 1) * POST_LIMIT, take: POST_LIMIT },
+      { enabled: false }
   )
-  const { data: newPosts, refetch: newPostsRefetch } = trpc.useQuery(
-    ['post.allByNew', { skip: (pageNr - 1) * POST_LIMIT, take: POST_LIMIT }],
-    { enabled: false }
+  const { data: newPosts, refetch: newPostsRefetch } = trpc.post.allByNew.useQuery(
+    { skip: (pageNr - 1) * POST_LIMIT, take: POST_LIMIT },
+      { enabled: false }
   )
   const {
     data: searchedPosts,
-    refetch: searchedPostsRefetch,
-    isLoading: searchIsLoading
-  } = trpc.useQuery(
-    [
-      'search.posts',
-      { skip: (pageNr - 1) * POST_LIMIT, take: POST_LIMIT, search: decodeURIComponent(q || '') }
-    ],
-    { enabled: false }
+    refetch: searchedPostsRefetch
+  } = trpc.search.posts.useQuery(
+    { skip: (pageNr - 1) * POST_LIMIT, take: POST_LIMIT, search: decodeURIComponent(q || '') },
+      { enabled: false }
   )
-  const { data: postCount } = trpc.useQuery(['post.count'])
-  const { data: searchPostCount, refetch: searchPostCountRefetch } = trpc.useQuery(
-    ['search.postCount', { search: decodeURIComponent(q || '') }],
-    { enabled: false }
+  const { data: postCount } = trpc.post.count.useQuery()
+  const { data: searchPostCount, refetch: searchPostCountRefetch } = trpc.search.postCount.useQuery(
+    { search: decodeURIComponent(q || '') },
+      { enabled: false }
   )
 
   useEffect(() => {
@@ -128,12 +125,14 @@ const Browse = () => {
     if (e && e.key !== 'Enter') return
     if (!search) return
 
+    setSearchIsLoading(true)
     await router.replace({
       query: { q: encodeURIComponent(search), page: '1' }
     })
 
-    searchedPostsRefetch()
-    searchPostCountRefetch()
+    await searchedPostsRefetch()
+    await searchPostCountRefetch()
+    setSearchIsLoading(false)
   }
 
   const getPostCount = () => {

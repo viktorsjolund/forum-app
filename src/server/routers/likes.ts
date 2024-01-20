@@ -1,17 +1,19 @@
 import { z } from 'zod'
-import { createRouter } from '../createRouter'
 import { prisma } from '../prisma'
 import * as trpc from '@trpc/server'
+import { publicProcedure, router } from '../trpc'
 
-export const likes = createRouter()
-  .mutation('add', {
-    input: z.object({
-      postId: z.number(),
-    }),
-    async resolve({ input, ctx }) {
+export const likesRouter = router({
+  add: publicProcedure
+    .input(
+      z.object({
+        postId: z.number()
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
       if (!ctx.user) {
         throw new trpc.TRPCError({
-          code: 'UNAUTHORIZED',
+          code: 'UNAUTHORIZED'
         })
       }
       const { postId } = input
@@ -19,8 +21,8 @@ export const likes = createRouter()
       const result = await prisma.post_like.findFirst({
         where: {
           user_id: parseInt(ctx.user!.id),
-          post_id: postId,
-        },
+          post_id: postId
+        }
       })
 
       if (!result) {
@@ -28,30 +30,31 @@ export const likes = createRouter()
           await prisma.post_like.create({
             data: {
               post_id: postId,
-              user_id: parseInt(ctx.user!.id),
-            },
+              user_id: parseInt(ctx.user!.id)
+            }
           })
 
           return true
         } catch (e) {
           throw new trpc.TRPCError({
             code: 'INTERNAL_SERVER_ERROR',
-            message: 'Something went wrong...',
+            message: 'Something went wrong...'
           })
         }
       } else {
         return false
       }
-    },
-  })
-  .mutation('remove', {
-    input: z.object({
-      postId: z.number(),
     }),
-    async resolve({ input, ctx }) {
+  remove: publicProcedure
+    .input(
+      z.object({
+        postId: z.number()
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
       if (!ctx.user) {
         throw new trpc.TRPCError({
-          code: 'UNAUTHORIZED',
+          code: 'UNAUTHORIZED'
         })
       }
       const { postId } = input
@@ -60,27 +63,28 @@ export const likes = createRouter()
         await prisma.post_like.deleteMany({
           where: {
             user_id: parseInt(ctx.user!.id),
-            post_id: postId,
-          },
+            post_id: postId
+          }
         })
 
         return true
       } catch (e) {
         throw new trpc.TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
-          message: 'Something went wrong...',
+          message: 'Something went wrong...'
         })
       }
-    },
-  })
-  .query('userHasLikedPost', {
-    input: z.object({
-      postId: z.number(),
     }),
-    async resolve({ input, ctx }) {
+  userHasLikedPost: publicProcedure
+    .input(
+      z.object({
+        postId: z.number()
+      })
+    )
+    .query(async ({ input, ctx }) => {
       if (!ctx.user) {
         throw new trpc.TRPCError({
-          code: 'UNAUTHORIZED',
+          code: 'UNAUTHORIZED'
         })
       }
       const { postId } = input
@@ -89,8 +93,8 @@ export const likes = createRouter()
         const result = await prisma.post_like.findFirst({
           where: {
             post_id: postId,
-            user_id: parseInt(ctx.user!.id),
-          },
+            user_id: parseInt(ctx.user!.id)
+          }
         })
 
         if (result) {
@@ -103,5 +107,5 @@ export const likes = createRouter()
           code: 'INTERNAL_SERVER_ERROR'
         })
       }
-    },
-  })
+    })
+})

@@ -17,25 +17,25 @@ const Liked = () => {
     pageNr = 1
   }
 
-  const { data: me } = trpc.useQuery(['user.me'])
+  const { data: me } = trpc.user.me.useQuery()
   const {
     data: user,
     isLoading: isUserLoading,
     error: userError
-  } = trpc.useQuery(['user.byUsername', { username: uname }])
+  } = trpc.user.byUsername.useQuery({ username: uname })
   const {
     data: posts,
     isLoading: isPostsLoading,
     refetch: refetchLikes
-  } = trpc.useQuery(
-    ['post.byUserLikes', { userId: user?.id!, skip: (pageNr - 1) * POST_LIMIT, take: POST_LIMIT }],
-    { enabled: false }
+  } = trpc.post.byUserLikes.useQuery(
+    { userId: user?.id!, skip: (pageNr - 1) * POST_LIMIT, take: POST_LIMIT },
+      { enabled: false }
   )
-  const { data: postCount, refetch: refetchCount } = trpc.useQuery(
-    ['post.countByUserLikes', { userId: user?.id! }],
-    {
-      enabled: false
-    }
+  const { data: postCount, refetch: refetchCount } = trpc.post.countByUserLikes.useQuery(
+    { userId: user?.id! },
+      {
+          enabled: false
+      }
   )
 
   useEffect(() => {

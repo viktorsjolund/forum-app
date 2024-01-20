@@ -5,12 +5,12 @@ import { Loading } from './loading'
 
 const permittedRoutes = ['/login', '/register']
 
-export const RouteProtect = ({ children }: { children: any }) => {
+export const RouteProtect = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter()
-  const { data: isAuthorized, isLoading, refetch } = trpc.useQuery(['user.isAuthorized'])
+  const { data: isAuthorized, isLoading, refetch } = trpc.user.isAuthorized.useQuery()
 
   useEffect(() => {
-    if (!isLoading) {
+    if (typeof isAuthorized !== 'undefined') {
       if (!isAuthorized && !permittedRoutes.includes(router.pathname)) {
         router.push('/login')
       } else if (isAuthorized && router.pathname === '/login') {
@@ -18,11 +18,11 @@ export const RouteProtect = ({ children }: { children: any }) => {
       }
       refetch()
     }
-  }, [isAuthorized, refetch, isLoading, router])
+  }, [isAuthorized, refetch, router])
 
   if (isLoading) {
     return <Loading />
   }
 
-  return children
+  return <>{children}</>
 }

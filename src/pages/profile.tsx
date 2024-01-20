@@ -36,7 +36,7 @@ const ProfileInfo = (props: ProfileInfoProps) => {
 
 const Profile = () => {
   const [showInfo, setShowInfo] = useState(true)
-  const { data } = trpc.useQuery(['user.me'])
+  const { data } = trpc.user.me.useQuery()
 
   if (!data) {
     return <Loading />

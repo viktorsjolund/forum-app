@@ -12,7 +12,7 @@ const Login = () => {
   const [isLoggingIn, setIsLoggingIn] = useState(false)
   const [emailErrorMessage, setEmailErrorMessage] = useState('')
   const [passwordErrorMessage, setPasswordErrorMessage] = useState('')
-  const login = trpc.useMutation(['user.login'])
+  const login = trpc.user.login.useMutation()
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()

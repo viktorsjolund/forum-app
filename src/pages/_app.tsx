@@ -4,9 +4,8 @@ import '@fontsource/roboto/400.css'
 import '@fontsource/roboto/500.css'
 import '@fontsource/roboto/700.css'
 import 'inter-ui/inter.css'
-import { withTRPC } from '@trpc/next'
+import { trpc } from '@/utils/trpc'
 import { AppType } from 'next/dist/shared/lib/utils'
-import type { AppRouter } from '@/server/routers/_app'
 import { RouteProtect } from '@/components/routeProtect'
 
 const MyApp: AppType = ({ Component, pageProps }) => {
@@ -17,20 +16,4 @@ const MyApp: AppType = ({ Component, pageProps }) => {
   )
 }
 
-export default withTRPC<AppRouter>({
-  config({ ctx }) {
-    const url = process.env.NEXT_PUBLIC_VERCEL_URL
-      ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}/api/trpc`
-      : 'http://localhost:3000/api/trpc'
-
-    return {
-      url,
-      headers() {
-        return {
-          cookie: ctx?.req?.headers.cookie,
-        }
-      },
-    }
-  },
-  ssr: true,
-})(MyApp)
+export default trpc.withTRPC(MyApp)

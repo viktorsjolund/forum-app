@@ -4,12 +4,12 @@ import { useEffect, useState } from 'react'
 export const usePostRating = (
   postId: number
 ): [() => Promise<void>, () => Promise<void>, boolean, boolean] => {
-  const addLikeMutation = trpc.useMutation(['like.add'])
-  const removeLikeMutation = trpc.useMutation(['like.remove'])
-  const addDislikeMutation = trpc.useMutation(['dislike.add'])
-  const removeDislikeMutation = trpc.useMutation(['dislike.remove'])
-  const { data: isLikedData } = trpc.useQuery(['like.userHasLikedPost', { postId }])
-  const { data: isDislikedData } = trpc.useQuery(['dislike.userHasDislikedPost', { postId }])
+  const addLikeMutation = trpc.like.add.useMutation()
+  const removeLikeMutation = trpc.like.remove.useMutation()
+  const addDislikeMutation = trpc.dislike.add.useMutation()
+  const removeDislikeMutation = trpc.dislike.remove.useMutation()
+  const { data: isLikedData } = trpc.like.userHasLikedPost.useQuery({ postId })
+  const { data: isDislikedData } = trpc.dislike.userHasDislikedPost.useQuery({ postId })
   const [isLiked, setIsLiked] = useState(false)
   const [isDisliked, setIsDisliked] = useState(false)
 

@@ -29,13 +29,11 @@ const LoggedIn = (props: TLoggedInProps) => {
   const [showAvatarDropdown, setShowAvatarDropdown] = useState(false)
   const [showNotiDropdown, setShowNotiDropdown] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
-  const logout = trpc.useMutation(['user.logout'])
+  const logout = trpc.user.logout.useMutation()
   const router = useRouter()
   const [errorTimeoutRef, setErrorTimeoutRef] = useState<NodeJS.Timeout | null>(null)
-  const { data: notifications, refetch: refetchNotifications } = trpc.useQuery([
-    'notification.byUser'
-  ])
-  const viewedNotificationMutation = trpc.useMutation(['notification.viewed'])
+  const { data: notifications, refetch: refetchNotifications } = trpc.notification.byUser.useQuery()
+  const viewedNotificationMutation = trpc.notification.viewed.useMutation()
 
   useEffect(() => {
     const handleAvatarDropdownHide = (e: MouseEvent) => {
@@ -215,7 +213,7 @@ const LoggedIn = (props: TLoggedInProps) => {
 
 export const Header = () => {
   const router = useRouter()
-  const { data: user, isLoading } = trpc.useQuery(['user.me'])
+  const { data: user, isLoading } = trpc.user.me.useQuery()
 
   return (
     <div className='h-14 w-full bg-[#212121] flex sticky top-0 z-50'>

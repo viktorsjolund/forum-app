@@ -15,7 +15,7 @@ const Register = () => {
   const [uniqueErrorMessage, setUniqueErrorMessage] = useState('')
   const [internalError, setInternalError] = useState(false)
   const [isRegistering, setIsRegistering] = useState(false)
-  const register = trpc.useMutation(['user.register'])
+  const register = trpc.user.register.useMutation()
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()

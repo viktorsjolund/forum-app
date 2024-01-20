@@ -1,15 +1,17 @@
 import { z } from 'zod'
-import { createRouter } from '../createRouter'
 import { prisma } from '../prisma'
 import * as trpc from '@trpc/server'
+import { publicProcedure, router } from '../trpc'
 
-export const comments = createRouter()
-  .mutation('add', {
-    input: z.object({
-      content: z.string(),
-      postId: z.number()
-    }),
-    async resolve({ input, ctx }) {
+export const commentsRouter = router({
+  add: publicProcedure
+    .input(
+      z.object({
+        content: z.string(),
+        postId: z.number()
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
       if (!ctx.user) {
         throw new trpc.TRPCError({
           code: 'UNAUTHORIZED'
@@ -33,5 +35,5 @@ export const comments = createRouter()
           code: 'INTERNAL_SERVER_ERROR'
         })
       }
-    }
-  })
+    })
+})

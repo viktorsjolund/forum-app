@@ -88,12 +88,13 @@ export const MinifiedPost = (props: TMinifiedPostProps) => {
                 </span>
               </span>
               <span className='text-xs h-fit mt-auto ml-auto text-gray-500'>
-                Posted on: {moment(post.created_at.toString(), 'YYYY-MM-DD HH:mm:ss').format('lll')}
+                Posted on: {moment(post.created_at).format('lll')}
               </span>
-              <span className='text-xs h-fit mt-auto text-gray-500'>
-                Last edited:{' '}
-                {moment(post.updated_at?.toString(), 'YYYY-MM-DD HH:mm:ss').format('lll')}
-              </span>
+              {post.created_at.getTime() === post.updated_at?.getTime() && (
+                <span className='text-xs h-fit mt-auto ml-auto text-gray-500'>
+                  Last edited: {moment(post.updated_at).format('lll')}
+                </span>
+              )}
             </div>
           </div>
           <div className='w-full pl-4 pr-4 flex'>

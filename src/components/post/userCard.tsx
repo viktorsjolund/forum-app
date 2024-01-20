@@ -25,7 +25,7 @@ export const UserCard = (props: TUserCardProps) => {
   const [replyFormContent, setReplyFormContent] = useState(`@${username} `)
   const [isRefetching, setIsRefetching] = useState(false)
   const replyFormRef = useRef(null)
-  const addReply = trpc.useMutation(['reply.add'])
+  const addReply = trpc.reply.add.useMutation()
 
   const filteredContent = useCallback(() => {
     const words = content.split(' ')

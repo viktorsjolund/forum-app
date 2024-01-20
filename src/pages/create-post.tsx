@@ -15,7 +15,7 @@ const CreatePost = () => {
   const [topic, setTopic] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
   const [isCreatingPost, setIsCreatingPost] = useState(false)
-  const addPost = trpc.useMutation(['post.add'])
+  const addPost = trpc.post.add.useMutation()
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()

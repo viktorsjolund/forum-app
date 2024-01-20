@@ -1,13 +1,15 @@
 import { decodeJwtToken } from '@/utils/decodeJwtToken'
+import type { CreateNextContextOptions } from '@trpc/server/adapters/next';
 import * as trpc from '@trpc/server'
-import { NextApiRequest, NextApiResponse } from 'next'
 
 interface UserToken {
   id: string
 }
 
 // The app's context - is generated for each incoming request
-export async function createContext({ req, res }: { req: NextApiRequest; res: NextApiResponse }) {
+export async function createContext(opts: CreateNextContextOptions) {
+  const { req, res } = opts
+
   function getUserFromHeader() {
     const token = req.cookies.token
 
