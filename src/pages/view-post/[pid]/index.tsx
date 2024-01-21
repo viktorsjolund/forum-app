@@ -100,7 +100,7 @@ const Post = () => {
       <div className='flex justify-center h-max min-h-full bg-gradient-to-tr from-main-purple-light to-main-purple via-main-purple-dark'>
         <div className='w-4/5 bg-[#212529] p-20 min-h-full pb-[100vh]'>
           <div className='flex border-b-2 p-8 mb-12 items-center border-b-white border-opacity-50 rounded-sm'>
-            <Avatar username={post.author.username} />
+            <Avatar username={post.author.username} src={post.author.image} />
             <Link
               href={`/user/${post.author.username}`}
               passHref

@@ -2,11 +2,12 @@ import Link from 'next/link'
 import Image from 'next/image'
 
 type AvatarProps = {
-  username: string
+  username?: string | null
+  src?: string | null
 }
 
 export const Avatar = (props: AvatarProps) => {
-  const { username } = props
+  const { username, src } = props
 
   return (
     <>
@@ -15,7 +16,7 @@ export const Avatar = (props: AvatarProps) => {
         passHref
       >
         <Image
-          src='/images/avatar.png'
+          src={src ? src : '/images/avatar.png'}
           alt='avatar'
           width={40}
           height={40}

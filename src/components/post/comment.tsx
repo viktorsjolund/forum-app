@@ -1,4 +1,4 @@
-import type { post_comment, user, post_reply } from '@prisma/client'
+import type { post_comment, User, post_reply } from '@prisma/client'
 import { useEffect, useRef, useState } from 'react'
 import { Replies } from './replies'
 import autoAnimate from '@formkit/auto-animate'
@@ -7,9 +7,9 @@ import { IoMdArrowDropup, IoMdArrowDropdown } from 'react-icons/io'
 
 type TCommentProps = {
   comment: post_comment & {
-    author: user
+    author: User
     replies: (post_reply & {
-      author: user
+      author: User
     })[]
   }
   refetchPost: () => Promise<void>
@@ -41,10 +41,11 @@ export const Comment = (props: TCommentProps) => {
         content={comment.content}
         createdAt={comment.created_at}
         updatedAt={comment.updated_at}
-        username={comment.author.username}
+        username={comment.author.username!}
         commentId={comment.id}
         refetchPost={refetchPost}
         showReplies={showAllReplies}
+        avatar={comment.author.image}
       />
       <div
         className='m-1'

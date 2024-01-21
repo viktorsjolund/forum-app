@@ -115,7 +115,7 @@ export const postsRouter = router({
   byUser: publicProcedure
     .input(
       z.object({
-        userId: z.number(),
+        userId: z.string(),
         skip: z.number(),
         take: z.number()
       })
@@ -149,7 +149,7 @@ export const postsRouter = router({
   countByUser: publicProcedure
     .input(
       z.object({
-        userId: z.number()
+        userId: z.string()
       })
     )
     .query(async ({ input }) => {
@@ -166,7 +166,7 @@ export const postsRouter = router({
   byUserLikes: publicProcedure
     .input(
       z.object({
-        userId: z.number(),
+        userId: z.string(),
         skip: z.number(),
         take: z.number()
       })
@@ -201,7 +201,7 @@ export const postsRouter = router({
   countByUserLikes: publicProcedure
     .input(
       z.object({
-        userId: z.number()
+        userId: z.string()
       })
     )
     .query(async ({ input }) => {
@@ -242,7 +242,7 @@ export const postsRouter = router({
           title: title.trim(),
           content: content.trim(),
           topic: filteredTopics || undefined,
-          authorId: parseInt(ctx.user.id)
+          authorId: ctx.user.id
         },
         select: {
           id: true
@@ -317,7 +317,7 @@ export const postsRouter = router({
         await prisma.post_follow.create({
           data: {
             post_id: postId,
-            user_id: parseInt(ctx.user.id)
+            user_id: ctx.user.id
           }
         })
       } catch (e) {
@@ -344,7 +344,7 @@ export const postsRouter = router({
         await prisma.post_follow.deleteMany({
           where: {
             post_id: postId,
-            user_id: parseInt(ctx.user.id)
+            user_id: ctx.user.id
           }
         })
       } catch (e) {
@@ -370,7 +370,7 @@ export const postsRouter = router({
       const result = await prisma.post_follow.findFirst({
         where: {
           post_id: postId,
-          user_id: parseInt(ctx.user.id)
+          user_id: ctx.user.id
         }
       })
 
@@ -394,7 +394,7 @@ export const postsRouter = router({
       const result = await prisma.post.findFirst({
         where: {
           id: postId,
-          authorId: parseInt(ctx.user.id)
+          authorId: ctx.user.id
         }
       })
 

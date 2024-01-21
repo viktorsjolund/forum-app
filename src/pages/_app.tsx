@@ -7,12 +7,16 @@ import 'inter-ui/inter.css'
 import { trpc } from '@/utils/trpc'
 import { AppType } from 'next/dist/shared/lib/utils'
 import { RouteProtect } from '@/components/routeProtect'
+import { SessionProvider } from 'next-auth/react'
+import { AppProps } from 'next/app'
 
-const MyApp: AppType = ({ Component, pageProps }) => {
+const MyApp: AppType = ({ Component, pageProps }: AppProps) => {
   return (
-    <RouteProtect>
-      <Component {...pageProps} />
-    </RouteProtect>
+    <SessionProvider session={pageProps.session}>
+      <RouteProtect>
+        <Component {...pageProps} />
+      </RouteProtect>
+    </SessionProvider>
   )
 }
 

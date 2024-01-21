@@ -1,9 +1,9 @@
-import type { post_reply, user } from '@prisma/client'
+import type { post_reply, User } from '@prisma/client'
 import { Reply } from './reply'
 
 type TRepliesProps = {
   replies: (post_reply & {
-    author: user
+    author: User
   })[]
   refetchPost: () => Promise<void>
   showReplies: () => void

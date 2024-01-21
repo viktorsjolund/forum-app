@@ -25,7 +25,7 @@ export const repliesRouter = router({
           data: {
             content,
             comment_id: commentId,
-            user_id: parseInt(ctx.user.id)
+            user_id: ctx.user.id
           }
         })
       } catch (e) {

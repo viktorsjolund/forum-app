@@ -1,5 +1,5 @@
 import { trpc } from '@/utils/trpc'
-import type { post_comment, user, post_reply } from '@prisma/client'
+import type { post_comment, User, post_reply } from '@prisma/client'
 import { ChangeEvent, FormEvent, useEffect, useMemo, useRef, useState } from 'react'
 import { Comment } from './comment'
 import autoAnimate from '@formkit/auto-animate'
@@ -7,9 +7,9 @@ import { VscLoading } from 'react-icons/vsc'
 
 type TCommentsProps = {
   comments: (post_comment & {
-    author: user
+    author: User
     replies: (post_reply & {
-      author: user
+      author: User
     })[]
   })[]
   postId: number

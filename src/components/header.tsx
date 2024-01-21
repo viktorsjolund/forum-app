@@ -20,12 +20,13 @@ const LoggedOut = () => {
 }
 
 type TLoggedInProps = {
-  username: string
+  username?: string | null
   role: role | null
+  avatar?: string | null
 }
 
 const LoggedIn = (props: TLoggedInProps) => {
-  const { username, role } = props
+  const { username, role, avatar } = props
   const [showAvatarDropdown, setShowAvatarDropdown] = useState(false)
   const [showNotiDropdown, setShowNotiDropdown] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
@@ -155,7 +156,7 @@ const LoggedIn = (props: TLoggedInProps) => {
         <div className='overflow-hidden rounded-full border-2 w-10 h-10 pointer-events-none'>
           <div className='pointer-events-none'>
             <Image
-              src='/images/avatar.png'
+              src={avatar ? avatar : '/images/avatar.png'}
               alt='avatar'
               layout='responsive'
               width={35}
@@ -191,15 +192,14 @@ const LoggedIn = (props: TLoggedInProps) => {
               <span>My Profile</span>
             </li>
           </Link>
-          <li
-            className='border-t-[1px] border-slate-800 pb-1 pt-1 cursor-pointer text-center hover:bg-gray-800 transition-colors flex items-center'
-            onClick={handleLogout}
-          >
-            <div className='pl-4 pr-4'>
-              <IoIosLogOut />
-            </div>
-            <span>Logout</span>
-          </li>
+          <Link href='/api/auth/signout'>
+            <li className='border-t-[1px] border-slate-800 pb-1 pt-1 cursor-pointer text-center hover:bg-gray-800 transition-colors flex items-center'>
+              <div className='pl-4 pr-4'>
+                <IoIosLogOut />
+              </div>
+              <span>Logout</span>
+            </li>
+          </Link>
         </ul>
       )}
       {errorMessage && (
@@ -241,6 +241,7 @@ export const Header = () => {
           <LoggedOut />
         ) : (
           <LoggedIn
+            avatar={user.image}
             username={user.username}
             role={user.role}
           />

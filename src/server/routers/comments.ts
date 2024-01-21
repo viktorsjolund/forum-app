@@ -25,7 +25,7 @@ export const commentsRouter = router({
           data: {
             content,
             post_id: postId,
-            user_id: parseInt(ctx.user.id)
+            user_id: ctx.user.id
           }
         })
 

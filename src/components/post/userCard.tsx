@@ -13,12 +13,13 @@ type TUserCardProps = {
   updatedAt: Date
   content: string
   commentId: number
+  avatar?: string | null
   refetchPost: () => Promise<void>
   showReplies: () => void
 }
 
 export const UserCard = (props: TUserCardProps) => {
-  const { username, createdAt, updatedAt, content, commentId, refetchPost, showReplies } = props
+  const { username, createdAt, updatedAt, content, commentId, refetchPost, showReplies, avatar } = props
   const [age, setAge] = useState('')
   const [rows, setRows] = useState(1)
   const [showReplyForm, setShowReplyForm] = useState(false)
@@ -87,7 +88,7 @@ export const UserCard = (props: TUserCardProps) => {
     <div>
       <div className='flex items-center relative'>
         <div className='-left-11 absolute top-0 cursor-pointer'>
-          <Avatar username={username} />
+          <Avatar username={username} src={avatar} />
         </div>
         <Link
           href={`/user/${username}`}

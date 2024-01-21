@@ -65,7 +65,7 @@ export const usersRouter = router({
         })
       }
 
-      const isPasswordValid = await argon2.verify(user.password, input.password)
+      const isPasswordValid = await argon2.verify(user.password!, input.password)
       if (!isPasswordValid) {
         throw new trpc.TRPCError({
           code: 'BAD_REQUEST',
@@ -107,13 +107,14 @@ export const usersRouter = router({
 
     const user = await prisma.user.findUnique({
       where: {
-        id: parseInt(ctx.user.id)
+        id: ctx.user.id
       },
       select: {
         email: true,
         username: true,
         id: true,
-        role: true
+        role: true,
+        image: true
       }
     })
 
@@ -128,5 +129,46 @@ export const usersRouter = router({
   }),
   logout: publicProcedure.mutation(({ ctx }) => {
     ctx.res.setHeader('Set-Cookie', serialize('token', '', { maxAge: -1, path: '/' }))
-  })
+  }),
+  update: publicProcedure
+    .input(
+      z.object({
+        username: z.string().optional()
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const { username } = input
+
+      if (!ctx.user) {
+        throw new trpc.TRPCError({
+          code: 'UNAUTHORIZED'
+        })
+      }
+
+      try {
+        await prisma.user.update({
+          where: {
+            id: ctx.user.id
+          },
+          data: {
+            username
+          }
+        })
+      } catch (e) {
+        if (e instanceof Prisma.PrismaClientKnownRequestError) {
+          // Unique constraint failed on the {constraint} https://www.prisma.io/docs/reference/api-reference/error-reference.
+          if (e.code === 'P2002') {
+            throw new trpc.TRPCError({
+              code: 'BAD_REQUEST',
+              message: 'Username already taken.'
+            })
+          } else {
+            throw new trpc.TRPCError({
+              code: 'INTERNAL_SERVER_ERROR',
+              message: 'Something went wrong...'
+            })
+          }
+        }
+      }
+    })
 })

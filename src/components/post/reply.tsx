@@ -1,9 +1,9 @@
-import type { post_reply, user } from '@prisma/client'
+import type { post_reply, User } from '@prisma/client'
 import { UserCard } from './userCard'
 
 type TReplyProps = {
   reply: post_reply & {
-    author: user
+    author: User
   }
   refetchPost: () => Promise<void>
   showReplies: () => void
@@ -18,8 +18,9 @@ export const Reply = (props: TReplyProps) => {
         content={reply.content}
         createdAt={reply.created_at}
         updatedAt={reply.updated_at}
-        username={reply.author.username}
+        username={reply.author.username!}
         commentId={reply.comment_id}
+        avatar={reply.author.image}
         refetchPost={refetchPost}
         showReplies={showReplies}
       />

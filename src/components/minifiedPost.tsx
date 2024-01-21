@@ -1,6 +1,6 @@
 import { AiFillDislike, AiFillLike, AiOutlineLike, AiOutlineDislike } from 'react-icons/ai'
 import { FaCommentDots } from 'react-icons/fa'
-import type { post, user } from '@prisma/client'
+import type { post, User } from '@prisma/client'
 import Link from 'next/link'
 import moment from 'moment'
 import { usePostRating } from '@/hooks/usePostRating'
@@ -8,7 +8,7 @@ import { IconContext } from 'react-icons'
 
 type TMinifiedPostProps = {
   post: post & {
-    author: user
+    author: User
     _count: {
       likes: number
       dislikes: number

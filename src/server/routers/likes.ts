@@ -20,7 +20,7 @@ export const likesRouter = router({
 
       const result = await prisma.post_like.findFirst({
         where: {
-          user_id: parseInt(ctx.user!.id),
+          user_id: ctx.user.id,
           post_id: postId
         }
       })
@@ -30,7 +30,7 @@ export const likesRouter = router({
           await prisma.post_like.create({
             data: {
               post_id: postId,
-              user_id: parseInt(ctx.user!.id)
+              user_id: ctx.user.id
             }
           })
 
@@ -62,7 +62,7 @@ export const likesRouter = router({
       try {
         await prisma.post_like.deleteMany({
           where: {
-            user_id: parseInt(ctx.user!.id),
+            user_id: ctx.user.id,
             post_id: postId
           }
         })
@@ -93,7 +93,7 @@ export const likesRouter = router({
         const result = await prisma.post_like.findFirst({
           where: {
             post_id: postId,
-            user_id: parseInt(ctx.user!.id)
+            user_id: ctx.user.id
           }
         })
 

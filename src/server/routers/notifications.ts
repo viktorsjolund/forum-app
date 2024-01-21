@@ -6,10 +6,10 @@ import { publicProcedure, router } from '../trpc'
 
 type TNotificationInput = {
   trigger: notification_trigger
-  user_id: number
+  user_id: string
   post_id: number
   element_id?: string
-  initiator_id: number
+  initiator_id: string
 }
 
 export const notificationsRouter = router({
@@ -43,7 +43,7 @@ export const notificationsRouter = router({
           trigger,
           user_id: follower.user_id,
           element_id: elementId,
-          initiator_id: parseInt(ctx.user.id)
+          initiator_id: ctx.user.id
         })
       }
 
@@ -60,7 +60,7 @@ export const notificationsRouter = router({
 
     const result = await prisma.notification.findMany({
       where: {
-        user_id: parseInt(ctx.user.id),
+        user_id: ctx.user.id,
         viewed: false
       },
       include: {
