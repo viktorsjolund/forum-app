@@ -12,6 +12,7 @@ import { Loading } from '@/components/loading'
 import { PopupMessage } from '@/components/popupMessage'
 import { usePostRating } from '@/hooks/usePostRating'
 import { usePostFollow } from '@/hooks/usePostFollow'
+import { useOutsideClick } from '@/hooks/useOutsideClick'
 
 const Post = () => {
   const router = useRouter()
@@ -29,6 +30,7 @@ const Post = () => {
   const removePostMutation = trpc.post.remove.useMutation()
   const [handleFollow, isFollowed] = usePostFollow(postId)
   const [handleLike, handleDislike, isLiked, isDisliked] = usePostRating(postId)
+  const { ref, triggerRef } = useOutsideClick<HTMLUListElement, HTMLDivElement>(() => setShowOptions(false))
 
   useEffect(() => {
     if (post) {
@@ -45,25 +47,6 @@ const Post = () => {
         document.querySelector(`#${router.asPath.split('#')[1]}`)?.scrollIntoView()
         setScrolled(true)
       }
-    }
-
-    const handleOptionsHide = (e: MouseEvent) => {
-      const target = e.target as HTMLElement
-      if (target.id === 'post-options' || target.id === 'post-options-icon') return
-      if (target.parentElement) {
-        if (
-          target.parentElement.id === 'post-options' ||
-          target.parentElement.id === 'post-options-icon'
-        )
-          return
-      }
-      setShowOptions(false)
-    }
-
-    document.addEventListener('click', handleOptionsHide)
-
-    return () => {
-      document.removeEventListener('click', handleOptionsHide)
     }
   }, [router, post, age, scrolled])
 
@@ -120,9 +103,9 @@ const Post = () => {
             <h1 className='text-4xl break-words w-5/6'>{post.title}</h1>
             <div className='ml-auto h-max relative'>
               <div
-                id='post-options-icon'
                 className='cursor-pointer'
                 onClick={() => setShowOptions((s) => !s)}
+                ref={triggerRef}
               >
                 <div className='pointer-events-none'>
                   <BsThreeDots size={24} />
@@ -130,8 +113,8 @@ const Post = () => {
               </div>
               {showOptions && (
                 <ul
-                  id='post-options'
                   className='absolute bg-gray-900 rounded shadow-black shadow border-[1px] border-slate-800 right-0 font-medium'
+                  ref={ref}
                 >
                   {user?.id === post.authorId && (
                     <Link

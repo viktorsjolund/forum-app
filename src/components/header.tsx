@@ -3,17 +3,19 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { trpc } from '@/utils/trpc'
 import Image from 'next/image'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import type { role } from '@prisma/client'
 import { getDateAge } from '@/utils/timeCalculator'
 import { CgProfile, CgUser } from 'react-icons/cg'
 import { IoIosLogOut } from 'react-icons/io'
+import { signOut } from 'next-auth/react'
+import { useOutsideClick } from '@/hooks/useOutsideClick'
 
 const LoggedOut = () => {
   return (
     <div className='pr-10'>
       <span className='text-lg hover:font-bold'>
-        <Link href='/login'>Login</Link>
+        <Link href='/auth/login'>Login</Link>
       </span>
     </div>
   )
@@ -30,54 +32,15 @@ const LoggedIn = (props: TLoggedInProps) => {
   const [showAvatarDropdown, setShowAvatarDropdown] = useState(false)
   const [showNotiDropdown, setShowNotiDropdown] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
-  const logout = trpc.user.logout.useMutation()
-  const router = useRouter()
-  const [errorTimeoutRef, setErrorTimeoutRef] = useState<NodeJS.Timeout | null>(null)
   const { data: notifications, refetch: refetchNotifications } = trpc.notification.byUser.useQuery()
   const viewedNotificationMutation = trpc.notification.viewed.useMutation()
-
-  useEffect(() => {
-    const handleAvatarDropdownHide = (e: MouseEvent) => {
-      const target = e.target as HTMLElement
-      if (target.id === 'header-dropdown' || target.id === 'header-profile') return
-      if (target.parentElement) {
-        if (target.parentElement.id === 'header-dropdown') return
-      }
-      setShowAvatarDropdown(false)
-    }
-
-    const handleNotiDropdownHide = (e: MouseEvent) => {
-      const target = e.target as HTMLElement
-      if (target.id === 'header-noti-dropdown') return
-      if (target.parentElement) {
-        if (target.parentElement.id === 'header-noti-dropdown') return
-      }
-      setShowNotiDropdown(false)
-    }
-
-    document.addEventListener('click', handleAvatarDropdownHide)
-    document.addEventListener('click', handleNotiDropdownHide)
-
-    return () => {
-      document.removeEventListener('click', handleAvatarDropdownHide)
-      document.removeEventListener('click', handleNotiDropdownHide)
-    }
-  }, [])
-
-  const handleLogout = async () => {
-    const errorDisplayDuration = 5000
-
-    try {
-      await logout.mutateAsync()
-      router.push('/login')
-    } catch (e) {
-      if (errorTimeoutRef) {
-        clearTimeout(errorTimeoutRef)
-      }
-      setErrorTimeoutRef(setTimeout(() => setErrorMessage(''), errorDisplayDuration))
-      setErrorMessage('Logout attempt failed. Please try again.')
-    }
-  }
+  const { ref: avatarRef, triggerRef: avatarTriggerRef } = useOutsideClick<
+    HTMLUListElement,
+    HTMLDivElement
+  >(() => setShowAvatarDropdown(false))
+  const { ref: notiRef, triggerRef: notiTriggerRef } = useOutsideClick<HTMLUListElement>(() =>
+    setShowNotiDropdown(false)
+  )
 
   const handleNotification = async (notificationId: number) => {
     await viewedNotificationMutation.mutateAsync({
@@ -100,16 +63,16 @@ const LoggedIn = (props: TLoggedInProps) => {
       </div>
       <div className='mr-5 relative'>
         <div
-          className='cursor-pointer relative'
-          id='header-noti-dropdown'
+          className='cursor-pointer'
           onClick={() => setShowNotiDropdown((s) => !s)}
+          ref={notiTriggerRef}
         >
           <div className='pointer-events-none'>
             {showNotiDropdown ? <AiFillBell size={30} /> : <AiOutlineBell size={30} />}
           </div>
           {notifications && notifications.length > 0 && (
-            <div className='absolute h-4 w-4 top-0 right-0 bg-red-600 rounded-full flex justify-center items-center pointer-events-none'>
-              <span className='text-[0.6rem] font-bold h-fit w-fit text-center pointer-events-none'>
+            <div className='absolute h-4 w-4 top-0 right-0 bg-red-600 rounded-full flex justify-center items-center'>
+              <span className='text-[0.6rem] font-bold h-fit w-fit text-center'>
                 {notifications.length > 9 ? '9+' : notifications.length}
               </span>
             </div>
@@ -118,7 +81,7 @@ const LoggedIn = (props: TLoggedInProps) => {
         {showNotiDropdown && (
           <ul
             className='absolute h-44 w-60 top-8 right-0 bg-gray-900 rounded shadow-black shadow border-[1px] border-slate-800 overflow-y-scroll'
-            id='header-dropdown'
+            ref={notiRef}
           >
             {notifications?.map((notification) => {
               return (
@@ -151,10 +114,10 @@ const LoggedIn = (props: TLoggedInProps) => {
       <div
         className='mr-10 h-full flex items-center flex-row justify-center cursor-pointer'
         onClick={() => setShowAvatarDropdown((sd) => !sd)}
-        id='header-profile'
+        ref={avatarTriggerRef}
       >
-        <div className='overflow-hidden rounded-full border-2 w-10 h-10 pointer-events-none'>
-          <div className='pointer-events-none'>
+        <div className='overflow-hidden rounded-full border-2 w-10 h-10'>
+          <div>
             <Image
               src={avatar ? avatar : '/images/avatar.png'}
               alt='avatar'
@@ -168,15 +131,15 @@ const LoggedIn = (props: TLoggedInProps) => {
       {showAvatarDropdown && (
         <ul
           className='absolute top-12 right-8 bg-gray-900 rounded shadow-black shadow border-[1px] border-slate-800 font-medium'
-          id='header-dropdown'
+          ref={avatarRef}
         >
           <li className='pb-1 pt-1 text-center flex items-center pr-8'>
             <div className='pl-4 pr-4'>
               <CgUser />
             </div>
-            <span className='pointer-events-none'>{username}</span>
+            <span>{username}</span>
             {role && (
-              <span className='ml-2 border-[1px] rounded p-1 font-bold text-xs mt-auto mb-auto bg-purple-500 pointer-events-none'>
+              <span className='ml-2 border-[1px] rounded p-1 font-bold text-xs mt-auto mb-auto bg-purple-500'>
                 {role}
               </span>
             )}
@@ -192,14 +155,15 @@ const LoggedIn = (props: TLoggedInProps) => {
               <span>My Profile</span>
             </li>
           </Link>
-          <Link href='/api/auth/signout'>
-            <li className='border-t-[1px] border-slate-800 pb-1 pt-1 cursor-pointer text-center hover:bg-gray-800 transition-colors flex items-center'>
-              <div className='pl-4 pr-4'>
-                <IoIosLogOut />
-              </div>
-              <span>Logout</span>
-            </li>
-          </Link>
+          <li
+            onClick={() => signOut({ callbackUrl: '/auth/login' })}
+            className='border-t-[1px] border-slate-800 pb-1 pt-1 cursor-pointer text-center hover:bg-gray-800 transition-colors flex items-center'
+          >
+            <div className='pl-4 pr-4'>
+              <IoIosLogOut />
+            </div>
+            <span>Logout</span>
+          </li>
         </ul>
       )}
       {errorMessage && (
