@@ -14,9 +14,9 @@ model post {
   content       String         @db.VarChar(4000)
   topic         String?        @db.VarChar(255)
   views         Int            @default(0)
-  created_at    DateTime       @default(now()) @db.DateTime(0)
-  updated_at    DateTime?      @updatedAt @db.DateTime(0)
-  author        User           @relation(fields: [authorId], references: [id])
+  created_at    DateTime       @default(now()) @db.DateTime(3)
+  updated_at    DateTime?      @updatedAt @db.DateTime(3)
+  author        User           @relation(fields: [authorId], references: [id], onDelete: Cascade)
   likes         post_like[]
   dislikes      post_dislike[]
   authorId      String
@@ -33,11 +33,11 @@ model post_comment {
   id         Int          @id @default(autoincrement())
   user_id    String
   post_id    Int
-  created_at DateTime     @default(now()) @db.DateTime(0)
-  updated_at DateTime     @updatedAt @db.DateTime(0)
+  created_at DateTime     @default(now()) @db.DateTime(3)
+  updated_at DateTime     @updatedAt @db.DateTime(3)
   content    String       @db.VarChar(500)
-  post       post         @relation(fields: [post_id], references: [id])
-  author     User         @relation(fields: [user_id], references: [id])
+  post       post         @relation(fields: [post_id], references: [id], onDelete: Cascade)
+  author     User         @relation(fields: [user_id], references: [id], onDelete: Cascade)
   replies    post_reply[]
 
   @@index([post_id])
@@ -49,11 +49,11 @@ model post_reply {
   id         Int          @id @default(autoincrement())
   user_id    String
   comment_id Int
-  created_at DateTime     @default(now()) @db.DateTime(0)
-  updated_at DateTime     @updatedAt @db.DateTime(0)
+  created_at DateTime     @default(now()) @db.DateTime(3)
+  updated_at DateTime     @updatedAt @db.DateTime(3)
   content    String       @db.VarChar(500)
-  comment    post_comment @relation(fields: [comment_id], references: [id])
-  author     User         @relation(fields: [user_id], references: [id])
+  comment    post_comment @relation(fields: [comment_id], references: [id], onDelete: Cascade)
+  author     User         @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@index([comment_id])
   @@index([user_id])
@@ -119,7 +119,7 @@ model post_like {
   user_id    String
   post_id    Int
   created_at DateTime @default(now()) @db.DateTime(0)
-  post       post     @relation(fields: [post_id], references: [id])
+  post       post     @relation(fields: [post_id], references: [id], onDelete: Cascade)
 
   @@index([post_id])
   @@map("forum_post_likes")
@@ -130,7 +130,7 @@ model post_dislike {
   user_id    String
   post_id    Int
   created_at DateTime @default(now()) @db.DateTime(0)
-  post       post     @relation(fields: [post_id], references: [id])
+  post       post     @relation(fields: [post_id], references: [id], onDelete: Cascade)
 
   @@index([post_id])
   @@map("forum_post_dislikes")
@@ -151,8 +151,8 @@ model notification {
   trigger      notification_trigger
   viewed       Boolean              @default(false)
   created_at   DateTime             @default(now()) @db.DateTime(0)
-  post         post                 @relation(fields: [post_id], references: [id])
-  user         User                 @relation(fields: [initiator_id], references: [id])
+  post         post                 @relation(fields: [post_id], references: [id], onDelete: Cascade)
+  user         User                 @relation(fields: [initiator_id], references: [id], onDelete: Cascade)
 }
 
 enum role {
