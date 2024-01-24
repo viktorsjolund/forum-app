@@ -7,6 +7,7 @@ import { trpc } from '@/utils/trpc'
 import { useRouter } from 'next/router'
 import { FormEvent, useState } from 'react'
 import { VscLoading } from 'react-icons/vsc'
+import { faker } from '@faker-js/faker'
 
 const CreatePost = () => {
   const router = useRouter()
@@ -15,6 +16,7 @@ const CreatePost = () => {
   const [topic, setTopic] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
   const [isCreatingPost, setIsCreatingPost] = useState(false)
+  const [showPopup, setShowPopup] = useState(false)
   const addPost = trpc.post.add.useMutation()
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -33,11 +35,23 @@ const CreatePost = () => {
     } catch (e) {
       setErrorMessage('Something went wrong when trying to create the post. Please try again.')
       setIsCreatingPost(false)
+      setShowPopup(true)
     }
   }
 
-  const handlePopupClose = () => {
-    setErrorMessage('')
+  const generateFakePosts = async () => {
+    for (const _ of new Array(50).fill(1)) {
+      await new Promise((resolve) => {
+        setTimeout(() => {
+          addPost.mutate({
+            content: faker.lorem.paragraphs({ min: 3, max: 10 }),
+            title: faker.lorem.sentence(),
+            topic: faker.lorem.words({ min: 0, max: 5 }).split(' ').join(',')
+          })
+          resolve(null)
+        }, 100)
+      })
+    }
   }
 
   return (
@@ -98,13 +112,13 @@ const CreatePost = () => {
               </StyledButton>
             </div>
           </form>
+          <button onClick={generateFakePosts}>Generate fake posts</button>
         </div>
       </div>
       {errorMessage && (
         <PopupMessage
           message={errorMessage}
-          showPopup={true}
-          handlePopupClose={handlePopupClose}
+          show={showPopup}
         />
       )}
     </>

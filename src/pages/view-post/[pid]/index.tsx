@@ -30,7 +30,9 @@ const Post = () => {
   const removePostMutation = trpc.post.remove.useMutation()
   const [handleFollow, isFollowed] = usePostFollow(postId)
   const [handleLike, handleDislike, isLiked, isDisliked] = usePostRating(postId)
-  const { ref, triggerRef } = useOutsideClick<HTMLUListElement, HTMLDivElement>(() => setShowOptions(false))
+  const { ref, triggerRef } = useOutsideClick<HTMLUListElement, HTMLDivElement>(() =>
+    setShowOptions(false)
+  )
 
   useEffect(() => {
     if (post) {
@@ -83,7 +85,10 @@ const Post = () => {
       <div className='flex justify-center h-max min-h-full bg-gradient-to-tr from-main-purple-light to-main-purple via-main-purple-dark'>
         <div className='w-4/5 bg-[#212529] p-20 min-h-full pb-[100vh]'>
           <div className='flex border-b-2 p-8 mb-12 items-center border-b-white border-opacity-50 rounded-sm'>
-            <Avatar username={post.author.username} src={post.author.image} />
+            <Avatar
+              username={post.author.username}
+              src={post.author.image}
+            />
             <Link
               href={`/user/${post.author.username}`}
               passHref
@@ -94,8 +99,8 @@ const Post = () => {
             <span className='pl-2 text-sm text-gray-500'>{age}</span>
             {editedAge && (
               <>
-                <span className='pl-2 pr-2 text-gray-500'>|</span>
-                <span className='text-sm text-gray-500'>Edited {editedAge}</span>
+                <span className='pl-2 pr-2 text-gray-500 text-xs'>&#8226;</span>
+                <span className='text-sm text-gray-500 italic'>edited {editedAge}</span>
               </>
             )}
           </div>
@@ -151,9 +156,9 @@ const Post = () => {
                     key={i}
                     passHref
                   >
-                      <div className='bg-main-purple-light rounded-2xl h-max pt-1 pb-1 pr-3 pl-3 shadow-lg cursor-pointer mr-4'>
-                        {topic}
-                      </div>
+                    <div className='bg-main-purple-light rounded-2xl h-max pt-1 pb-1 pr-3 pl-3 shadow-lg cursor-pointer mr-4'>
+                      {topic}
+                    </div>
                   </Link>
                 )
               })}
@@ -245,12 +250,10 @@ const Post = () => {
           />
         </div>
       </div>
-      {showPopup && (
-        <PopupMessage
-          message='Something went wrong while trying to remove the post. Please try again.'
-          showPopup={true}
-        />
-      )}
+      <PopupMessage
+        message='Something went wrong while trying to remove the post. Please try again.'
+        show={showPopup}
+      />
     </>
   )
 }

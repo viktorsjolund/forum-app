@@ -19,7 +19,10 @@ const Home = () => {
           </div>
         </Link>
         {router.query.postRemoved === 'true' && (
-          <PopupMessage message='Post was successfully removed.' showPopup={true} />
+          <PopupMessage
+            message='Post was successfully removed.'
+            show={true}
+          />
         )}
       </div>
     </>
