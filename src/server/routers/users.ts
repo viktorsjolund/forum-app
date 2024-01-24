@@ -2,10 +2,11 @@ import { z } from 'zod'
 import { prisma } from '../prisma'
 import * as trpc from '@trpc/server'
 import { Prisma } from '@prisma/client'
-import jwt from 'jsonwebtoken'
 import argon2 from 'argon2'
 import { serialize } from 'cookie'
 import { publicProcedure, router } from '../trpc'
+import { getProviders } from 'next-auth/react'
+import { exclude } from '@/utils/exclude'
 
 export const usersRouter = router({
   register: publicProcedure
@@ -73,9 +74,8 @@ export const usersRouter = router({
         })
       }
 
-      const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET!, { expiresIn: '240h' })
-
-      ctx.res.setHeader('Set-Cookie', serialize('token', token, { path: '/' }))
+      const userWithoutPassword = exclude(user, ['password'])
+      return userWithoutPassword
     }),
   byUsername: publicProcedure
     .input(
@@ -170,5 +170,10 @@ export const usersRouter = router({
           }
         }
       }
-    })
+    }),
+  providers: publicProcedure.query(async () => {
+    const providers = await getProviders()
+
+    return providers ?? []
+  })
 })
