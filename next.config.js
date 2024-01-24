@@ -14,7 +14,8 @@ const nextConfig = {
         pathname: '/u/**'
       }
     ]
-  }
+  },
+  transpilePackages: ["react-icons"]
 }
 
 module.exports = nextConfig
