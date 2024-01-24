@@ -3,7 +3,7 @@ import { useRouter } from 'next/router'
 import { useEffect } from 'react'
 import { Loading } from './loading'
 
-const permittedRoutes = ['/api/auth/signin']
+const permittedRoutes = ['/api/auth/signin', '/auth/login', '/auth/register']
 
 export const RouteProtect = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter()
