@@ -1,60 +1,46 @@
-import { Loading } from '@/components/loading'
 import { MinifiedPost } from '@/components/minifiedPost'
 import { PaginationButtons } from '@/components/paginationButtons'
 import { ProfileTemplate } from '@/components/profileTemplate'
+import { usePageQueryParam } from '@/hooks/usePageQueryParam'
 import { trpc } from '@/utils/trpc'
 import { useRouter } from 'next/router'
-import { useEffect } from 'react'
-const POST_LIMIT = 2 as const
+import { useEffect, useState } from 'react'
+import { keepPreviousData } from '@tanstack/react-query'
+const POST_LIMIT = 5 as const
 
 const Profile = () => {
   const router = useRouter()
-  const { uname, page } = router.query as { uname: string; page?: string }
-  let pageNr = page ? parseInt(page) : 1
-  if (isNaN(pageNr)) {
-    pageNr = 1
-  } else if (pageNr < 1) {
-    pageNr = 1
-  }
+  const { uname } = router.query as { uname: string }
 
-  const {
-    data: user,
-    isLoading: isUserLoading,
-    error: userError
-  } = trpc.user.byUsername.useQuery({ username: uname })
-  const {
-    data: posts,
-    isLoading: isPostsLoading,
-    refetch: refetchPosts
-  } = trpc.post.byUser.useQuery(
+  const [pageNr, setPageNr] = usePageQueryParam()
+  const [isEnabled, setIsEnabled] = useState(false)
+  const { data: user, error: userError } = trpc.user.byUsername.useQuery({ username: uname })
+  const { data: posts, refetch: refetchPosts } = trpc.post.byUser.useQuery(
     { userId: user?.id!, skip: (pageNr - 1) * POST_LIMIT, take: POST_LIMIT },
-      { enabled: false }
+    { enabled: isEnabled, placeholderData: keepPreviousData }
   )
   const { data: postCount, refetch: refetchCount } = trpc.post.countByUser.useQuery(
     { userId: user?.id! },
-      {
-          enabled: false
-      }
+    {
+      enabled: false
+    }
   )
   const { data: me } = trpc.user.me.useQuery()
 
   useEffect(() => {
-    if (user) {
+    if (user && !postCount && !posts) {
       refetchPosts()
       refetchCount()
     }
-  }, [user, refetchPosts, refetchCount])
-
-  if (isUserLoading || isPostsLoading) {
-    return <Loading />
-  }
+  }, [user, refetchPosts, refetchCount, posts, postCount])
 
   if (userError) {
     return <span>User not found.</span>
   }
 
-  const handleNewPage = () => {
-    refetchPosts()
+  const handleNewPage = (newPageNr: number) => {
+    setPageNr(newPageNr)
+    setIsEnabled(true)
   }
 
   return (

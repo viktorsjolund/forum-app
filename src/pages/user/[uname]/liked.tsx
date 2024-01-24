@@ -1,41 +1,30 @@
-import { Loading } from '@/components/loading'
 import { MinifiedPost } from '@/components/minifiedPost'
 import { PaginationButtons } from '@/components/paginationButtons'
 import { ProfileTemplate } from '@/components/profileTemplate'
+import { usePageQueryParam } from '@/hooks/usePageQueryParam'
 import { trpc } from '@/utils/trpc'
+import { keepPreviousData } from '@tanstack/react-query'
 import { useRouter } from 'next/router'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 const POST_LIMIT = 2 as const
 
 const Liked = () => {
   const router = useRouter()
-  const { uname, page } = router.query as { uname: string; page?: string }
-  let pageNr = page ? parseInt(page) : 1
-  if (isNaN(pageNr)) {
-    pageNr = 1
-  } else if (pageNr < 1) {
-    pageNr = 1
-  }
+  const { uname } = router.query as { uname: string }
 
+  const [pageNr, setPageNr] = usePageQueryParam()
+  const [isEnabled, setIsEnabled] = useState(false)
   const { data: me } = trpc.user.me.useQuery()
-  const {
-    data: user,
-    isLoading: isUserLoading,
-    error: userError
-  } = trpc.user.byUsername.useQuery({ username: uname })
-  const {
-    data: posts,
-    isLoading: isPostsLoading,
-    refetch: refetchLikes
-  } = trpc.post.byUserLikes.useQuery(
+  const { data: user, error: userError } = trpc.user.byUsername.useQuery({ username: uname })
+  const { data: posts, refetch: refetchLikes } = trpc.post.byUserLikes.useQuery(
     { userId: user?.id!, skip: (pageNr - 1) * POST_LIMIT, take: POST_LIMIT },
-      { enabled: false }
+    { enabled: isEnabled, placeholderData: keepPreviousData }
   )
   const { data: postCount, refetch: refetchCount } = trpc.post.countByUserLikes.useQuery(
     { userId: user?.id! },
-      {
-          enabled: false
-      }
+    {
+      enabled: false
+    }
   )
 
   useEffect(() => {
@@ -45,16 +34,13 @@ const Liked = () => {
     }
   }, [user, refetchLikes, refetchCount])
 
-  if (isUserLoading || isPostsLoading) {
-    return <Loading />
-  }
-
   if (userError) {
     return <span>User not found.</span>
   }
 
-  const handleNewPage = () => {
-    refetchLikes()
+  const handleNewPage = (newPageNr: number) => {
+    setPageNr(newPageNr)
+    setIsEnabled(true)
   }
 
   const handleRatingChange = () => {

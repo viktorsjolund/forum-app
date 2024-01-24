@@ -1,78 +1,64 @@
 import { useRouter } from 'next/router'
-import { ChangeEvent, useEffect, useMemo, useState } from 'react'
+import { ChangeEvent, createRef, useEffect, useMemo, useState } from 'react'
 import { MdKeyboardArrowRight, MdKeyboardArrowLeft } from 'react-icons/md'
 import { FaPlusCircle, FaMinusCircle } from 'react-icons/fa'
 import { StyledButton } from './styledButton'
+import { useOutsideClick } from '@/hooks/useOutsideClick'
 
 type TPaginationButtonsProps = {
-  pageNr: number
-  handleNewPage: () => void
+  handleNewPage: (newPageNr: number) => void
   postCount: number
   postLimit: number
+  pageNr: number
 }
 
 export const PaginationButtons = (props: TPaginationButtonsProps) => {
-  const { postCount, handleNewPage, pageNr, postLimit } = props
+  const { postCount, handleNewPage, postLimit, pageNr } = props
 
   const router = useRouter()
   const [showPageMenu, setShowPageMenu] = useState(false)
-  const [customPageNr, setCustomPageNr] = useState(pageNr.toString())
+  const [customPageNr, setCustomPageNr] = useState(pageNr)
   const numberOfPages = useMemo(() => Math.ceil(postCount / postLimit), [postCount, postLimit])
+  const { triggerRef, refArray } = useOutsideClick<any, HTMLDivElement, HTMLButtonElement>(() =>
+    setShowPageMenu(false)
+  )
 
   useEffect(() => {
-    const handlePageMenuHide = (e: MouseEvent) => {
-      const target = e.target as HTMLElement
-
-      if (
-        target.id === 'page-menu' ||
-        target.id === 'page-menu-btn' ||
-        target.parentElement?.id === 'page-menu' ||
-        target.parentElement?.id === 'page-menu-2'
-      ) {
-        return
-      } else {
-        setShowPageMenu(false)
-      }
+    const handleRouteChange = (url: string) => {
+      const searchParams = url.split('?')[1]
+      handleNewPage(parseInt(new URLSearchParams(searchParams).get('page') || '1'))
     }
 
-    document.addEventListener('click', handlePageMenuHide)
+    router.events.on('routeChangeComplete', handleRouteChange)
 
     return () => {
-      document.removeEventListener('click', handlePageMenuHide)
+      router.events.off('routeChangeComplete', handleRouteChange)
     }
-  }, [])
+  }, [handleNewPage, router.events])
 
   const handlePageBtn = async (nr: number) => {
     if (pageNr === nr) return
     await router.replace({
       query: { ...router.query, page: nr }
     })
-
-    handleNewPage()
   }
 
   const handleNextBtn = async () => {
     await router.replace({
       query: { ...router.query, page: pageNr + 1 }
     })
-
-    handleNewPage()
   }
 
   const handlePrevBtn = async () => {
     await router.replace({
       query: { ...router.query, page: pageNr - 1 }
     })
-
-    handleNewPage()
   }
 
   const handleGoTo = async () => {
     await router.replace({
       query: { ...router.query, page: customPageNr }
     })
-
-    handleNewPage()
   }
 
   const pageNumbers = () => {
@@ -103,6 +89,9 @@ export const PaginationButtons = (props: TPaginationButtonsProps) => {
       pageNumbers.push({ nr: 1 })
     }
 
+    refArray.current = new Array(pageNumbers.length)
+      .fill(null)
+      .map((_, i) => refArray.current[i] || null)
     return pageNumbers
   }
 
@@ -111,23 +100,23 @@ export const PaginationButtons = (props: TPaginationButtonsProps) => {
 
     if (parseInt(e.target.value) > numberOfPages || parseInt(e.target.value) < 1) return
 
-    setCustomPageNr(e.target.value)
+    setCustomPageNr(parseInt(e.target.value))
   }
 
   const handleSubtractPageNr = () => {
-    const nr = parseInt(customPageNr)
+    const nr = customPageNr
     if (nr <= 1) return
 
     const newNr = nr - 1
-    setCustomPageNr(newNr.toString())
+    setCustomPageNr(newNr)
   }
 
   const handleAddPageNr = () => {
-    const nr = parseInt(customPageNr)
+    const nr = customPageNr
     if (nr >= numberOfPages) return
 
     const newNr = nr + 1
-    setCustomPageNr(newNr.toString())
+    setCustomPageNr(newNr)
   }
 
   return (
@@ -150,7 +139,7 @@ export const PaginationButtons = (props: TPaginationButtonsProps) => {
               key={i}
               className='min-w-[2rem] w-fit rounded-sm border-[1px] flex justify-center items-center bg-midnight-dark hover:border-main-purple-light border-slate-600 text-sm h-5 font-medium'
               onClick={() => setShowPageMenu((s) => !s)}
-              id='page-menu-btn'
+              ref={(el) => (refArray.current[i] = el)}
             >
               ...
             </button>
@@ -184,10 +173,10 @@ export const PaginationButtons = (props: TPaginationButtonsProps) => {
       )}
       {showPageMenu && (
         <div
-          id='page-menu'
           className='flex absolute flex-col left-32 top-6 w-32 h-fit bg-midnight-dark justify-center items-center rounded border-2 border-slate-800 pb-1 z-50'
+          ref={triggerRef}
         >
-          <span className='w-full text-center border-b-[1px] border-slate-700 h-8 leading-8 pointer-events-none'>
+          <span className='w-full text-center border-b-[1px] border-slate-700 h-8 leading-8'>
             Go to page
           </span>
           <div

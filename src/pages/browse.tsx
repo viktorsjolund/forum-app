@@ -1,46 +1,45 @@
 import { Header } from '@/components/header'
 import { MinifiedPost } from '@/components/minifiedPost'
 import { PaginationButtons } from '@/components/paginationButtons'
+import { usePageQueryParam } from '@/hooks/usePageQueryParam'
 import { trpc } from '@/utils/trpc'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { FaSearch } from 'react-icons/fa'
 import { VscLoading } from 'react-icons/vsc'
-const POST_LIMIT = 10 as const
+const POST_LIMIT = 15 as const
 
 const Browse = () => {
   const router = useRouter()
-  const { sort, page, q } = router.query as { sort?: string; page?: string; q?: string }
-  let pageNr = page ? parseInt(page) : 1
-  if (isNaN(pageNr)) {
-    pageNr = 1
-  } else if (pageNr < 1) {
-    pageNr = 1
-  }
+  const { sort, q } = router.query as { sort?: string; q?: string }
 
+  const [pageNr, setPageNr] = usePageQueryParam()
   const [posts, setPosts] = useState<any[]>([])
   const [isInitialFetch, setIsIntitialFetch] = useState(true)
   const [search, setSearch] = useState('')
   const [searchIsLoading, setSearchIsLoading] = useState(false)
+  const [queryEnable, setQueryEnable] = useState({
+    topEnabled: false,
+    newEnabled: false,
+    searchedEnabled: false,
+    searchedCountEnabled: false
+  })
   const { data: topPosts, refetch: topPostsRefetch } = trpc.post.allByLikes.useQuery(
     { skip: (pageNr - 1) * POST_LIMIT, take: POST_LIMIT },
-      { enabled: false }
+    { enabled: queryEnable.topEnabled }
   )
   const { data: newPosts, refetch: newPostsRefetch } = trpc.post.allByNew.useQuery(
     { skip: (pageNr - 1) * POST_LIMIT, take: POST_LIMIT },
-      { enabled: false }
+    { enabled: queryEnable.newEnabled }
   )
-  const {
-    data: searchedPosts,
-    refetch: searchedPostsRefetch
-  } = trpc.search.posts.useQuery(
+  const { data: searchedPosts, refetch: searchedPostsRefetch } = trpc.search.posts.useQuery(
     { skip: (pageNr - 1) * POST_LIMIT, take: POST_LIMIT, search: decodeURIComponent(q || '') },
-      { enabled: false }
+    { enabled: queryEnable.searchedEnabled }
   )
   const { data: postCount } = trpc.post.count.useQuery()
   const { data: searchPostCount, refetch: searchPostCountRefetch } = trpc.search.postCount.useQuery(
     { search: decodeURIComponent(q || '') },
-      { enabled: false }
+    { enabled: queryEnable.searchedCountEnabled }
   )
 
   useEffect(() => {
@@ -74,16 +73,15 @@ const Browse = () => {
   }, [
     sort,
     newPosts,
-    topPosts,
     isInitialFetch,
-    topPostsRefetch,
     newPostsRefetch,
-    pageNr,
-    router,
-    searchedPosts,
-    searchedPostsRefetch,
     q,
-    searchPostCountRefetch
+    searchPostCount,
+    searchPostCountRefetch,
+    topPosts,
+    topPostsRefetch,
+    searchedPosts,
+    searchedPostsRefetch
   ])
 
   const handleSortTop = async () => {
@@ -102,21 +100,43 @@ const Browse = () => {
     newPostsRefetch()
   }
 
-  const handleNewPage = async () => {
+  const handleNewPage = async (newPageNr: number) => {
+    setPageNr(newPageNr)
+
     if (q) {
-      searchedPostsRefetch()
+      setQueryEnable(() => ({
+        newEnabled: false,
+        searchedCountEnabled: true,
+        searchedEnabled: true,
+        topEnabled: false
+      }))
       return
     }
 
     switch (sort) {
       case 'top':
-        topPostsRefetch()
+        setQueryEnable(() => ({
+          newEnabled: false,
+          searchedCountEnabled: false,
+          searchedEnabled: false,
+          topEnabled: true
+        }))
         break
       case 'new':
-        newPostsRefetch()
+        setQueryEnable(() => ({
+          newEnabled: true,
+          searchedCountEnabled: false,
+          searchedEnabled: false,
+          topEnabled: false
+        }))
         break
       default:
-        newPostsRefetch()
+        setQueryEnable(() => ({
+          newEnabled: true,
+          searchedCountEnabled: false,
+          searchedEnabled: false,
+          topEnabled: false
+        }))
         break
     }
   }
@@ -219,7 +239,7 @@ const Browse = () => {
             )}
           </div>
           <div className={`${posts.length < POST_LIMIT ? 'mt-24' : 'mt-4'}`}>
-            {getPostCount() > 0 && (
+            {getPostCount() > 0 && false && (
               <PaginationButtons
                 handleNewPage={handleNewPage}
                 pageNr={pageNr}
