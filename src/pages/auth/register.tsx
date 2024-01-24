@@ -41,20 +41,20 @@ const Register = () => {
       return
     }
 
-    router.push('/login')
+    router.push('/auth/login')
   }
 
   return (
     <div className='w-full h-full overflow-hidden pb-14'>
       <Header />
-      <div className='flex justify-center items-center min-h-screen'>
-        <div className='bg-[#110c21] w-2/5 shadow flex justify-center items-center min-h-[70vh]'>
+      <div className='flex justify-center items-center h-full bg-gradient-to-tr from-main-purple-light to-main-purple via-main-purple-dark'>
+        <div className='bg-midnight-dark border-[1px] border-slate-700 shadow-lg w-1/3 flex justify-center items-center min-h-[70vh]'>
           <form
             onSubmit={handleSubmit}
             className='flex items-center justify-center flex-col'
           >
-            <span className='text-4xl mb-10 tracking-wider font-bold'>REGISTER</span>
-            <div className='flex flex-col mb-8'>
+            <span className='text-4xl mb-10 tracking-widest font-semibold'>SIGN UP</span>
+            <div className='flex flex-col mb-4'>
               <label
                 htmlFor='email'
                 className={`w-max pt-2 pr-3 pl-3 pb-2 rounded-t-md text-sm font-bold ${
@@ -65,7 +65,7 @@ const Register = () => {
               </label>
               <input
                 type='email'
-                className={`pl-2 pt-1 pb-1 pr-2 bg-[#150d2c] focus:bg-[#262135] border-b-2 rounded-t-md text-lg hover:border-gray-800 focus:border-gray-800 ${
+                className={`pl-2 pt-1 pb-1 pr-2 bg-midnight border-[1px] border-slate-500 rounded focus:bg-[#262135] text-lg hover:border-gray-800 focus:border-gray-800 ${
                   uniqueErrorMessage && 'border-red-600'
                 }`}
                 value={email}
@@ -77,7 +77,7 @@ const Register = () => {
                 {uniqueErrorMessage && uniqueErrorMessage}
               </span>
             </div>
-            <div className='flex flex-col mb-8'>
+            <div className='flex flex-col mb-4'>
               <label
                 htmlFor='username'
                 className='w-max pt-2 pr-3 pl-3 pb-2 rounded-t-md text-sm font-bold'
@@ -85,14 +85,14 @@ const Register = () => {
                 USERNAME
               </label>
               <input
-                className='pl-2 pt-1 pb-1 pr-2 bg-[#150d2c] focus:bg-[#262135] border-b-2 rounded-t-md text-lg hover:border-gray-800 focus:border-gray-800'
+                className='pl-2 pt-1 pb-1 pr-2 bg-midnight border-[1px] border-slate-500 rounded text-lg focus:bg-[#262135] hover:border-gray-800 focus:border-gray-800'
                 value={username}
                 required
                 onChange={(e) => setUsername(e.target.value)}
                 id='username'
               />
             </div>
-            <div className='flex flex-col mb-8'>
+            <div className='flex flex-col mb-4'>
               <label
                 htmlFor='password'
                 className={`w-max pt-2 pr-3 pl-3 pb-2 rounded-t-md text-sm font-bold ${
@@ -103,7 +103,7 @@ const Register = () => {
               </label>
               <input
                 type='password'
-                className={`pl-2 pt-1 pb-1 pr-2 bg-[#150d2c] focus:bg-[#262135] border-b-2 rounded-t-md text-lg hover:border-gray-800 focus:border-gray-800 ${
+                className={`pl-2 pt-1 pb-1 pr-2 bg-midnight border-[1px] border-slate-500 rounded text-lg focus:bg-[#262135] hover:border-gray-800 focus:border-gray-800 ${
                   passwordErrorMessage && 'border-red-600'
                 }`}
                 value={password}
@@ -115,7 +115,7 @@ const Register = () => {
                 {passwordErrorMessage && passwordErrorMessage}
               </span>
             </div>
-            <div className='flex flex-col mb-2'>
+            <div className='flex flex-col mb-1'>
               <label
                 htmlFor='repassword'
                 className={`w-max pt-2 pr-3 pl-3 pb-2 rounded-t-md text-sm font-bold ${
@@ -126,7 +126,7 @@ const Register = () => {
               </label>
               <input
                 type='password'
-                className={`pl-2 pt-1 pb-1 pr-2 bg-[#150d2c] focus:bg-[#262135] border-b-2 rounded-t-md text-lg hover:border-gray-800 focus:border-gray-800 ${
+                className={`pl-2 pt-1 pb-1 pr-2 bg-midnight border-[1px] border-slate-500 rounded focus:bg-[#262135] text-lg hover:border-gray-800 focus:border-gray-800 ${
                   passwordErrorMessage && 'border-red-600'
                 }`}
                 value={repassword}
@@ -138,12 +138,14 @@ const Register = () => {
                 {passwordErrorMessage && passwordErrorMessage}
               </span>
             </div>
-            <Link href={'/login'}>
-              <span className='underline cursor-pointer mb-6'>Already have an account?</span>
+            <Link href={'/auth/login'}>
+              <span className='underline cursor-pointer hover:text-slate-400'>
+                Already have an account?
+              </span>
             </Link>
             <button
               type='submit'
-              className='bg-main-purple font-bold pt-3 pb-3 pl-10 pr-10 rounded-md shadow-md w-36 h-12 hover:bg-main-purple-dark flex justify-center'
+              className='bg-main-purple font-bold pt-3 pb-3 pl-10 pr-10 rounded-md mt-4 shadow-md w-36 h-12 hover:bg-main-purple-dark flex justify-center'
             >
               {isRegistering ? (
                 <VscLoading

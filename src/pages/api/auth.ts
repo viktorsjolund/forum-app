@@ -25,7 +25,11 @@ export const authOptions: AuthOptions = {
         ...session.user,
         id: user.id
       }
-    }),
+    })
+  },
+  pages: {
+    signIn: '/auth/login',
+    newUser: '/user-setup'
   }
 }
 
