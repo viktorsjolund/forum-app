@@ -59,7 +59,7 @@ export const postsRouter = router({
 
       const result = await prisma.post.findMany({
         orderBy: {
-          created_at: 'desc'
+          created_at: 'asc'
         },
         skip,
         take,
