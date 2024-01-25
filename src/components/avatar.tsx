@@ -11,16 +11,12 @@ export const Avatar = (props: AvatarProps) => {
 
   return (
     <>
-      <Link
-        href={`/user/${username}`}
-        passHref
-      >
+      <Link href={`/user/${username}`}>
         <Image
           src={src ? src : '/images/avatar.png'}
           alt='avatar'
           width={40}
           height={40}
-          layout='fixed'
           className='rounded-full cursor-pointer'
         />
       </Link>

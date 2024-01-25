@@ -121,7 +121,7 @@ const LoggedIn = (props: TLoggedInProps) => {
             <Image
               src={avatar ? avatar : '/images/avatar.png'}
               alt='avatar'
-              layout='responsive'
+              className='w-full h-auto'
               width={35}
               height={35}
             />
