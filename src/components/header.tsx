@@ -5,11 +5,11 @@ import { trpc } from '@/utils/trpc'
 import Image from 'next/image'
 import { useState } from 'react'
 import type { role } from '@prisma/client'
-import { getDateAge } from '@/utils/timeCalculator'
 import { CgProfile, CgUser } from 'react-icons/cg'
 import { IoIosLogOut } from 'react-icons/io'
 import { signOut } from 'next-auth/react'
 import { useOutsideClick } from '@/hooks/useOutsideClick'
+import moment from 'moment'
 
 const LoggedOut = () => {
   return (
@@ -32,19 +32,19 @@ const LoggedIn = (props: TLoggedInProps) => {
   const [showAvatarDropdown, setShowAvatarDropdown] = useState(false)
   const [showNotiDropdown, setShowNotiDropdown] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
-  const { data: notifications, refetch: refetchNotifications } = trpc.notification.byUser.useQuery()
+  const { data: notifications, refetch: refetchNotifications } =
+    trpc.notification.byUser.useQuery()
   const viewedNotificationMutation = trpc.notification.viewed.useMutation()
   const { ref: avatarRef, triggerRef: avatarTriggerRef } = useOutsideClick<
     HTMLUListElement,
     HTMLDivElement
   >(() => setShowAvatarDropdown(false))
-  const { ref: notiRef, triggerRef: notiTriggerRef } = useOutsideClick<HTMLUListElement>(() =>
-    setShowNotiDropdown(false)
-  )
+  const { ref: notiRef, triggerRef: notiTriggerRef } =
+    useOutsideClick<HTMLUListElement>(() => setShowNotiDropdown(false))
 
   const handleNotification = async (notificationId: number) => {
     await viewedNotificationMutation.mutateAsync({
-      notificationId
+      notificationId,
     })
     refetchNotifications()
   }
@@ -52,10 +52,7 @@ const LoggedIn = (props: TLoggedInProps) => {
   return (
     <>
       <div className='mr-5'>
-        <Link
-          href='/create-post'
-          passHref
-        >
+        <Link href='/create-post' passHref>
           <div className='flex leading-6 transition-colors justify-center items-center pr-4 pl-4 pb-1 pt-1 w-full h-full rounded bg-main-purple hover:bg-main-purple-dark shadow-lg font-medium text-sm'>
             Create a post
           </div>
@@ -68,7 +65,11 @@ const LoggedIn = (props: TLoggedInProps) => {
           ref={notiTriggerRef}
         >
           <div className='pointer-events-none'>
-            {showNotiDropdown ? <AiFillBell size={30} /> : <AiOutlineBell size={30} />}
+            {showNotiDropdown ? (
+              <AiFillBell size={30} />
+            ) : (
+              <AiOutlineBell size={30} />
+            )}
           </div>
           {notifications && notifications.length > 0 && (
             <div className='absolute h-4 w-4 top-0 right-0 bg-red-600 rounded-full flex justify-center items-center'>
@@ -97,10 +98,15 @@ const LoggedIn = (props: TLoggedInProps) => {
                     {notification.trigger === 'COMMENT' && (
                       <>
                         <span className='text-xs'>
-                          User <span className='font-bold'>{notification.user.username}</span>{' '}
+                          User{' '}
+                          <span className='font-bold'>
+                            {notification.user.username}
+                          </span>{' '}
                           commented on{' '}
                           <span className='font-bold'>{`"${notification.post.title}"`}</span>{' '}
-                          <span>{getDateAge(notification.created_at.toString())}</span>
+                          <span>
+                            {moment(notification.created_at).fromNow()}
+                          </span>
                         </span>
                       </>
                     )}
@@ -144,10 +150,7 @@ const LoggedIn = (props: TLoggedInProps) => {
               </span>
             )}
           </li>
-          <Link
-            href={`/user/${username}`}
-            passHref
-          >
+          <Link href={`/user/${username}`} passHref>
             <li className='pb-1 pt-1 text-center cursor-pointer border-t-[1px] border-slate-800 hover:bg-gray-800 transition-colors flex items-center pr-4'>
               <div className='pl-4 pr-4'>
                 <CgProfile />
@@ -185,10 +188,7 @@ export const Header = () => {
         <div className='ml-3 cursor-pointer rounded-full hover:bg-[#343434] p-3 transition-colors'>
           <AiOutlineMenu size={25} />
         </div>
-        <Link
-          href='/'
-          passHref
-        >
+        <Link href='/' passHref>
           <span
             className={`pl-3 pt-2 pr-3 pb-2 ml-6 font-semibold text-lg rounded ${
               router.pathname === '/'
