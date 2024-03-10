@@ -8,13 +8,13 @@ export const repliesRouter = router({
     .input(
       z.object({
         content: z.string(),
-        commentId: z.number()
-      })
+        commentId: z.string(),
+      }),
     )
     .mutation(async ({ input, ctx }) => {
       if (!ctx.user) {
         throw new trpc.TRPCError({
-          code: 'UNAUTHORIZED'
+          code: 'UNAUTHORIZED',
         })
       }
 
@@ -25,13 +25,13 @@ export const repliesRouter = router({
           data: {
             content,
             comment_id: commentId,
-            user_id: ctx.user.id
-          }
+            user_id: ctx.user.id,
+          },
         })
       } catch (e) {
         throw new trpc.TRPCError({
-          code: 'INTERNAL_SERVER_ERROR'
+          code: 'INTERNAL_SERVER_ERROR',
         })
       }
-    })
+    }),
 })

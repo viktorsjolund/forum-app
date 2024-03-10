@@ -2,14 +2,16 @@ import { trpc } from '@/utils/trpc'
 import { useEffect, useState } from 'react'
 
 export const usePostRating = (
-  postId: number
+  postId: string,
 ): [() => Promise<void>, () => Promise<void>, boolean, boolean] => {
   const addLikeMutation = trpc.like.add.useMutation()
   const removeLikeMutation = trpc.like.remove.useMutation()
   const addDislikeMutation = trpc.dislike.add.useMutation()
   const removeDislikeMutation = trpc.dislike.remove.useMutation()
   const { data: isLikedData } = trpc.like.userHasLikedPost.useQuery({ postId })
-  const { data: isDislikedData } = trpc.dislike.userHasDislikedPost.useQuery({ postId })
+  const { data: isDislikedData } = trpc.dislike.userHasDislikedPost.useQuery({
+    postId,
+  })
   const [isLiked, setIsLiked] = useState(false)
   const [isDisliked, setIsDisliked] = useState(false)
 
@@ -29,7 +31,7 @@ export const usePostRating = (
 
       try {
         await removeLikeMutation.mutateAsync({
-          postId
+          postId,
         })
       } catch (e) {
         setIsLiked(true)
@@ -40,7 +42,7 @@ export const usePostRating = (
 
       try {
         await addLikeMutation.mutateAsync({
-          postId
+          postId,
         })
       } catch (e) {
         setIsLiked(false)
@@ -51,7 +53,7 @@ export const usePostRating = (
       if (isDisliked) {
         try {
           await removeDislikeMutation.mutateAsync({
-            postId
+            postId,
           })
         } catch (e) {
           setIsDisliked(true)
@@ -66,7 +68,7 @@ export const usePostRating = (
 
       try {
         await removeDislikeMutation.mutateAsync({
-          postId
+          postId,
         })
       } catch (e) {
         setIsDisliked(true)
@@ -77,7 +79,7 @@ export const usePostRating = (
 
       try {
         await addDislikeMutation.mutateAsync({
-          postId
+          postId,
         })
       } catch (e) {
         setIsDisliked(false)
@@ -88,7 +90,7 @@ export const usePostRating = (
       if (isLiked) {
         try {
           await removeLikeMutation.mutateAsync({
-            postId
+            postId,
           })
         } catch (e) {
           setIsLiked(true)

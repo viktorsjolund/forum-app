@@ -7,7 +7,7 @@ import { publicProcedure, router } from '../trpc'
 type TNotificationInput = {
   trigger: notification_trigger
   user_id: string
-  post_id: number
+  post_id: string
   element_id?: string
   initiator_id: string
 }
@@ -16,23 +16,23 @@ export const notificationsRouter = router({
   add: publicProcedure
     .input(
       z.object({
-        postId: z.number(),
+        postId: z.string(),
         trigger: z.nativeEnum(notification_trigger),
-        elementId: z.string().optional()
-      })
+        elementId: z.string().optional(),
+      }),
     )
     .mutation(async ({ input, ctx }) => {
       if (!ctx.user) {
         throw new trpc.TRPCError({
-          code: 'UNAUTHORIZED'
+          code: 'UNAUTHORIZED',
         })
       }
       const { postId, trigger, elementId } = input
 
       const followers = await prisma.post_follow.findMany({
         where: {
-          post_id: postId
-        }
+          post_id: postId,
+        },
       })
 
       const data: TNotificationInput[] = []
@@ -43,33 +43,33 @@ export const notificationsRouter = router({
           trigger,
           user_id: follower.user_id,
           element_id: elementId,
-          initiator_id: ctx.user.id
+          initiator_id: ctx.user.id,
         })
       }
 
       await prisma.notification.createMany({
-        data
+        data,
       })
     }),
   byUser: publicProcedure.query(async ({ ctx }) => {
     if (!ctx.user) {
       throw new trpc.TRPCError({
-        code: 'UNAUTHORIZED'
+        code: 'UNAUTHORIZED',
       })
     }
 
     const result = await prisma.notification.findMany({
       where: {
         user_id: ctx.user.id,
-        viewed: false
+        viewed: false,
       },
       include: {
         post: true,
-        user: true
+        user: true,
       },
       orderBy: {
-        created_at: 'desc'
-      }
+        created_at: 'desc',
+      },
       // TODO: ignore getting the logged in user's own comments etc
     })
 
@@ -78,19 +78,19 @@ export const notificationsRouter = router({
   viewed: publicProcedure
     .input(
       z.object({
-        notificationId: z.number()
-      })
+        notificationId: z.number(),
+      }),
     )
     .mutation(async ({ input }) => {
       const { notificationId } = input
 
       await prisma.notification.update({
         data: {
-          viewed: true
+          viewed: true,
         },
         where: {
-          id: notificationId
-        }
+          id: notificationId,
+        },
       })
-    })
+    }),
 })
