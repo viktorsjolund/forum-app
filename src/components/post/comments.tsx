@@ -1,6 +1,13 @@
 import { trpc } from '@/utils/trpc'
 import type { post_comment, User, post_reply } from '@prisma/client'
-import { ChangeEvent, FormEvent, useEffect, useMemo, useRef, useState } from 'react'
+import {
+  ChangeEvent,
+  FormEvent,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import { Comment } from './comment'
 import autoAnimate from '@formkit/auto-animate'
 import { VscLoading } from 'react-icons/vsc'
@@ -12,7 +19,7 @@ type TCommentsProps = {
       author: User
     })[]
   })[]
-  postId: number
+  postId: string
   refetchPost: () => Promise<void>
 }
 
@@ -43,7 +50,7 @@ export const Comments = (props: TCommentsProps) => {
     await addNotificationMutation.mutateAsync({
       trigger: 'COMMENT',
       postId,
-      elementId: `comment-nr-${comment.id}`
+      elementId: `comment-nr-${comment.id}`,
     })
 
     await refetchPost()
@@ -57,10 +64,7 @@ export const Comments = (props: TCommentsProps) => {
   }
 
   return (
-    <div
-      ref={commentsRef}
-      className='mt-20'
-    >
+    <div ref={commentsRef} className='mt-20'>
       <form
         onSubmit={handleSubmit}
         className='w-full flex flex-col rounded-t-md mt-3 font-medium'
@@ -85,25 +89,24 @@ export const Comments = (props: TCommentsProps) => {
         <div>
           <button className='flex leading-6 justify-center items-center pr-4 pl-4 pb-1 pt-1 float-right rounded w-22 h-8 bg-main-purple hover:bg-main-purple-dark shadow-lg font-medium text-sm mt-3'>
             {isRefetching ? (
-              <VscLoading
-                size={20}
-                className='animate-spin'
-              />
+              <VscLoading size={20} className='animate-spin' />
             ) : (
               'COMMENT'
             )}
           </button>
         </div>
       </form>
-      {commentsReversed.map((comment) => {
-        return (
-          <Comment
-            comment={comment}
-            key={comment.id}
-            refetchPost={refetchPost}
-          />
-        )
-      })}
+      <div className='flex flex-col space-y-2'>
+        {commentsReversed.map((comment) => {
+          return (
+            <Comment
+              comment={comment}
+              key={comment.id}
+              refetchPost={refetchPost}
+            />
+          )
+        })}
+      </div>
     </div>
   )
 }
