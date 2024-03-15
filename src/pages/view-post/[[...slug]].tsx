@@ -29,6 +29,7 @@ import { StyledInput } from '@/components/styledInput'
 import { StyledTextarea } from '@/components/styledTextarea'
 import { VscLoading } from 'react-icons/vsc'
 import moment from 'moment'
+import { tokenize } from '@/utils/lexer'
 
 type TEditProps = {
   post: post & { author: User }
@@ -200,7 +201,7 @@ const View = (props: TViewProps) => {
     <>
       <div className='flex border-b-2 p-8 mb-12 items-center border-b-white border-opacity-50 rounded-sm'>
         <Avatar username={post.author.username!} src={post.author.image} />
-        <Link href={`/user/${post.author.username}`} passHref>
+        <Link href={`/user/${post.author.username}`}>
           <span className='ml-2 font-bold pr-2 cursor-pointer'>
             {post.author.username}
           </span>
@@ -261,11 +262,7 @@ const View = (props: TViewProps) => {
         <div className='flex items-center w-full'>
           {post.topic?.split(',').map((topic, i) => {
             return (
-              <Link
-                href={`/topic/${encodeURIComponent(topic)}`}
-                key={i}
-                passHref
-              >
+              <Link href={`/topic/${encodeURIComponent(topic)}`} key={i}>
                 <div className='bg-main-purple-light rounded-2xl h-max pt-1 pb-1 pr-3 pl-3 shadow-lg cursor-pointer mr-4'>
                   {topic}
                 </div>
