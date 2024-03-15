@@ -19,10 +19,7 @@ export const ProfileTemplate = ({ children, me, username }: TProfileTemplateProp
       <div className='flex justify-center h-max min-h-full bg-gradient-to-tr from-main-purple-light to-main-purple via-main-purple-dark'>
         <div className='w-4/5 bg-[#212529] min-h-full'>
           <ul className='flex bg-midnight w-full border-t-2 border-l-2 border-midnight'>
-            <Link
-              href={`/user/${username}`}
-              passHref
-            >
+            <Link href={`/user/${username}`} className='min-w-fit'>
               <li
                 className={`pl-4 pt-1 pr-4 pb-1 border-b-2 bg-midnight-light border-midnight ${
                   router.pathname === '/user/[uname]'
@@ -33,10 +30,7 @@ export const ProfileTemplate = ({ children, me, username }: TProfileTemplateProp
                 Posts
               </li>
             </Link>
-            <Link
-              href={`/user/${username}/liked`}
-              passHref
-            >
+            <Link href={`/user/${username}/liked`} className='min-w-fit'>
               <li
                 className={`pl-4 pt-1 pr-4 pb-1 border-b-2 bg-midnight-light border-midnight ${
                   router.pathname === '/user/[uname]/liked'
@@ -47,10 +41,7 @@ export const ProfileTemplate = ({ children, me, username }: TProfileTemplateProp
                 Liked
               </li>
             </Link>
-            <Link
-              href={`/user/${username}/saved`}
-              passHref
-            >
+            <Link href={`/user/${username}/saved`} className='min-w-fit'>
               <li
                 className={`pl-4 pt-1 pr-4 pb-1 border-b-2 bg-midnight-light border-midnight hover:border-b-main-purple ${
                   router.pathname === '/user/[uname]/saved'

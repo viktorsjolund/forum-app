@@ -9,7 +9,7 @@ datasource db {
 }
 
 model post {
-  id            Int            @id @default(autoincrement())
+  id            String         @id @default(cuid())
   title         String         @db.VarChar(255)
   content       String         @db.VarChar(4000)
   topic         String?        @db.VarChar(255)
@@ -26,13 +26,12 @@ model post {
   @@index([authorId])
   @@fulltext([title])
   @@fulltext([title, content])
-  @@map("forum_post")
 }
 
 model post_comment {
-  id         Int          @id @default(autoincrement())
+  id         String       @id @default(cuid())
   user_id    String
-  post_id    Int
+  post_id    String
   created_at DateTime     @default(now()) @db.DateTime(3)
   updated_at DateTime     @updatedAt @db.DateTime(3)
   content    String       @db.VarChar(500)
@@ -42,13 +41,12 @@ model post_comment {
 
   @@index([post_id])
   @@index([user_id])
-  @@map("forum_post_comment")
 }
 
 model post_reply {
-  id         Int          @id @default(autoincrement())
+  id         String       @id @default(cuid())
   user_id    String
-  comment_id Int
+  comment_id String
   created_at DateTime     @default(now()) @db.DateTime(3)
   updated_at DateTime     @updatedAt @db.DateTime(3)
   content    String       @db.VarChar(500)
@@ -57,22 +55,21 @@ model post_reply {
 
   @@index([comment_id])
   @@index([user_id])
-  @@map("forum_post_reply")
 }
 
 model Account {
-  id                 String  @id @default(cuid())
-  userId             String
-  type               String
-  provider           String
-  providerAccountId  String
-  refresh_token      String?  @db.Text
-  access_token       String?  @db.Text
-  expires_at         Int?
-  token_type         String?
-  scope              String?
-  id_token           String?  @db.Text
-  session_state      String?
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -117,34 +114,32 @@ model VerificationToken {
 model post_like {
   id         Int      @id @default(autoincrement())
   user_id    String
-  post_id    Int
+  post_id    String
   created_at DateTime @default(now()) @db.DateTime(0)
   post       post     @relation(fields: [post_id], references: [id], onDelete: Cascade)
 
   @@index([post_id])
-  @@map("forum_post_likes")
 }
 
 model post_dislike {
   id         Int      @id @default(autoincrement())
   user_id    String
-  post_id    Int
+  post_id    String
   created_at DateTime @default(now()) @db.DateTime(0)
   post       post     @relation(fields: [post_id], references: [id], onDelete: Cascade)
 
   @@index([post_id])
-  @@map("forum_post_dislikes")
 }
 
 model post_follow {
-  id      Int @id @default(autoincrement())
+  id      Int    @id @default(autoincrement())
   user_id String
-  post_id Int
+  post_id String
 }
 
 model notification {
   id           Int                  @id @default(autoincrement())
-  post_id      Int
+  post_id      String
   user_id      String
   initiator_id String
   element_id   String?              @db.VarChar(255)

@@ -1,10 +1,16 @@
-import { AiFillDislike, AiFillLike, AiOutlineLike, AiOutlineDislike } from 'react-icons/ai'
+import {
+  AiFillDislike,
+  AiFillLike,
+  AiOutlineLike,
+  AiOutlineDislike,
+} from 'react-icons/ai'
 import { FaCommentDots } from 'react-icons/fa'
 import type { post, User } from '@prisma/client'
 import Link from 'next/link'
 import moment from 'moment'
 import { usePostRating } from '@/hooks/usePostRating'
 import { IconContext } from 'react-icons'
+import { getPostTitleSlug } from '@/utils/slug'
 
 type TMinifiedPostProps = {
   post: post & {
@@ -20,7 +26,9 @@ type TMinifiedPostProps = {
 
 export const MinifiedPost = (props: TMinifiedPostProps) => {
   const { post, ratingChangeCb } = props
-  const [handleLike, handleDislike, isLiked, isDisliked] = usePostRating(post.id)
+  const [handleLike, handleDislike, isLiked, isDisliked] = usePostRating(
+    post.id,
+  )
 
   const handleLikeClick = async () => {
     await handleLike()
@@ -37,7 +45,10 @@ export const MinifiedPost = (props: TMinifiedPostProps) => {
       <div className='flex flex-col h-full justify-center border-r-2 border-slate-800 pr-2 w-fit min-w-[5rem]'>
         <div className='flex items-center mb-1'>
           <IconContext.Provider
-            value={{ className: 'hover:fill-blue-500 w-full h-full p-1 transition-colors' }}
+            value={{
+              className:
+                'hover:fill-blue-500 w-full h-full p-1 transition-colors',
+            }}
           >
             <div
               className='hover:bg-midnight rounded'
@@ -46,11 +57,16 @@ export const MinifiedPost = (props: TMinifiedPostProps) => {
               {isLiked ? <AiFillLike /> : <AiOutlineLike />}
             </div>
           </IconContext.Provider>
-          <span className='pl-2 text-gray-300 text-sm'>{post._count.likes}</span>
+          <span className='pl-2 text-gray-300 text-sm'>
+            {post._count.likes}
+          </span>
         </div>
         <div className='flex items-center mb-1'>
           <IconContext.Provider
-            value={{ className: 'hover:fill-red-500 w-full h-full p-1 transition-colors' }}
+            value={{
+              className:
+                'hover:fill-red-500 w-full h-full p-1 transition-colors',
+            }}
           >
             <div
               className='hover:bg-midnight rounded'
@@ -59,19 +75,22 @@ export const MinifiedPost = (props: TMinifiedPostProps) => {
               {isDisliked ? <AiFillDislike /> : <AiOutlineDislike />}
             </div>
           </IconContext.Provider>
-          <span className='pl-2 text-gray-300 text-sm'>{post._count.dislikes}</span>
+          <span className='pl-2 text-gray-300 text-sm'>
+            {post._count.dislikes}
+          </span>
         </div>
         <div className='flex items-center'>
           <div className='p-1'>
             <FaCommentDots />
           </div>
-          <span className='pl-2 text-gray-300 text-sm'>{post._count.comments}</span>
+          <span className='pl-2 text-gray-300 text-sm'>
+            {post._count.comments}
+          </span>
         </div>
       </div>
       <Link
-        href={`/view-post/${post.id}`}
+        href={`/view-post/${post.id}/${getPostTitleSlug(post.title)}`}
         className='w-full'
-        passHref
       >
         <div className='w-full h-full flex-col'>
           <div className='flex'>
@@ -90,7 +109,7 @@ export const MinifiedPost = (props: TMinifiedPostProps) => {
               <span className='text-xs h-fit mt-auto ml-auto text-gray-500'>
                 Posted on: {moment(post.created_at).format('lll')}
               </span>
-              {post.created_at.getTime() === post.updated_at?.getTime() && (
+              {post.created_at.getTime() !== post.updated_at?.getTime() && (
                 <span className='text-xs h-fit mt-auto ml-auto text-gray-500'>
                   Last edited: {moment(post.updated_at).format('lll')}
                 </span>

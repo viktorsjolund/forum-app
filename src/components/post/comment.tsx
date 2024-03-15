@@ -1,9 +1,12 @@
 import type { post_comment, User, post_reply } from '@prisma/client'
 import { useEffect, useRef, useState } from 'react'
-import { Replies } from './replies'
 import autoAnimate from '@formkit/auto-animate'
 import { UserCard } from './userCard'
-import { IoMdArrowDropup, IoMdArrowDropdown } from 'react-icons/io'
+import {
+  MdArrowDownward,
+  MdOutlineKeyboardDoubleArrowDown,
+  MdOutlineKeyboardDoubleArrowUp,
+} from 'react-icons/md'
 
 type TCommentProps = {
   comment: post_comment & {
@@ -17,16 +20,8 @@ type TCommentProps = {
 
 export const Comment = (props: TCommentProps) => {
   const { comment, refetchPost } = props
-  const [showReplies, setShowReplies] = useState(false)
+  const [repliesCount, setRepliesCount] = useState(1)
   const repliesDropdownRef = useRef(null)
-
-  const toggleReplies = () => {
-    setShowReplies(!showReplies)
-  }
-
-  const showAllReplies = () => {
-    setShowReplies(true)
-  }
 
   useEffect(() => {
     repliesDropdownRef.current && autoAnimate(repliesDropdownRef.current)
@@ -34,7 +29,7 @@ export const Comment = (props: TCommentProps) => {
 
   return (
     <div
-      className='mb-8 scroll-m-14'
+      className='scroll-m-14 p-1 border border-midnight-dark rounded bg-midnight'
       id={`comment-nr-${comment.id}`}
     >
       <UserCard
@@ -44,34 +39,48 @@ export const Comment = (props: TCommentProps) => {
         username={comment.author.username!}
         commentId={comment.id}
         refetchPost={refetchPost}
-        showReplies={showAllReplies}
         avatar={comment.author.image}
       />
-      <div
-        className='m-1'
-        ref={repliesDropdownRef}
-      >
-        {comment.replies.length > 0 && (
-          <div
-            className='flex items-center justify-center cursor-pointer w-max'
-            onClick={toggleReplies}
-          >
-            {showReplies ? (
-              <IoMdArrowDropup fill='rgb(123 44 191)' />
-            ) : (
-              <IoMdArrowDropdown fill='rgb(123 44 191)' />
-            )}
-            <span className='text-main-purple-light'>{comment.replies.length} replies</span>
+      {comment.replies.length > 0 && (
+        <>
+          <div className='border-b border-midnight-dark mt-2 mb-2'></div>
+          <div className='flex flex-col pl-12 space-y-2'>
+            {comment.replies.slice(0, repliesCount).map((reply) => (
+              <UserCard
+                content={reply.content}
+                createdAt={reply.created_at}
+                updatedAt={reply.updated_at}
+                username={reply.author.username!}
+                commentId={reply.comment_id}
+                avatar={reply.author.image}
+                refetchPost={refetchPost}
+                key={reply.id}
+              />
+            ))}
+            <div className='flex justify-between items-center'>
+              <div></div>
+              {repliesCount < comment.replies.length && (
+                <div
+                  className='cursor-pointer hover:bg-midnight-light pt-1 pb-1 pr-4 pl-4 rounded flex items-center'
+                  onClick={() => setRepliesCount((s) => s + 5)}
+                >
+                  <MdOutlineKeyboardDoubleArrowDown className='fill-slate-300' />
+                  <span className='text-sm text-slate-300'>
+                    View more ({comment.replies.length - repliesCount})
+                  </span>
+                </div>
+              )}
+              <div
+                className='cursor-pointer hover:bg-midnight-light pt-1 pb-1 pr-4 pl-4 rounded flex items-center'
+                onClick={() => setRepliesCount(0)}
+              >
+                <MdOutlineKeyboardDoubleArrowUp className='fill-slate-300' />
+                <span className='text-sm text-slate-300'>Hide</span>
+              </div>
+            </div>
           </div>
-        )}
-        {showReplies && (
-          <Replies
-            replies={comment.replies}
-            refetchPost={refetchPost}
-            showReplies={showAllReplies}
-          />
-        )}
-      </div>
+        </>
+      )}
     </div>
   )
 }

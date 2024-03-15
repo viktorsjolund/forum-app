@@ -7,39 +7,39 @@ export const postsRouter = router({
   byId: publicProcedure
     .input(
       z.object({
-        id: z.number()
-      })
+        id: z.string(),
+      }),
     )
     .query(async ({ input }) => {
       const post = await prisma.post.findFirst({
         where: {
-          id: input.id
+          id: input.id,
         },
         include: {
           author: true,
           _count: {
             select: {
               dislikes: true,
-              likes: true
-            }
+              likes: true,
+            },
           },
           comments: {
             orderBy: {
-              created_at: 'asc'
+              created_at: 'asc',
             },
             include: {
               author: true,
               replies: {
                 orderBy: {
-                  created_at: 'desc'
+                  created_at: 'desc',
                 },
                 include: {
-                  author: true
-                }
-              }
-            }
-          }
-        }
+                  author: true,
+                },
+              },
+            },
+          },
+        },
       })
 
       return post
@@ -51,15 +51,15 @@ export const postsRouter = router({
     .input(
       z.object({
         skip: z.number(),
-        take: z.number()
-      })
+        take: z.number(),
+      }),
     )
     .query(async ({ input }) => {
       const { skip, take } = input
 
       const result = await prisma.post.findMany({
         orderBy: {
-          created_at: 'asc'
+          created_at: 'desc',
         },
         skip,
         take,
@@ -69,10 +69,10 @@ export const postsRouter = router({
             select: {
               comments: true,
               dislikes: true,
-              likes: true
-            }
-          }
-        }
+              likes: true,
+            },
+          },
+        },
       })
 
       return result
@@ -81,8 +81,8 @@ export const postsRouter = router({
     .input(
       z.object({
         skip: z.number(),
-        take: z.number()
-      })
+        take: z.number(),
+      }),
     )
     .query(async ({ input }) => {
       const { skip, take } = input
@@ -90,8 +90,8 @@ export const postsRouter = router({
       const result = await prisma.post.findMany({
         orderBy: {
           likes: {
-            _count: 'desc'
-          }
+            _count: 'desc',
+          },
         },
         skip,
         take,
@@ -101,10 +101,10 @@ export const postsRouter = router({
             select: {
               comments: true,
               dislikes: true,
-              likes: true
-            }
-          }
-        }
+              likes: true,
+            },
+          },
+        },
       })
 
       return result
@@ -117,15 +117,15 @@ export const postsRouter = router({
       z.object({
         userId: z.string(),
         skip: z.number(),
-        take: z.number()
-      })
+        take: z.number(),
+      }),
     )
     .query(async ({ input }) => {
       const { userId, skip, take } = input
 
       const result = await prisma.post.findMany({
         where: {
-          authorId: userId
+          authorId: userId,
         },
         skip,
         take,
@@ -135,13 +135,13 @@ export const postsRouter = router({
             select: {
               comments: true,
               dislikes: true,
-              likes: true
-            }
-          }
+              likes: true,
+            },
+          },
         },
         orderBy: {
-          created_at: 'desc'
-        }
+          created_at: 'desc',
+        },
       })
 
       return result
@@ -149,16 +149,16 @@ export const postsRouter = router({
   countByUser: publicProcedure
     .input(
       z.object({
-        userId: z.string()
-      })
+        userId: z.string(),
+      }),
     )
     .query(async ({ input }) => {
       const { userId } = input
 
       const result = await prisma.post.count({
         where: {
-          authorId: userId
-        }
+          authorId: userId,
+        },
       })
 
       return result
@@ -168,8 +168,8 @@ export const postsRouter = router({
       z.object({
         userId: z.string(),
         skip: z.number(),
-        take: z.number()
-      })
+        take: z.number(),
+      }),
     )
     .query(async ({ input }) => {
       const { userId, skip, take } = input
@@ -178,9 +178,9 @@ export const postsRouter = router({
         where: {
           likes: {
             some: {
-              user_id: userId
-            }
-          }
+              user_id: userId,
+            },
+          },
         },
         skip,
         take,
@@ -190,10 +190,10 @@ export const postsRouter = router({
             select: {
               comments: true,
               dislikes: true,
-              likes: true
-            }
-          }
-        }
+              likes: true,
+            },
+          },
+        },
       })
 
       return result
@@ -201,8 +201,8 @@ export const postsRouter = router({
   countByUserLikes: publicProcedure
     .input(
       z.object({
-        userId: z.string()
-      })
+        userId: z.string(),
+      }),
     )
     .query(async ({ input }) => {
       const { userId } = input
@@ -211,10 +211,10 @@ export const postsRouter = router({
         where: {
           likes: {
             some: {
-              user_id: userId
-            }
-          }
-        }
+              user_id: userId,
+            },
+          },
+        },
       })
 
       return result
@@ -224,29 +224,33 @@ export const postsRouter = router({
       z.object({
         title: z.string(),
         content: z.string(),
-        topic: z.string()
-      })
+        topic: z.string(),
+      }),
     )
     .mutation(async ({ input, ctx }) => {
       if (!ctx.user) {
         throw new trpc.TRPCError({
-          code: 'UNAUTHORIZED'
+          code: 'UNAUTHORIZED',
         })
       }
       const { title, content, topic } = input
 
-      const filteredTopics = topic.split(',').filter(String).join(',').toLowerCase()
+      const filteredTopics = topic
+        .split(',')
+        .filter(String)
+        .join(',')
+        .toLowerCase()
 
       const result = await prisma.post.create({
         data: {
           title: title.trim(),
           content: content.trim(),
           topic: filteredTopics || undefined,
-          authorId: ctx.user.id
+          authorId: ctx.user.id,
         },
         select: {
-          id: true
-        }
+          id: true,
+        },
       })
 
       return result
@@ -254,20 +258,20 @@ export const postsRouter = router({
   byTopic: publicProcedure
     .input(
       z.object({
-        topic: z.string()
-      })
+        topic: z.string(),
+      }),
     )
     .query(async ({ input }) => {
       const { topic } = input
       const posts = await prisma.post.findMany({
         where: {
           topic: {
-            contains: topic
-          }
+            contains: topic,
+          },
         },
         include: {
-          author: true
-        }
+          author: true,
+        },
       })
 
       return posts
@@ -275,13 +279,13 @@ export const postsRouter = router({
   remove: publicProcedure
     .input(
       z.object({
-        id: z.number()
-      })
+        id: z.string(),
+      }),
     )
     .mutation(async ({ input, ctx }) => {
       if (!ctx.user) {
         throw new trpc.TRPCError({
-          code: 'UNAUTHORIZED'
+          code: 'UNAUTHORIZED',
         })
       }
       const { id } = input
@@ -289,26 +293,26 @@ export const postsRouter = router({
       try {
         await prisma.post.delete({
           where: {
-            id
-          }
+            id,
+          },
         })
       } catch (e) {
         throw new trpc.TRPCError({
           code: 'NOT_FOUND',
-          message: `Post id ${id} could not be found.`
+          message: `Post id ${id} could not be found.`,
         })
       }
     }),
   follow: publicProcedure
     .input(
       z.object({
-        postId: z.number()
-      })
+        postId: z.string(),
+      }),
     )
     .mutation(async ({ input, ctx }) => {
       if (!ctx.user) {
         throw new trpc.TRPCError({
-          code: 'UNAUTHORIZED'
+          code: 'UNAUTHORIZED',
         })
       }
       const { postId } = input
@@ -317,25 +321,25 @@ export const postsRouter = router({
         await prisma.post_follow.create({
           data: {
             post_id: postId,
-            user_id: ctx.user.id
-          }
+            user_id: ctx.user.id,
+          },
         })
       } catch (e) {
         throw new trpc.TRPCError({
-          code: 'BAD_REQUEST'
+          code: 'BAD_REQUEST',
         })
       }
     }),
   unfollow: publicProcedure
     .input(
       z.object({
-        postId: z.number()
-      })
+        postId: z.string(),
+      }),
     )
     .mutation(async ({ input, ctx }) => {
       if (!ctx.user) {
         throw new trpc.TRPCError({
-          code: 'UNAUTHORIZED'
+          code: 'UNAUTHORIZED',
         })
       }
       const { postId } = input
@@ -344,25 +348,25 @@ export const postsRouter = router({
         await prisma.post_follow.deleteMany({
           where: {
             post_id: postId,
-            user_id: ctx.user.id
-          }
+            user_id: ctx.user.id,
+          },
         })
       } catch (e) {
         throw new trpc.TRPCError({
-          code: 'BAD_REQUEST'
+          code: 'BAD_REQUEST',
         })
       }
     }),
   isFollowed: publicProcedure
     .input(
       z.object({
-        postId: z.number()
-      })
+        postId: z.string(),
+      }),
     )
     .query(async ({ input, ctx }) => {
       if (!ctx.user) {
         throw new trpc.TRPCError({
-          code: 'UNAUTHORIZED'
+          code: 'UNAUTHORIZED',
         })
       }
       const { postId } = input
@@ -370,8 +374,8 @@ export const postsRouter = router({
       const result = await prisma.post_follow.findFirst({
         where: {
           post_id: postId,
-          user_id: ctx.user.id
-        }
+          user_id: ctx.user.id,
+        },
       })
 
       return !!result
@@ -379,13 +383,13 @@ export const postsRouter = router({
   isAuthor: publicProcedure
     .input(
       z.object({
-        postId: z.number()
-      })
+        postId: z.string(),
+      }),
     )
     .query(async ({ input, ctx }) => {
       if (!ctx.user) {
         throw new trpc.TRPCError({
-          code: 'UNAUTHORIZED'
+          code: 'UNAUTHORIZED',
         })
       }
 
@@ -394,8 +398,8 @@ export const postsRouter = router({
       const result = await prisma.post.findFirst({
         where: {
           id: postId,
-          authorId: ctx.user.id
-        }
+          authorId: ctx.user.id,
+        },
       })
 
       return !!result
@@ -403,26 +407,26 @@ export const postsRouter = router({
   update: publicProcedure
     .input(
       z.object({
-        postId: z.number(),
+        postId: z.string(),
         title: z.string().optional(),
         topic: z.string().optional(),
-        content: z.string().optional()
-      })
+        content: z.string().optional(),
+      }),
     )
     .mutation(async ({ input }) => {
       const { postId, content, title, topic } = input
 
       const result = await prisma.post.update({
         where: {
-          id: postId
+          id: postId,
         },
         data: {
           title,
           topic,
-          content
-        }
+          content,
+        },
       })
 
       return result
-    })
+    }),
 })

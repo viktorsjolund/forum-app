@@ -1,7 +1,9 @@
 import { trpc } from '@/utils/trpc'
 import { useEffect, useState } from 'react'
 
-export const usePostFollow = (postId: number): [() => Promise<void>, boolean] => {
+export const usePostFollow = (
+  postId: string,
+): [() => Promise<void>, boolean] => {
   const { data: isFollowedData } = trpc.post.isFollowed.useQuery({ postId })
   const followPostMutation = trpc.post.follow.useMutation()
   const unfollowPostMutation = trpc.post.unfollow.useMutation()
@@ -19,7 +21,7 @@ export const usePostFollow = (postId: number): [() => Promise<void>, boolean] =>
 
       try {
         await unfollowPostMutation.mutateAsync({
-          postId
+          postId,
         })
       } catch (e) {
         setIsFollowed(true)
@@ -29,7 +31,7 @@ export const usePostFollow = (postId: number): [() => Promise<void>, boolean] =>
 
       try {
         await followPostMutation.mutateAsync({
-          postId
+          postId,
         })
       } catch (e) {
         setIsFollowed(false)
